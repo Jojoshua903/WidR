@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wat in de Ranking</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1A2E'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='36' fill='%23F5C518' text-anchor='middle'%3EW%3C/text%3E%3Crect x='12' y='48' width='40' height='4' rx='2' fill='%23E94560'/%3E%3C/svg%3E">
   <style>
     :root {
       --primary: #1A1A2E;
@@ -842,6 +843,218 @@
       color: var(--gold);
       border-color: var(--primary);
     }
+
+    .preset-btn-add {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 2px dashed rgba(26,26,46,0.15);
+      background: transparent;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: rgba(26,26,46,0.4);
+    }
+
+    .preset-btn-add:hover {
+      border-color: var(--mint);
+      color: var(--mint);
+      background: rgba(22,199,154,0.05);
+    }
+
+    .preset-btn-delete {
+      margin-left: 6px;
+      background: none;
+      border: none;
+      color: rgba(26,26,46,0.3);
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .preset-btn-delete:hover { color: var(--accent); }
+
+    /* CATEGORY MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26,26,46,0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+      animation: fadeIn 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-sub {
+      font-size: 0.85rem;
+      color: rgba(26,26,46,0.5);
+      margin-bottom: 24px;
+    }
+
+    .modal-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(26,26,46,0.45);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(26,26,46,0.08);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--primary);
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .modal-items-area {
+      min-height: 60px;
+      margin-bottom: 20px;
+    }
+
+    .modal-items-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .modal-item-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .modal-item-remove {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(233,69,96,0.1);
+      color: var(--accent);
+      border: none;
+      cursor: pointer;
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-item-remove:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .modal-add-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-add-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid rgba(26,26,46,0.08);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .modal-add-input:focus { outline: none; border-color: var(--accent); }
+
+    .modal-add-btn {
+      padding: 10px 18px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .modal-save {
+      flex: 1;
+      padding: 14px;
+      background: var(--primary);
+      color: var(--gold);
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-save:hover { background: var(--blue); }
+
+    .modal-save:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .modal-cancel {
+      padding: 14px 24px;
+      background: transparent;
+      border: 2px solid rgba(26,26,46,0.1);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--primary);
+      transition: all 0.3s;
+    }
+
+    .modal-cancel:hover { border-color: var(--primary); }
 
     /* RANKINGS PAGE */
     .rankings-hero {
@@ -1843,9 +2056,10 @@
         <h2>Wat wil je ranken?</h2>
         <div class="ranker-setup-sub">Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.</div>
 
-        <div class="preset-row">
+        <div class="preset-row" id="presetRow">
           <button class="preset-btn" onclick="loadPreset('leden')">&#x1F451; Groepsleden</button>
           <button class="preset-btn" onclick="loadPreset('docenten')">&#x1F393; Docenten</button>
+          <button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>
         </div>
 
         <div class="ranker-input-row">
@@ -2633,6 +2847,152 @@
     }
 
     loadMemes();
+  </script>
+
+  <!-- CATEGORY MODAL -->
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+      <h2>Nieuwe Categorie &#x2728;</h2>
+      <div class="modal-sub">Maak een ranking categorie die iedereen kan gebruiken</div>
+
+      <label class="modal-label">Categorie Naam</label>
+      <input type="text" class="modal-input" id="catName" placeholder="bijv. Beste Vakken, Top Films...">
+
+      <label class="modal-label">Emoji (optioneel)</label>
+      <input type="text" class="modal-input" id="catEmoji" placeholder="bijv. &#x1F3AC; &#x26BD; &#x1F355;" style="max-width: 160px;">
+
+      <label class="modal-label">Items toevoegen (minimaal 3)</label>
+      <div class="modal-items-area">
+        <div class="modal-items-list" id="catItemsList"></div>
+        <div class="modal-add-row">
+          <input type="text" class="modal-add-input" id="catItemInput" placeholder="Typ een item..." onkeydown="if(event.key==='Enter')addCatItem()">
+          <button class="modal-add-btn" onclick="addCatItem()">+</button>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeCategoryModal()">Annuleren</button>
+        <button class="modal-save" id="catSaveBtn" onclick="saveCategory()" disabled>Opslaan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var catItems = [];
+    var customCategories = {};
+
+    function openCategoryModal() {
+      catItems = [];
+      document.getElementById('catName').value = '';
+      document.getElementById('catEmoji').value = '';
+      document.getElementById('catItemInput').value = '';
+      renderCatItems();
+      document.getElementById('categoryModal').classList.add('active');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('active');
+    }
+
+    function addCatItem() {
+      var input = document.getElementById('catItemInput');
+      var val = input.value.trim();
+      if (!val || catItems.indexOf(val) !== -1) { input.value = ''; return; }
+      catItems.push(val);
+      input.value = '';
+      input.focus();
+      renderCatItems();
+    }
+
+    function removeCatItem(idx) {
+      catItems.splice(idx, 1);
+      renderCatItems();
+    }
+
+    function renderCatItems() {
+      var list = document.getElementById('catItemsList');
+      var btn = document.getElementById('catSaveBtn');
+      list.innerHTML = catItems.map(function(item, i) {
+        return '<span class="modal-item-chip">' + item.replace(/</g, '&lt;') +
+          '<button class="modal-item-remove" onclick="removeCatItem(' + i + ')">x</button></span>';
+      }).join('');
+      btn.disabled = catItems.length < 3 || !document.getElementById('catName').value.trim();
+    }
+
+    document.getElementById('catName').addEventListener('input', renderCatItems);
+
+    function saveCategory() {
+      var name = document.getElementById('catName').value.trim();
+      var emoji = document.getElementById('catEmoji').value.trim() || '🏷️';
+      if (!name || catItems.length < 3) return;
+
+      var btn = document.getElementById('catSaveBtn');
+      btn.textContent = 'Opslaan...';
+      btn.disabled = true;
+
+      var catId = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+      db.collection('categories').doc(catId).set({
+        name: name,
+        emoji: emoji,
+        items: catItems.slice(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        presets[catId] = catItems.slice();
+        customCategories[catId] = { name: name, emoji: emoji };
+        renderPresetButtons();
+        closeCategoryModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+        loadPreset(catId);
+      }).catch(function(err) {
+        presets[catId] = catItems.slice();
+        customCategories[catId] = { name: name, emoji: emoji };
+        renderPresetButtons();
+        closeCategoryModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+        loadPreset(catId);
+      });
+    }
+
+    function deleteCategory(catId) {
+      if (!confirm('Weet je zeker dat je "' + customCategories[catId].name + '" wilt verwijderen?')) return;
+      db.collection('categories').doc(catId).delete().catch(function() {});
+      delete presets[catId];
+      delete customCategories[catId];
+      renderPresetButtons();
+    }
+
+    function renderPresetButtons() {
+      var row = document.getElementById('presetRow');
+      var html = '<button class="preset-btn" onclick="loadPreset(\'leden\')">&#x1F451; Groepsleden</button>';
+      html += '<button class="preset-btn" onclick="loadPreset(\'docenten\')">&#x1F393; Docenten</button>';
+
+      Object.keys(customCategories).forEach(function(id) {
+        var cat = customCategories[id];
+        html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
+          cat.emoji + ' ' + cat.name +
+          '<button class="preset-btn-delete" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>' +
+          '</button>';
+      });
+
+      html += '<button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>';
+      row.innerHTML = html;
+    }
+
+    function loadCustomCategories() {
+      db.collection('categories').get().then(function(snapshot) {
+        snapshot.forEach(function(doc) {
+          var data = doc.data();
+          presets[doc.id] = data.items;
+          customCategories[doc.id] = { name: data.name, emoji: data.emoji || '🏷️' };
+        });
+        renderPresetButtons();
+      }).catch(function() {});
+    }
+
+    loadCustomCategories();
   </script>
 </body>
 </html>
