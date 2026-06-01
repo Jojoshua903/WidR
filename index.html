@@ -871,6 +871,7 @@
       font-size: 0.7rem;
       font-weight: 700;
       transition: color 0.2s;
+      display: none;
     }
 
     .preset-btn-delete:hover { color: var(--accent); }
@@ -1879,6 +1880,193 @@
 
     footer .footer-logo span { color: var(--accent); }
 
+    .footer-admin {
+      display: inline-block;
+      cursor: pointer;
+      opacity: 0.15;
+      font-size: 0.7rem;
+      margin-top: 8px;
+      transition: opacity 0.3s;
+    }
+
+    .footer-admin:hover { opacity: 0.4; }
+
+    .admin-badge {
+      display: none;
+      position: fixed;
+      top: 72px;
+      right: 16px;
+      background: var(--mint);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(22,199,154,0.3);
+    }
+
+    .admin-badge.active { display: block; }
+
+    .admin-controls {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(26,26,46,0.1);
+    }
+
+    body.admin-mode .admin-controls { display: block; }
+    body.admin-mode .preset-btn-delete { display: inline; }
+
+    .admin-logout {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .admin-logout:hover { text-decoration: underline; }
+
+    .voter-name-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(26,26,46,0.06);
+    }
+
+    .voter-name-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(26,26,46,0.45);
+      margin-bottom: 8px;
+    }
+
+    .voter-name-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid rgba(26,26,46,0.08);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--primary);
+      transition: border-color 0.3s;
+    }
+
+    .voter-name-input:focus { outline: none; border-color: var(--gold); }
+
+    .admin-votes-section {
+      display: none;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 3px solid var(--mint);
+    }
+
+    body.admin-mode .admin-votes-section { display: block; }
+
+    .admin-votes-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--mint);
+      margin-bottom: 16px;
+    }
+
+    .vote-entry {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .vote-entry:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+    .vote-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .vote-entry-name {
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .vote-entry-time {
+      font-size: 0.7rem;
+      color: rgba(26,26,46,0.35);
+    }
+
+    .vote-entry-details {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(26,26,46,0.06);
+    }
+
+    .vote-entry.expanded .vote-entry-details { display: block; }
+
+    .vote-detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.8rem;
+      color: rgba(26,26,46,0.6);
+    }
+
+    .vote-detail-wins {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .admin-delete-vote {
+      background: none;
+      border: none;
+      color: rgba(26,26,46,0.2);
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-left: 12px;
+      transition: color 0.2s;
+    }
+
+    .admin-delete-vote:hover { color: var(--accent); }
+
+    .admin-msg-section {
+      display: none;
+      margin-top: 24px;
+    }
+
+    body.admin-mode .admin-msg-section { display: block; }
+
+    .msg-entry {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .msg-entry-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .msg-entry-name { font-weight: 700; font-size: 0.9rem; }
+    .msg-entry-subject { font-size: 0.7rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .msg-entry-text { font-size: 0.85rem; color: rgba(26,26,46,0.6); line-height: 1.5; }
+
     /* MOBILE */
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
@@ -2039,7 +2227,7 @@
 
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2069,7 +2257,13 @@
 
         <div class="ranker-items-list" id="rankerItemsList"></div>
         <div class="ranker-item-count" id="rankerItemCount">0 items toegevoegd</div>
-        <button class="ranker-start-btn" id="rankerStartBtn" onclick="startBattle()" disabled>Start Ranking (minimaal 3 items)</button>
+
+        <div class="voter-name-section">
+          <div class="voter-name-label">Jouw naam</div>
+          <input type="text" class="voter-name-input" id="voterName" placeholder="Vul je naam in om te stemmen..." oninput="checkStartReady()">
+        </div>
+
+        <button class="ranker-start-btn" id="rankerStartBtn" onclick="startBattle()" disabled style="margin-top:16px;">Start Ranking (minimaal 3 items + naam)</button>
       </div>
 
       <!-- BATTLE -->
@@ -2108,7 +2302,7 @@
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2119,7 +2313,7 @@
       <p>Live resultaten van alle stemmers — powered by Firebase</p>
     </div>
     <div class="rankings-container">
-      <div class="ranking-tabs">
+      <div class="ranking-tabs" id="rankingTabs">
         <button class="ranking-tab active" onclick="switchTab(this, 'leden')">&#x1F451; Groepsleden</button>
         <button class="ranking-tab" onclick="switchTab(this, 'docenten')">&#x1F393; Docenten</button>
       </div>
@@ -2131,10 +2325,15 @@
         <div style="font-size:0.85rem;color:rgba(26,26,46,0.5);">Ga naar Rank It en maak een ranking om hier te verschijnen!</div>
       </div>
       <div id="voteCount" style="text-align:center;padding:16px 0 0;font-size:0.75rem;color:rgba(26,26,46,0.35);font-weight:600;text-transform:uppercase;letter-spacing:1px;"></div>
+
+      <div class="admin-votes-section">
+        <div class="admin-votes-title">&#x1F6E1; Admin: Individuele Stemmen</div>
+        <div id="adminVotesList"></div>
+      </div>
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2261,7 +2460,7 @@
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2292,7 +2491,7 @@
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2390,7 +2589,7 @@
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2430,10 +2629,15 @@
         </div>
         <button class="form-submit" onclick="submitForm()">Verstuur Bericht</button>
       </div>
+
+      <div class="admin-msg-section">
+        <div class="admin-votes-title" style="margin-top:32px;">&#x1F4EC; Admin: Ontvangen Berichten</div>
+        <div id="adminMsgList"></div>
+      </div>
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
-      <p>&copy; 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 
@@ -2490,7 +2694,9 @@
       var status = document.getElementById('rankingStatus');
       var empty = document.getElementById('rankingEmpty');
       var voteCount = document.getElementById('voteCount');
+      var adminList = document.getElementById('adminVotesList');
       list.innerHTML = '';
+      if (adminList) adminList.innerHTML = '';
       status.style.display = 'block';
       status.textContent = 'Laden...';
       empty.style.display = 'none';
@@ -2499,11 +2705,13 @@
       db.collection('rankings').where('category', '==', category).get().then(function(snapshot) {
         var totals = {};
         var totalVotes = 0;
+        var individualVotes = [];
 
         snapshot.forEach(function(doc) {
           var data = doc.data();
           var items = data.items || {};
           totalVotes++;
+          individualVotes.push({ id: doc.id, voter: data.voter || 'Anoniem', items: items, timestamp: data.timestamp });
           Object.keys(items).forEach(function(name) {
             if (!totals[name]) totals[name] = 0;
             totals[name] += items[name];
@@ -2521,7 +2729,6 @@
         var maxScore = totals[sorted[0]] || 1;
 
         var colors = ['#F5C518', '#A0A0A0', '#CD7F32'];
-        var emojis = ['&#x1F947;', '&#x1F948;', '&#x1F949;'];
 
         list.innerHTML = sorted.map(function(name, i) {
           var score = totals[name];
@@ -2541,18 +2748,53 @@
         }).join('');
 
         voteCount.textContent = totalVotes + ' ranking' + (totalVotes !== 1 ? 's' : '') + ' ingestuurd';
+
+        if (adminList) {
+          individualVotes.sort(function(a, b) {
+            var ta = a.timestamp ? a.timestamp.seconds : 0;
+            var tb = b.timestamp ? b.timestamp.seconds : 0;
+            return tb - ta;
+          });
+          adminList.innerHTML = individualVotes.map(function(v) {
+            var itemsSorted = Object.keys(v.items).sort(function(a, b) { return v.items[b] - v.items[a]; });
+            var time = v.timestamp ? new Date(v.timestamp.seconds * 1000).toLocaleString('nl-NL') : 'onbekend';
+            return '<div class="vote-entry" onclick="this.classList.toggle(\'expanded\')">' +
+              '<div class="vote-entry-header">' +
+                '<div class="vote-entry-name">' + v.voter + '</div>' +
+                '<div>' +
+                  '<span class="vote-entry-time">' + time + '</span>' +
+                  '<button class="admin-delete-vote" onclick="event.stopPropagation();deleteVote(\'' + v.id + '\')">verwijder</button>' +
+                '</div>' +
+              '</div>' +
+              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);">Klik om details te zien</div>' +
+              '<div class="vote-entry-details">' +
+                itemsSorted.map(function(name, i) {
+                  return '<div class="vote-detail-item"><span>' + (i+1) + '. ' + name + '</span><span class="vote-detail-wins">' + v.items[name] + ' wins</span></div>';
+                }).join('') +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
       }).catch(function(err) {
         status.textContent = 'Kon rankings niet laden. Check je internetverbinding.';
         console.error(err);
       });
     }
 
+    function deleteVote(docId) {
+      if (!confirm('Weet je zeker dat je deze stem wilt verwijderen?')) return;
+      db.collection('rankings').doc(docId).delete().then(function() {
+        loadRankings(currentCategory);
+      }).catch(function(err) { console.error(err); });
+    }
+
     function saveRankingToFirebase(category, winsData) {
+      var voterName = (document.getElementById('voterName').value || '').trim() || 'Anoniem';
       db.collection('rankings').add({
         category: category,
         items: winsData,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        voter: 'anon-' + Math.random().toString(36).substr(2, 8)
+        voter: voterName
       }).then(function() {
         console.log('Ranking saved!');
       }).catch(function(err) {
@@ -2646,10 +2888,13 @@
       renderRankerItems();
     }
 
+    function checkStartReady() { renderRankerItems(); }
+
     function renderRankerItems() {
       var list = document.getElementById('rankerItemsList');
       var count = document.getElementById('rankerItemCount');
       var btn = document.getElementById('rankerStartBtn');
+      var voterName = (document.getElementById('voterName').value || '').trim();
 
       list.innerHTML = rankerItems.map(function(item, i) {
         return '<div class="ranker-chip">' + item +
@@ -2658,13 +2903,17 @@
 
       count.textContent = rankerItems.length + ' item' + (rankerItems.length !== 1 ? 's' : '') + ' toegevoegd';
 
-      if (rankerItems.length >= 3) {
+      if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
         var totalBattles = rankerItems.length * (rankerItems.length - 1) / 2;
         btn.textContent = 'Start Ranking (' + totalBattles + ' rondes)';
       } else {
         btn.disabled = true;
-        btn.textContent = 'Start Ranking (minimaal 3 items)';
+        if (rankerItems.length < 3) {
+          btn.textContent = 'Start Ranking (minimaal 3 items + naam)';
+        } else {
+          btn.textContent = 'Vul je naam in om te starten';
+        }
       }
     }
 
@@ -2972,13 +3221,31 @@
       Object.keys(customCategories).forEach(function(id) {
         var cat = customCategories[id];
         html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
-          cat.emoji + ' ' + cat.name +
-          '<button class="preset-btn-delete" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>' +
-          '</button>';
+          cat.emoji + ' ' + cat.name;
+        if (isAdmin) {
+        html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
+      }
+        html += '</button>';
       });
 
       html += '<button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>';
       row.innerHTML = html;
+
+      renderRankingTabs();
+    }
+
+    function renderRankingTabs() {
+      var tabs = document.getElementById('rankingTabs');
+      if (!tabs) return;
+      var html = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">&#x1F451; Groepsleden</button>';
+      html += '<button class="ranking-tab' + (currentCategory === 'docenten' ? ' active' : '') + '" onclick="switchTab(this, \'docenten\')">&#x1F393; Docenten</button>';
+
+      Object.keys(customCategories).forEach(function(id) {
+        var cat = customCategories[id];
+        html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + cat.emoji + ' ' + cat.name + '</button>';
+      });
+
+      tabs.innerHTML = html;
     }
 
     function loadCustomCategories() {
@@ -2993,6 +3260,168 @@
     }
 
     loadCustomCategories();
+  </script>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal">
+      <h2 id="adminTitle">Admin Login &#x1F512;</h2>
+      <div class="modal-sub" id="adminSub">Voer je wachtwoord in om admin modus te activeren</div>
+
+      <div id="adminSetup" style="display:none;">
+        <label class="modal-label">Kies een wachtwoord</label>
+        <input type="password" class="modal-input" id="adminNewPass" placeholder="Nieuw wachtwoord...">
+        <label class="modal-label">Bevestig wachtwoord</label>
+        <input type="password" class="modal-input" id="adminConfirmPass" placeholder="Herhaal wachtwoord...">
+        <div class="modal-buttons">
+          <button class="modal-cancel" onclick="closeAdminModal()">Annuleren</button>
+          <button class="modal-save" onclick="setupAdminPassword()">Wachtwoord Instellen</button>
+        </div>
+      </div>
+
+      <div id="adminLogin">
+        <label class="modal-label">Wachtwoord</label>
+        <input type="password" class="modal-input" id="adminPass" placeholder="Wachtwoord..." onkeydown="if(event.key==='Enter')attemptLogin()">
+        <div id="adminError" style="color:var(--accent);font-size:0.8rem;font-weight:700;margin-bottom:16px;display:none;">Verkeerd wachtwoord</div>
+        <div class="modal-buttons">
+          <button class="modal-cancel" onclick="closeAdminModal()">Annuleren</button>
+          <button class="modal-save" onclick="attemptLogin()">Inloggen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN BADGE -->
+  <div class="admin-badge" id="adminBadge">&#x1F6E1; Admin <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
+
+  <script>
+    var isAdmin = false;
+
+    function simpleHash(str) {
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) {
+        var c = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + c;
+        hash = hash & hash;
+      }
+      return 'h_' + Math.abs(hash).toString(36);
+    }
+
+    function openAdminLogin() {
+      if (isAdmin) {
+        logoutAdmin();
+        return;
+      }
+      document.getElementById('adminError').style.display = 'none';
+      document.getElementById('adminPass').value = '';
+      document.getElementById('adminNewPass').value = '';
+      document.getElementById('adminConfirmPass').value = '';
+
+      db.collection('config').doc('admin').get().then(function(doc) {
+        if (doc.exists && doc.data().passwordHash) {
+          document.getElementById('adminSetup').style.display = 'none';
+          document.getElementById('adminLogin').style.display = 'block';
+          document.getElementById('adminTitle').innerHTML = 'Admin Login &#x1F512;';
+          document.getElementById('adminSub').textContent = 'Voer je wachtwoord in om admin modus te activeren';
+        } else {
+          document.getElementById('adminSetup').style.display = 'block';
+          document.getElementById('adminLogin').style.display = 'none';
+          document.getElementById('adminTitle').innerHTML = 'Admin Setup &#x1F511;';
+          document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
+        }
+        document.getElementById('adminModal').classList.add('active');
+      }).catch(function() {
+        document.getElementById('adminSetup').style.display = 'block';
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminTitle').innerHTML = 'Admin Setup &#x1F511;';
+        document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
+        document.getElementById('adminModal').classList.add('active');
+      });
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.remove('active');
+    }
+
+    function setupAdminPassword() {
+      var pass = document.getElementById('adminNewPass').value;
+      var confirm = document.getElementById('adminConfirmPass').value;
+      if (!pass || pass.length < 4) {
+        alert('Wachtwoord moet minimaal 4 tekens zijn');
+        return;
+      }
+      if (pass !== confirm) {
+        alert('Wachtwoorden komen niet overeen');
+        return;
+      }
+      var hash = simpleHash(pass);
+      db.collection('config').doc('admin').set({
+        passwordHash: hash
+      }).then(function() {
+        isAdmin = true;
+        activateAdmin();
+        closeAdminModal();
+      }).catch(function() {
+        alert('Kon wachtwoord niet opslaan. Check je Firebase verbinding.');
+      });
+    }
+
+    function attemptLogin() {
+      var pass = document.getElementById('adminPass').value;
+      var hash = simpleHash(pass);
+
+      db.collection('config').doc('admin').get().then(function(doc) {
+        if (doc.exists && doc.data().passwordHash === hash) {
+          isAdmin = true;
+          activateAdmin();
+          closeAdminModal();
+        } else {
+          document.getElementById('adminError').style.display = 'block';
+          document.getElementById('adminPass').value = '';
+        }
+      }).catch(function() {
+        alert('Kon niet verbinden met Firebase');
+      });
+    }
+
+    function activateAdmin() {
+      document.body.classList.add('admin-mode');
+      document.getElementById('adminBadge').classList.add('active');
+      renderPresetButtons();
+      loadRankings(currentCategory);
+      loadAdminMessages();
+    }
+
+    function logoutAdmin() {
+      isAdmin = false;
+      document.body.classList.remove('admin-mode');
+      document.getElementById('adminBadge').classList.remove('active');
+      renderPresetButtons();
+    }
+
+    function loadAdminMessages() {
+      var msgList = document.getElementById('adminMsgList');
+      if (!msgList) return;
+      db.collection('berichten').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        if (snapshot.empty) {
+          msgList.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Nog geen berichten ontvangen</div>';
+          return;
+        }
+        msgList.innerHTML = '';
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          var time = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
+          msgList.innerHTML += '<div class="msg-entry">' +
+            '<div class="msg-entry-header">' +
+              '<div class="msg-entry-name">' + (d.naam || 'Onbekend') + (d.email ? ' (' + d.email + ')' : '') + '</div>' +
+              '<div class="msg-entry-subject">' + (d.onderwerp || '') + '</div>' +
+            '</div>' +
+            '<div class="msg-entry-text">' + (d.bericht || '') + '</div>' +
+            '<div style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">' + time + '</div>' +
+          '</div>';
+        });
+      }).catch(function() {});
+    }
   </script>
 </body>
 </html>
