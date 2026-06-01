@@ -818,6 +818,120 @@
       border-color: var(--primary);
     }
 
+    /* MODE SELECTOR */
+    .mode-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(26,26,46,0.06);
+    }
+
+    .mode-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(26,26,46,0.45);
+      margin-bottom: 12px;
+    }
+
+    .mode-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mode-card {
+      background: var(--bg);
+      border: 3px solid transparent;
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .mode-card:hover { border-color: rgba(26,26,46,0.1); }
+
+    .mode-card.selected {
+      border-color: var(--gold);
+      background: rgba(245,197,24,0.06);
+    }
+
+    .mode-card-icon { font-size: 1.8rem; margin-bottom: 8px; }
+
+    .mode-card-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .mode-card-desc {
+      font-size: 0.7rem;
+      color: rgba(26,26,46,0.45);
+      line-height: 1.4;
+    }
+
+    /* BRACKET */
+    .bracket-round-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .bracket-winner {
+      text-align: center;
+      padding: 40px 20px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .bracket-winner-emoji { font-size: 4rem; margin-bottom: 16px; }
+
+    .bracket-winner-name {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .bracket-winner-sub {
+      font-size: 0.9rem;
+      color: rgba(26,26,46,0.5);
+    }
+
+    .bracket-history {
+      margin-top: 32px;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .bracket-match {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(26,26,46,0.06);
+    }
+
+    .bracket-match-round {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(26,26,46,0.3);
+      min-width: 60px;
+    }
+
+    .bracket-match-winner { font-weight: 700; color: var(--mint); }
+    .bracket-match-vs { color: rgba(26,26,46,0.25); font-weight: 700; }
+    .bracket-match-loser { color: rgba(26,26,46,0.35); }
+
     /* PRESETS */
     .preset-row {
       display: flex;
@@ -2258,6 +2372,22 @@
         <div class="ranker-items-list" id="rankerItemsList"></div>
         <div class="ranker-item-count" id="rankerItemCount">0 items toegevoegd</div>
 
+        <div class="mode-section">
+          <div class="mode-label">Kies een modus</div>
+          <div class="mode-options">
+            <div class="mode-card selected" id="modePair" onclick="selectMode('pair')">
+              <div class="mode-card-icon">&#x2696;&#xFE0F;</div>
+              <div class="mode-card-name">Pair Ranking</div>
+              <div class="mode-card-desc">Iedereen vs iedereen. Volledige ranking van alle items.</div>
+            </div>
+            <div class="mode-card" id="modeBracket" onclick="selectMode('bracket')">
+              <div class="mode-card-icon">&#x1F3C6;</div>
+              <div class="mode-card-name">Bracket</div>
+              <div class="mode-card-desc">Tournament eliminatie. Sneller, kroont 1 winnaar.</div>
+            </div>
+          </div>
+        </div>
+
         <div class="voter-name-section">
           <div class="voter-name-label">Jouw naam</div>
           <input type="text" class="voter-name-input" id="voterName" placeholder="Vul je naam in om te stemmen..." oninput="checkStartReady()">
@@ -2858,6 +2988,13 @@
     var currentBattle = 0;
     var wins = {};
     var isAnimating = false;
+    var rankMode = 'pair';
+    var bracketRound = [];
+    var bracketNextRound = [];
+    var bracketHistory = [];
+    var bracketRoundNum = 1;
+    var totalBracketMatches = 0;
+    var completedBracketMatches = 0;
 
     var presets = {
       leden: ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'Daniël', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping'],
@@ -2905,8 +3042,13 @@
 
       if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
-        var totalBattles = rankerItems.length * (rankerItems.length - 1) / 2;
-        btn.textContent = 'Start Ranking (' + totalBattles + ' rondes)';
+        if (rankMode === 'bracket') {
+          var bracketMatches = rankerItems.length - 1;
+          btn.textContent = 'Start Bracket (' + bracketMatches + ' rondes)';
+        } else {
+          var totalBattles = rankerItems.length * (rankerItems.length - 1) / 2;
+          btn.textContent = 'Start Ranking (' + totalBattles + ' rondes)';
+        }
       } else {
         btn.disabled = true;
         if (rankerItems.length < 3) {
@@ -2930,19 +3072,31 @@
       }
     }
 
+    function selectMode(mode) {
+      rankMode = mode;
+      document.getElementById('modePair').className = 'mode-card' + (mode === 'pair' ? ' selected' : '');
+      document.getElementById('modeBracket').className = 'mode-card' + (mode === 'bracket' ? ' selected' : '');
+      renderRankerItems();
+    }
+
     function startBattle() {
       wins = {};
       rankerItems.forEach(function(item) { wins[item] = 0; });
-      generateBattles();
-      currentBattle = 0;
 
       document.getElementById('rankerSetup').style.display = 'none';
       document.getElementById('battleContainer').classList.add('active');
       document.getElementById('resultsContainer').classList.remove('active');
 
-      showBattle();
+      if (rankMode === 'bracket') {
+        startBracket();
+      } else {
+        generateBattles();
+        currentBattle = 0;
+        showBattle();
+      }
     }
 
+    // === PAIR MODE ===
     function showBattle() {
       if (currentBattle >= battles.length) {
         showResults();
@@ -2969,12 +3123,22 @@
       if (isAnimating) return;
       isAnimating = true;
 
-      var pair = battles[currentBattle];
-      var winner = side === 'left' ? pair[0] : pair[1];
-      wins[winner]++;
-
       var leftCard = document.getElementById('battleLeft');
       var rightCard = document.getElementById('battleRight');
+
+      if (rankMode === 'bracket') {
+        var pair = bracketRound[currentBattle];
+        var winner = side === 'left' ? pair[0] : pair[1];
+        var loser = side === 'left' ? pair[1] : pair[0];
+        wins[winner] = (wins[winner] || 0) + 1;
+        bracketNextRound.push(winner);
+        bracketHistory.push({ round: bracketRoundNum, winner: winner, loser: loser });
+        completedBracketMatches++;
+      } else {
+        var pair = battles[currentBattle];
+        var winner = side === 'left' ? pair[0] : pair[1];
+        wins[winner]++;
+      }
 
       if (side === 'left') {
         leftCard.classList.add('picked');
@@ -2986,8 +3150,116 @@
 
       setTimeout(function() {
         currentBattle++;
-        showBattle();
+        if (rankMode === 'bracket') {
+          showBracketBattle();
+        } else {
+          showBattle();
+        }
       }, 450);
+    }
+
+    // === BRACKET MODE ===
+    function startBracket() {
+      bracketHistory = [];
+      bracketRoundNum = 1;
+      completedBracketMatches = 0;
+
+      var shuffled = rankerItems.slice();
+      for (var i = shuffled.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+      }
+
+      // Calculate total matches needed
+      var n = shuffled.length;
+      totalBracketMatches = n - 1;
+
+      bracketRound = [];
+      bracketNextRound = [];
+      currentBattle = 0;
+
+      // Create first round pairs
+      buildBracketPairs(shuffled);
+      showBracketBattle();
+    }
+
+    function buildBracketPairs(items) {
+      bracketRound = [];
+      currentBattle = 0;
+      for (var i = 0; i < items.length - 1; i += 2) {
+        bracketRound.push([items[i], items[i + 1]]);
+      }
+      // Odd one out gets a bye
+      if (items.length % 2 === 1) {
+        var byeItem = items[items.length - 1];
+        bracketNextRound.push(byeItem);
+      }
+    }
+
+    function showBracketBattle() {
+      if (currentBattle >= bracketRound.length) {
+        // Round complete
+        if (bracketNextRound.length === 1) {
+          showBracketResults(bracketNextRound[0]);
+          return;
+        }
+        // Next round
+        bracketRoundNum++;
+        var nextItems = bracketNextRound.slice();
+        bracketNextRound = [];
+        buildBracketPairs(nextItems);
+        showBracketBattle();
+        return;
+      }
+
+      var pair = bracketRound[currentBattle];
+      var leftCard = document.getElementById('battleLeft');
+      var rightCard = document.getElementById('battleRight');
+
+      leftCard.className = 'battle-card';
+      rightCard.className = 'battle-card';
+
+      document.getElementById('battleLeftName').textContent = pair[0];
+      document.getElementById('battleRightName').textContent = pair[1];
+
+      var roundNames = ['', 'Ronde 1', 'Kwartfinale', 'Halve Finale', 'Finale'];
+      var roundLabel = bracketRoundNum <= 4 ? (roundNames[bracketRoundNum] || 'Ronde ' + bracketRoundNum) : 'Ronde ' + bracketRoundNum;
+      if (bracketRound.length === 1 && bracketNextRound.length === 0) roundLabel = 'Finale';
+
+      document.getElementById('battleQuestion').textContent = roundLabel + ': Welke vind je beter?';
+      document.getElementById('battleProgressCount').textContent = completedBracketMatches + '/' + totalBracketMatches;
+      document.getElementById('battleProgressFill').style.width = ((completedBracketMatches / totalBracketMatches) * 100) + '%';
+
+      isAnimating = false;
+    }
+
+    function showBracketResults(winner) {
+      document.getElementById('battleContainer').classList.remove('active');
+      document.getElementById('resultsContainer').classList.add('active');
+      document.getElementById('battleProgressFill').style.width = '100%';
+
+      var list = document.getElementById('resultsList');
+      var html = '<div class="bracket-winner">' +
+        '<div class="bracket-winner-emoji">&#x1F3C6;</div>' +
+        '<div class="bracket-winner-name">' + winner + '</div>' +
+        '<div class="bracket-winner-sub">Winnaar van het bracket!</div>' +
+        '<div class="bracket-history">';
+
+      bracketHistory.forEach(function(m) {
+        html += '<div class="bracket-match">' +
+          '<div class="bracket-match-round">Ronde ' + m.round + '</div>' +
+          '<span class="bracket-match-winner">' + m.winner + '</span>' +
+          '<span class="bracket-match-vs"> vs </span>' +
+          '<span class="bracket-match-loser">' + m.loser + '</span>' +
+        '</div>';
+      });
+
+      html += '</div></div>';
+      list.innerHTML = html;
+
+      if (activePresetCategory) {
+        saveRankingToFirebase(activePresetCategory, wins);
+      }
     }
 
     function showResults() {
@@ -3013,7 +3285,6 @@
 
       document.getElementById('battleProgressFill').style.width = '100%';
 
-      // Save to Firebase
       if (activePresetCategory) {
         saveRankingToFirebase(activePresetCategory, wins);
       }
@@ -3025,6 +3296,11 @@
       currentBattle = 0;
       wins = {};
       activePresetCategory = null;
+      bracketRound = [];
+      bracketNextRound = [];
+      bracketHistory = [];
+      rankMode = 'pair';
+      selectMode('pair');
 
       document.getElementById('rankerSetup').style.display = 'block';
       document.getElementById('battleContainer').classList.remove('active');
