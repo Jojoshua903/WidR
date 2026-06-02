@@ -2733,7 +2733,7 @@
   <!-- RANK IT PAGE -->
   <div class="page" id="page-apps">
     <div class="apps-hero">
-      <h1>Rank It &#x1F525;</h1>
+      <h1>Rank It 🔥</h1>
       <p>Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking</p>
     </div>
     <div class="ranker-container">
@@ -2744,8 +2744,8 @@
         <div class="ranker-setup-sub">Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.</div>
 
         <div class="preset-row" id="presetRow">
-          <button class="preset-btn" onclick="loadPreset('leden')">&#x1F451; Groepsleden</button>
-          <button class="preset-btn" onclick="loadPreset('docenten')">&#x1F393; Docenten</button>
+          <button class="preset-btn" onclick="loadPreset('leden')">👑 Groepsleden</button>
+          <button class="preset-btn" onclick="loadPreset('docenten')">🎓 Docenten</button>
           <button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>
         </div>
 
@@ -2761,17 +2761,17 @@
           <div class="mode-label">Kies een modus</div>
           <div class="mode-options" style="grid-template-columns:1fr 1fr 1fr;">
             <div class="mode-card selected" id="modePair" onclick="selectMode('pair')">
-              <div class="mode-card-icon">&#x2696;&#xFE0F;</div>
+              <div class="mode-card-icon">⚖️</div>
               <div class="mode-card-name">Pair Ranking</div>
               <div class="mode-card-desc">Iedereen vs iedereen. Volledige ranking.</div>
             </div>
             <div class="mode-card" id="modeBracket" onclick="selectMode('bracket')">
-              <div class="mode-card-icon">&#x1F3C6;</div>
+              <div class="mode-card-icon">🏆</div>
               <div class="mode-card-name">Bracket</div>
               <div class="mode-card-desc">Tournament eliminatie. Kroont 1 winnaar.</div>
             </div>
             <div class="mode-card" id="modeTierlist" onclick="selectMode('tierlist')">
-              <div class="mode-card-icon">&#x1F4CA;</div>
+              <div class="mode-card-icon">📊</div>
               <div class="mode-card-name">Tierlist</div>
               <div class="mode-card-desc">Sorteer items in S, A, B, C, D, F tiers.</div>
             </div>
@@ -2812,24 +2812,24 @@
       <!-- RESULTS -->
       <div id="resultsContainer" class="results-container">
         <div class="results-header">
-          <h2>&#x1F3C6; Jouw Ranking</h2>
+          <h2>🏆 Jouw Ranking</h2>
           <p>Op basis van jouw keuzes — dit is jouw definitieve ranking!</p>
         </div>
         <div class="results-list" id="resultsList"></div>
-        <button class="ranker-reset-btn" onclick="resetRanker()">&#x1F504; Opnieuw Beginnen</button>
+        <button class="ranker-reset-btn" onclick="resetRanker()">🔄 Opnieuw Beginnen</button>
       </div>
 
       <!-- TIERLIST -->
       <div id="tierlistContainer" style="display:none;">
         <div class="results-header">
-          <h2>&#x1F4CA; Tierlist</h2>
+          <h2>📊 Tierlist</h2>
           <p>Sleep items of klik om ze in een tier te plaatsen</p>
         </div>
         <div id="tierlistBoard"></div>
         <div id="tierlistPool" style="margin-top:24px;"></div>
         <div style="margin-top:24px;display:flex;gap:12px;">
           <button class="ranker-start-btn" id="tierlistSaveBtn" onclick="saveTierlist()" style="flex:1;" disabled>Tierlist Opslaan</button>
-          <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">&#x1F504; Reset</button>
+          <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">🔄 Reset</button>
         </div>
       </div>
 
@@ -2848,20 +2848,20 @@
     </div>
     <div class="rankings-container">
       <div class="ranking-tabs" id="rankingTabs">
-        <button class="ranking-tab active" onclick="switchTab(this, 'leden')">&#x1F451; Groepsleden</button>
-        <button class="ranking-tab" onclick="switchTab(this, 'docenten')">&#x1F393; Docenten</button>
+        <button class="ranking-tab active" onclick="switchTab(this, 'leden')">👑 Groepsleden</button>
+        <button class="ranking-tab" onclick="switchTab(this, 'docenten')">🎓 Docenten</button>
       </div>
       <div id="rankingStatus" style="text-align:center;padding:24px;color:rgba(26,26,46,0.4);font-size:0.85rem;font-weight:600;">Laden...</div>
       <div class="ranking-list" id="rankingList"></div>
       <div id="rankingEmpty" style="display:none;text-align:center;padding:40px 20px;">
-        <div style="font-size:3rem;margin-bottom:16px;">&#x1F3C6;</div>
+        <div style="font-size:3rem;margin-bottom:16px;">🏆</div>
         <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen rankings</div>
         <div style="font-size:0.85rem;color:rgba(26,26,46,0.5);">Ga naar Rank It en maak een ranking om hier te verschijnen!</div>
       </div>
       <div id="voteCount" style="text-align:center;padding:16px 0 0;font-size:0.75rem;color:rgba(26,26,46,0.35);font-weight:600;text-transform:uppercase;letter-spacing:1px;"></div>
 
       <div class="admin-votes-section">
-        <div class="admin-votes-title">&#x1F6E1; Admin: Individuele Stemmen</div>
+        <div class="admin-votes-title">🛡 Admin: Individuele Stemmen</div>
         <div id="adminVotesList"></div>
       </div>
     </div>
@@ -2892,13 +2892,13 @@
   <!-- LORE PAGE -->
   <div class="page" id="page-lore">
     <div class="lore-hero">
-      <h1>De Lore &#x1F4DC;</h1>
+      <h1>De Lore 📜</h1>
       <p>Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.</p>
     </div>
     <div class="lore-content">
 
       <div class="lore-stories-header">
-        <h2>&#x1F4D6; De Verhalen</h2>
+        <h2>📖 De Verhalen</h2>
         <button class="lore-add-btn" onclick="openStoryModal()">+ Verhaal Toevoegen</button>
       </div>
       <div id="storiesContainer"><div class="stories-empty">Verhalen laden...</div></div>
@@ -2906,7 +2906,7 @@
       <hr class="lore-divider">
 
       <div class="meme-wall-header">
-        <h2>Words of Wisdom &#x1F4A3;</h2>
+        <h2>Words of Wisdom 💣</h2>
         <p>Alle uitspraken, inside jokes en legendarische quotes uit de gc</p>
       </div>
 
@@ -2914,7 +2914,7 @@
       <div class="meme-count" id="memeCount"></div>
 
       <div class="meme-add-form">
-        <h3>Nieuwe meme toevoegen &#x270F;&#xFE0F;</h3>
+        <h3>Nieuwe meme toevoegen ✏️</h3>
         <div class="meme-add-row">
           <input type="text" class="meme-add-input" id="memeInput" placeholder="Typ een meme of uitspraak..." onkeydown="if(event.key==='Enter')addMeme()">
           <button class="meme-add-btn" onclick="addMeme()">+ Toevoegen</button>
@@ -2931,15 +2931,15 @@
   <!-- STATS PAGE -->
   <div class="page" id="page-stats">
     <div class="stats-hero">
-      <h1>Chat Stats &#x1F4CA;</h1>
+      <h1>Chat Stats 📊</h1>
       <p>Upload je WhatsApp chat export en ontdek wie het meest praat</p>
     </div>
     <div class="stats-container">
       <div class="stats-upload" id="statsUpload">
         <h2>WhatsApp Chat Uploaden</h2>
-        <div class="stats-upload-sub">Ga naar je WhatsApp groep &#x2192; Meer opties &#x2192; Chat exporteren &#x2192; Zonder media. Upload het .txt bestand hier.</div>
+        <div class="stats-upload-sub">Ga naar je WhatsApp groep → Meer opties → Chat exporteren → Zonder media. Upload het .txt bestand hier.</div>
         <div class="stats-upload-area">
-          <div class="stats-upload-icon">&#x1F4E4;</div>
+          <div class="stats-upload-icon">📤</div>
           <div class="stats-upload-text">Klik of sleep een _chat.txt bestand hierheen</div>
           <input type="file" accept=".txt" onchange="parseWhatsApp(this.files[0])">
         </div>
@@ -2952,7 +2952,7 @@
         </div>
         <div id="statsBarList"></div>
         <div style="text-align:center;margin-top:32px;">
-          <button class="ranker-reset-btn" onclick="resetStats()">&#x1F504; Andere chat uploaden</button>
+          <button class="ranker-reset-btn" onclick="resetStats()">🔄 Andere chat uploaden</button>
         </div>
       </div>
     </div>
@@ -3098,7 +3098,7 @@
       </div>
 
       <div class="admin-msg-section">
-        <div class="admin-votes-title" style="margin-top:32px;">&#x1F4EC; Admin: Ontvangen Berichten</div>
+        <div class="admin-votes-title" style="margin-top:32px;">📬 Admin: Ontvangen Berichten</div>
         <div id="adminMsgList"></div>
       </div>
     </div>
@@ -3585,7 +3585,7 @@
 
       var list = document.getElementById('resultsList');
       var html = '<div class="bracket-winner">' +
-        '<div class="bracket-winner-emoji">&#x1F3C6;</div>' +
+        '<div class="bracket-winner-emoji">🏆</div>' +
         '<div class="bracket-winner-name">' + winner + '</div>' +
         '<div class="bracket-winner-sub">Winnaar van het bracket!</div>' +
         '<div class="bracket-history">';
@@ -3723,14 +3723,14 @@
   <!-- CATEGORY MODAL -->
   <div class="modal-overlay" id="categoryModal">
     <div class="modal">
-      <h2>Nieuwe Categorie &#x2728;</h2>
+      <h2>Nieuwe Categorie ✨</h2>
       <div class="modal-sub">Maak een ranking categorie die iedereen kan gebruiken</div>
 
       <label class="modal-label">Categorie Naam</label>
       <input type="text" class="modal-input" id="catName" placeholder="bijv. Beste Vakken, Top Films...">
 
       <label class="modal-label">Emoji (optioneel)</label>
-      <input type="text" class="modal-input" id="catEmoji" placeholder="bijv. &#x1F3AC; &#x26BD; &#x1F355;" style="max-width: 160px;">
+      <input type="text" class="modal-input" id="catEmoji" placeholder="bijv. 🎬 ⚽ 🍕" style="max-width: 160px;">
 
       <label class="modal-label">Items toevoegen (minimaal 3)</label>
       <div class="modal-items-area">
@@ -3851,15 +3851,15 @@
 
     function renderPresetButtons() {
       var row = document.getElementById('presetRow');
-      var html = '<button class="preset-btn" onclick="loadPreset(\'leden\')">&#x1F451; Groepsleden</button>';
-      html += '<button class="preset-btn" onclick="loadPreset(\'docenten\')">&#x1F393; Docenten</button>';
+      var html = '<button class="preset-btn" onclick="loadPreset(\'leden\')">👑 Groepsleden</button>';
+      html += '<button class="preset-btn" onclick="loadPreset(\'docenten\')">🎓 Docenten</button>';
 
       Object.keys(customCategories).forEach(function(id) {
         var cat = customCategories[id];
         html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
           cat.emoji + ' ' + cat.name;
         if (isAdmin) {
-          html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">&#x270F;&#xFE0F;</button>';
+          html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
           html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
         }
         html += '</button>';
@@ -3874,8 +3874,8 @@
     function renderRankingTabs() {
       var tabs = document.getElementById('rankingTabs');
       if (!tabs) return;
-      var html = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">&#x1F451; Groepsleden</button>';
-      html += '<button class="ranking-tab' + (currentCategory === 'docenten' ? ' active' : '') + '" onclick="switchTab(this, \'docenten\')">&#x1F393; Docenten</button>';
+      var html = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">👑 Groepsleden</button>';
+      html += '<button class="ranking-tab' + (currentCategory === 'docenten' ? ' active' : '') + '" onclick="switchTab(this, \'docenten\')">🎓 Docenten</button>';
 
       Object.keys(customCategories).forEach(function(id) {
         var cat = customCategories[id];
@@ -4052,7 +4052,7 @@
           }
         });
       } else {
-        document.getElementById('storyModalTitle').innerHTML = 'Verhaal Toevoegen &#x1F4D6;';
+        document.getElementById('storyModalTitle').innerHTML = 'Verhaal Toevoegen 📖';
         document.getElementById('storyTitle').value = '';
         document.getElementById('storyTag').value = '';
         document.getElementById('storyText').value = '';
@@ -4327,7 +4327,7 @@
   <!-- STORY MODAL -->
   <div class="modal-overlay" id="storyModal">
     <div class="modal">
-      <h2 id="storyModalTitle">Verhaal Toevoegen &#x1F4D6;</h2>
+      <h2 id="storyModalTitle">Verhaal Toevoegen 📖</h2>
       <div class="modal-sub">Voeg een legendarisch moment toe aan de lore</div>
 
       <label class="modal-label">Titel</label>
@@ -4388,7 +4388,7 @@
   <!-- ADMIN LOGIN MODAL -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal">
-      <h2 id="adminTitle">Admin Login &#x1F512;</h2>
+      <h2 id="adminTitle">Admin Login 🔒</h2>
       <div class="modal-sub" id="adminSub">Voer je wachtwoord in om admin modus te activeren</div>
 
       <div id="adminSetup" style="display:none;">
@@ -4415,7 +4415,7 @@
   </div>
 
   <!-- ADMIN BADGE -->
-  <div class="admin-badge" id="adminBadge">&#x1F6E1; Admin <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
+  <div class="admin-badge" id="adminBadge">🛡 Admin <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
 
   <script>
     var isAdmin = false;
@@ -4444,19 +4444,19 @@
         if (doc.exists && doc.data().passwordHash) {
           document.getElementById('adminSetup').style.display = 'none';
           document.getElementById('adminLogin').style.display = 'block';
-          document.getElementById('adminTitle').innerHTML = 'Admin Login &#x1F512;';
+          document.getElementById('adminTitle').innerHTML = 'Admin Login 🔒';
           document.getElementById('adminSub').textContent = 'Voer je wachtwoord in om admin modus te activeren';
         } else {
           document.getElementById('adminSetup').style.display = 'block';
           document.getElementById('adminLogin').style.display = 'none';
-          document.getElementById('adminTitle').innerHTML = 'Admin Setup &#x1F511;';
+          document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
           document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
         }
         document.getElementById('adminModal').classList.add('active');
       }).catch(function() {
         document.getElementById('adminSetup').style.display = 'block';
         document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('adminTitle').innerHTML = 'Admin Setup &#x1F511;';
+        document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
         document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
         document.getElementById('adminModal').classList.add('active');
       });
