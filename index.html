@@ -1775,6 +1775,386 @@
       margin-bottom: 16px;
     }
 
+    /* LORE STORIES */
+    .lore-stories-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .lore-stories-header h2 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .lore-add-btn {
+      padding: 8px 20px;
+      border-radius: 100px;
+      border: 2px dashed rgba(26,26,46,0.15);
+      background: transparent;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: rgba(26,26,46,0.4);
+    }
+
+    .lore-add-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .story-card {
+      background: white;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      position: relative;
+      transition: all 0.3s;
+      border-left: 4px solid var(--gold);
+    }
+
+    .story-card:nth-child(3n+2) { border-left-color: var(--accent); }
+    .story-card:nth-child(3n+3) { border-left-color: var(--purple); }
+
+    .story-card-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: rgba(245,197,24,0.12);
+      color: #b8960f;
+      margin-bottom: 10px;
+    }
+
+    .story-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .story-card p {
+      font-size: 0.85rem;
+      color: rgba(26,26,46,0.6);
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .story-card-people {
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: rgba(26,26,46,0.35);
+      font-weight: 600;
+    }
+
+    .story-card-admin {
+      margin-top: 10px;
+      display: none;
+    }
+
+    body.admin-mode .story-card-admin { display: block; }
+
+    .stories-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(26,26,46,0.3);
+      font-size: 0.9rem;
+    }
+
+    .lore-divider {
+      border: none;
+      border-top: 2px dashed rgba(26,26,46,0.08);
+      margin: 48px 0;
+    }
+
+    /* TIERLIST */
+    .tier-row {
+      display: flex;
+      align-items: stretch;
+      margin-bottom: 4px;
+      min-height: 56px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tier-label {
+      width: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .tier-s { background: #E94560; }
+    .tier-a { background: #FF9A3C; }
+    .tier-b { background: #F5C518; }
+    .tier-c { background: #16C79A; }
+    .tier-d { background: #0F3460; }
+    .tier-f { background: #1A1A2E; }
+
+    .tier-items {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.8);
+      min-height: 44px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .tier-items:hover { background: rgba(255,255,255,1); }
+
+    .tier-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: white;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tier-chip:hover {
+      transform: scale(1.05);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    }
+
+    .tier-chip-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(233,69,96,0.1);
+      color: var(--accent);
+      border: none;
+      cursor: pointer;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tier-pool {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .tier-pool-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(26,26,46,0.4);
+      margin-bottom: 12px;
+    }
+
+    .tier-pool-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tier-pool-chip {
+      padding: 8px 18px;
+      background: var(--bg);
+      border: 2px solid rgba(26,26,46,0.06);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tier-pool-chip:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .tier-select-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(26,26,46,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tier-select-overlay.active { display: flex; }
+
+    .tier-select-box {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .tier-select-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .tier-select-sub {
+      font-size: 0.8rem;
+      color: rgba(26,26,46,0.4);
+      margin-bottom: 16px;
+    }
+
+    .tier-select-options {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .tier-select-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      font-weight: 900;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tier-select-btn:hover { transform: scale(1.15); }
+
+    /* STATS PAGE */
+    .stats-hero {
+      background: linear-gradient(135deg, #16213E 0%, var(--primary) 100%);
+      padding: 100px 40px 60px;
+      text-align: center;
+    }
+
+    .stats-hero h1 { font-size: 3.5rem; font-weight: 900; color: white; letter-spacing: -2px; margin-bottom: 16px; }
+    .stats-hero p { color: rgba(255,255,255,0.5); font-size: 1.1rem; max-width: 520px; margin: 0 auto; }
+
+    .stats-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    .stats-upload {
+      background: white;
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+    }
+
+    .stats-upload h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+
+    .stats-upload-sub { font-size: 0.85rem; color: rgba(26,26,46,0.5); margin-bottom: 24px; line-height: 1.6; }
+
+    .stats-upload-area {
+      border: 3px dashed rgba(26,26,46,0.1);
+      border-radius: 16px;
+      padding: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .stats-upload-area:hover { border-color: var(--gold); background: rgba(245,197,24,0.03); }
+
+    .stats-upload-icon { font-size: 3rem; margin-bottom: 12px; }
+    .stats-upload-text { font-size: 0.9rem; color: rgba(26,26,46,0.4); font-weight: 600; }
+
+    .stats-upload-area input[type="file"] {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .stats-results { display: none; margin-top: 32px; }
+    .stats-results.active { display: block; }
+
+    .stats-total {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .stats-total-number {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .stats-total-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(26,26,46,0.4);
+      font-weight: 600;
+    }
+
+    .stats-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .stats-bar-name {
+      min-width: 140px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+
+    .stats-bar-track {
+      flex: 1;
+      height: 32px;
+      background: rgba(26,26,46,0.04);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stats-bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      transition: width 0.8s ease;
+      min-width: 40px;
+    }
+
+    .stats-bar-count {
+      font-size: 0.75rem;
+      color: rgba(26,26,46,0.35);
+      min-width: 60px;
+      text-align: right;
+    }
+
     .meme-add-row {
       display: flex;
       gap: 10px;
@@ -2254,6 +2634,10 @@
       .members-grid { grid-template-columns: 1fr; }
 
       .lore-content { padding: 40px 20px 80px; }
+
+      .stats-container { padding: 40px 20px 80px; }
+
+      .stats-bar-name { min-width: 80px; font-size: 0.75rem; }
     }
 
     @media print {
@@ -2278,6 +2662,7 @@
       <a href="#rankings" onclick="navigate('rankings')">Rankings</a>
       <a href="#members" onclick="navigate('members')">Leden</a>
       <a href="#lore" onclick="navigate('lore')">Lore</a>
+      <a href="#stats" onclick="navigate('stats')">Stats</a>
       <a href="#about" onclick="navigate('about')">Over Ons</a>
       <a href="#contact" onclick="navigate('contact')">Contact</a>
     </ul>
@@ -2288,7 +2673,7 @@
     <div class="hero">
       <div class="hero-badge">App Groep 2026</div>
       <h1>Wat in de<br><span class="highlight">Ranking</span></h1>
-      <p>De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses â wij ranken het allemaal.</p>
+      <p>De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.</p>
       <button class="hero-cta" onclick="navigate('apps')">Start met Ranken &rarr;</button>
       <div class="scroll-indicator"><span></span></div>
     </div>
@@ -2307,7 +2692,7 @@
         <div class="stat-label">Rankings</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">â</div>
+        <div class="stat-number">∞</div>
         <div class="stat-label">Chaos</div>
       </div>
     </div>
@@ -2320,19 +2705,19 @@
       <div class="featured-grid">
         <div class="featured-card" onclick="navigate('apps')">
           <div class="card-rank">#1</div>
-          <div class="card-icon">ð</div>
+          <div class="card-icon">🏆</div>
           <div class="card-title">Rank Alles</div>
           <div class="card-desc">Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.</div>
         </div>
         <div class="featured-card" onclick="navigate('rankings')">
           <div class="card-rank">#2</div>
-          <div class="card-icon">â¡</div>
+          <div class="card-icon">⚡</div>
           <div class="card-title">Live Rankings</div>
           <div class="card-desc">Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.</div>
         </div>
         <div class="featured-card" onclick="navigate('about')">
           <div class="card-rank">#3</div>
-          <div class="card-icon">ð¥</div>
+          <div class="card-icon">👥</div>
           <div class="card-title">Community</div>
           <div class="card-desc">Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.</div>
         </div>
@@ -2374,16 +2759,21 @@
 
         <div class="mode-section">
           <div class="mode-label">Kies een modus</div>
-          <div class="mode-options">
+          <div class="mode-options" style="grid-template-columns:1fr 1fr 1fr;">
             <div class="mode-card selected" id="modePair" onclick="selectMode('pair')">
               <div class="mode-card-icon">&#x2696;&#xFE0F;</div>
               <div class="mode-card-name">Pair Ranking</div>
-              <div class="mode-card-desc">Iedereen vs iedereen. Volledige ranking van alle items.</div>
+              <div class="mode-card-desc">Iedereen vs iedereen. Volledige ranking.</div>
             </div>
             <div class="mode-card" id="modeBracket" onclick="selectMode('bracket')">
               <div class="mode-card-icon">&#x1F3C6;</div>
               <div class="mode-card-name">Bracket</div>
-              <div class="mode-card-desc">Tournament eliminatie. Sneller, kroont 1 winnaar.</div>
+              <div class="mode-card-desc">Tournament eliminatie. Kroont 1 winnaar.</div>
+            </div>
+            <div class="mode-card" id="modeTierlist" onclick="selectMode('tierlist')">
+              <div class="mode-card-icon">&#x1F4CA;</div>
+              <div class="mode-card-name">Tierlist</div>
+              <div class="mode-card-desc">Sorteer items in S, A, B, C, D, F tiers.</div>
             </div>
           </div>
         </div>
@@ -2423,10 +2813,24 @@
       <div id="resultsContainer" class="results-container">
         <div class="results-header">
           <h2>&#x1F3C6; Jouw Ranking</h2>
-          <p>Op basis van jouw keuzes â dit is jouw definitieve ranking!</p>
+          <p>Op basis van jouw keuzes — dit is jouw definitieve ranking!</p>
         </div>
         <div class="results-list" id="resultsList"></div>
         <button class="ranker-reset-btn" onclick="resetRanker()">&#x1F504; Opnieuw Beginnen</button>
+      </div>
+
+      <!-- TIERLIST -->
+      <div id="tierlistContainer" style="display:none;">
+        <div class="results-header">
+          <h2>&#x1F4CA; Tierlist</h2>
+          <p>Sleep items of klik om ze in een tier te plaatsen</p>
+        </div>
+        <div id="tierlistBoard"></div>
+        <div id="tierlistPool" style="margin-top:24px;"></div>
+        <div style="margin-top:24px;display:flex;gap:12px;">
+          <button class="ranker-start-btn" id="tierlistSaveBtn" onclick="saveTierlist()" style="flex:1;" disabled>Tierlist Opslaan</button>
+          <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">&#x1F504; Reset</button>
+        </div>
       </div>
 
     </div>
@@ -2440,7 +2844,7 @@
   <div class="page" id="page-rankings">
     <div class="rankings-hero">
       <h1>De Rankings</h1>
-      <p>Live resultaten van alle stemmers â powered by Firebase</p>
+      <p>Live resultaten van alle stemmers — powered by Firebase</p>
     </div>
     <div class="rankings-container">
       <div class="ranking-tabs" id="rankingTabs">
@@ -2474,119 +2878,10 @@
       <p>11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.</p>
     </div>
     <div class="members-content">
-
-      <div class="members-section-label">ð Admin</div>
-      <div class="members-grid">
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(245,197,24,0.15);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Josh Ibrahim</div>
-            <div class="member-card-title" style="color: var(--gold);">Admin & Oprichter</div>
-            <div class="member-card-desc">Houdt van rankings, polls en orde proberen te houden, maar raakt uiteindelijk altijd betrokken bij de chaos.</div>
-          </div>
-        </div>
+      <div id="membersContainer"></div>
+      <div class="admin-controls" style="text-align:center;margin-top:24px;border-top:none;">
+        <button class="preset-btn-add" onclick="openMemberModal()" style="font-size:0.8rem;padding:10px 24px;">+ Lid Toevoegen</button>
       </div>
-
-      <div class="members-section-label">ð¥ Kernleden</div>
-      <div class="members-grid">
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(233,69,96,0.12);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Lors Jocohobo</div>
-            <div class="member-card-title" style="color: var(--accent);">Professionele Ragebaiter</div>
-            <div class="member-card-desc">Sticker-spammer en professionele troller. Houdt ervan om gesprekken expres chaotischer te maken en overal een grap van te maken.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(22,199,154,0.12);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Fionn</div>
-            <div class="member-card-title" style="color: var(--mint);">Sarcasme Expert</div>
-            <div class="member-card-desc">Droge humor en sarcastische opmerkingen. Reageert alsof hij klaar is met de groep, maar doet altijd mee aan de onzin.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(255,107,107,0.12);">ð¤</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Nathananiel Timoty Good</div>
-            <div class="member-card-title" style="color: var(--coral);">Frustratie Master</div>
-            <div class="member-card-desc">Master van overdreven frustratie. Reageert alsof alles hem irriteert, wat juist voor veel humor zorgt.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(132,94,194,0.12);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Reshman</div>
-            <div class="member-card-title" style="color: var(--purple);">Agent of Chaos</div>
-            <div class="member-card-desc">Onvoorspelbaar en chaotisch. Stuurt random Engelse reacties, stickers en opmerkingen die uit het niets komen.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(255,154,60,0.12);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Dani&euml;l</div>
-            <div class="member-card-title" style="color: var(--orange);">Absurdist</div>
-            <div class="member-card-desc">Specialist in ongemakkelijke en absurde grappen. Staat bekend om zijn interacties met Meta AI en bizarre scenario's.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(15,52,96,0.12);">ð§</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Milo Van Der Meijs</div>
-            <div class="member-card-title" style="color: var(--blue);">Storyteller</div>
-            <div class="member-card-desc">Relaxte deelnemer die regelmatig droge humor toevoegt. Kan van de kleinste gebeurtenis een groot verhaal maken.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(233,69,96,0.08);">ð¯</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Adam</div>
-            <div class="member-card-title" style="color: var(--accent);">Sticker Spammer</div>
-            <div class="member-card-desc">Sticker-spammer en professionele troller. Houdt ervan om gesprekken expres chaotischer te maken en overal een grap van te maken.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="members-section-label">ð¤ Ere-lid</div>
-      <div class="members-grid">
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: linear-gradient(135deg, rgba(22,199,154,0.15), rgba(132,94,194,0.15));">ð¤</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Meta AI</div>
-            <div class="member-card-title" style="color: var(--mint);">GC Legende</div>
-            <div class="member-card-desc">Ere-lid van de groep. Werd voortdurend getrolld, misleid en gebruikt voor fanfictions, waardoor het een belangrijk onderdeel van de gc-lore werd.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="members-section-label">ð» De Stille Krachten</div>
-      <div class="members-grid">
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(26,26,46,0.06);">â¡</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Maciek</div>
-            <div class="member-card-title" style="color: rgba(26,26,46,0.4);">Surprise Element</div>
-            <div class="member-card-desc">Minder actief dan de kernleden, maar verschijnt regelmatig met onverwachte opmerkingen en reacties.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(26,26,46,0.06);">ð</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Denize</div>
-            <div class="member-card-title" style="color: rgba(26,26,46,0.4);">Stille Waarnemer</div>
-            <div class="member-card-desc">Rustige deelnemer die af en toe opduikt in gesprekken en groepsactiviteiten. Bekend van zijn "tot morgen" uitspraak.</div>
-          </div>
-        </div>
-        <div class="member-card">
-          <div class="member-card-avatar" style="background: rgba(26,26,46,0.06);">ð®</div>
-          <div class="member-card-info">
-            <div class="member-card-name">Sichen Ping</div>
-            <div class="member-card-title" style="color: rgba(26,26,46,0.4);">Mythisch Lid</div>
-            <div class="member-card-desc">Zelden actief, maar wel onderdeel van de groep en de lore.</div>
-          </div>
-        </div>
-      </div>
-
     </div>
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
@@ -2601,6 +2896,14 @@
       <p>Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.</p>
     </div>
     <div class="lore-content">
+
+      <div class="lore-stories-header">
+        <h2>&#x1F4D6; De Verhalen</h2>
+        <button class="lore-add-btn" onclick="openStoryModal()">+ Verhaal Toevoegen</button>
+      </div>
+      <div id="storiesContainer"><div class="stories-empty">Verhalen laden...</div></div>
+
+      <hr class="lore-divider">
 
       <div class="meme-wall-header">
         <h2>Words of Wisdom &#x1F4A3;</h2>
@@ -2625,6 +2928,40 @@
     </footer>
   </div>
 
+  <!-- STATS PAGE -->
+  <div class="page" id="page-stats">
+    <div class="stats-hero">
+      <h1>Chat Stats &#x1F4CA;</h1>
+      <p>Upload je WhatsApp chat export en ontdek wie het meest praat</p>
+    </div>
+    <div class="stats-container">
+      <div class="stats-upload" id="statsUpload">
+        <h2>WhatsApp Chat Uploaden</h2>
+        <div class="stats-upload-sub">Ga naar je WhatsApp groep &#x2192; Meer opties &#x2192; Chat exporteren &#x2192; Zonder media. Upload het .txt bestand hier.</div>
+        <div class="stats-upload-area">
+          <div class="stats-upload-icon">&#x1F4E4;</div>
+          <div class="stats-upload-text">Klik of sleep een _chat.txt bestand hierheen</div>
+          <input type="file" accept=".txt" onchange="parseWhatsApp(this.files[0])">
+        </div>
+      </div>
+
+      <div class="stats-results" id="statsResults">
+        <div class="stats-total">
+          <div class="stats-total-number" id="statsTotalNum">0</div>
+          <div class="stats-total-label">Totaal berichten</div>
+        </div>
+        <div id="statsBarList"></div>
+        <div style="text-align:center;margin-top:32px;">
+          <button class="ranker-reset-btn" onclick="resetStats()">&#x1F504; Andere chat uploaden</button>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
   <!-- ABOUT PAGE -->
   <div class="page" id="page-about">
     <div class="about-hero">
@@ -2635,19 +2972,19 @@
       <div class="about-block">
         <div class="about-block-text">
           <h2>Het Begon Met Een Discussie</h2>
-          <p>Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit â dus bouwden we een app waar iedereen kan stemmen.</p>
+          <p>Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.</p>
         </div>
         <div class="about-visual">
           <div class="emoji-grid">
-            <div class="emoji-cell">ð</div>
-            <div class="emoji-cell">ð</div>
-            <div class="emoji-cell">ð¥</div>
-            <div class="emoji-cell">ð¬</div>
-            <div class="emoji-cell">â¡</div>
-            <div class="emoji-cell">ð¯</div>
-            <div class="emoji-cell">ð³ï¸</div>
-            <div class="emoji-cell">ð</div>
-            <div class="emoji-cell">ð</div>
+            <div class="emoji-cell">🏆</div>
+            <div class="emoji-cell">📊</div>
+            <div class="emoji-cell">🔥</div>
+            <div class="emoji-cell">💬</div>
+            <div class="emoji-cell">⚡</div>
+            <div class="emoji-cell">🎯</div>
+            <div class="emoji-cell">🗳️</div>
+            <div class="emoji-cell">👑</div>
+            <div class="emoji-cell">🚀</div>
           </div>
         </div>
       </div>
@@ -2659,55 +2996,55 @@
 
       <div class="team-grid">
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(245,197,24,0.15);">ð</div>
+          <div class="team-avatar" style="background: rgba(245,197,24,0.15);">👑</div>
           <div class="team-name">Josh Ibrahim</div>
           <div class="team-role">Admin</div>
           <div class="team-bio">Probeert orde te houden. Faalt regelmatig. Geniet er stiekem van.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(233,69,96,0.12);">ð</div>
+          <div class="team-avatar" style="background: rgba(233,69,96,0.12);">🃏</div>
           <div class="team-name">Lors Jocohobo</div>
           <div class="team-role">Troller</div>
           <div class="team-bio">Maakt alles chaotischer. Met opzet.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(22,199,154,0.12);">ð</div>
+          <div class="team-avatar" style="background: rgba(22,199,154,0.12);">😑</div>
           <div class="team-name">Fionn</div>
           <div class="team-role">Sarcast</div>
           <div class="team-bio">Klaar met de groep. Doet toch altijd mee.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(255,107,107,0.12);">ð¤</div>
+          <div class="team-avatar" style="background: rgba(255,107,107,0.12);">😤</div>
           <div class="team-name">Nathananiel T. Good</div>
           <div class="team-role">Frustratie King</div>
           <div class="team-bio">Alles irriteert hem. Dat is het grappige.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(132,94,194,0.12);">ð</div>
+          <div class="team-avatar" style="background: rgba(132,94,194,0.12);">🌀</div>
           <div class="team-name">Reshman</div>
           <div class="team-role">Chaos Agent</div>
           <div class="team-bio">Random. Onvoorspelbaar. Briljant.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(255,154,60,0.12);">ð</div>
+          <div class="team-avatar" style="background: rgba(255,154,60,0.12);">💀</div>
           <div class="team-name">Dani&euml;l</div>
           <div class="team-role">Absurdist</div>
           <div class="team-bio">Bizarre grappen en Meta AI fanfictions.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(15,52,96,0.12);">ð§</div>
+          <div class="team-avatar" style="background: rgba(15,52,96,0.12);">🧊</div>
           <div class="team-name">Milo Van Der Meijs</div>
           <div class="team-role">Storyteller</div>
           <div class="team-bio">Maakt van niks een episch verhaal.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: rgba(233,69,96,0.08);">ð¯</div>
+          <div class="team-avatar" style="background: rgba(233,69,96,0.08);">🎯</div>
           <div class="team-name">Adam</div>
           <div class="team-role">Sticker King</div>
           <div class="team-bio">Spamt stickers. Maakt alles erger. Legendarisch.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background: linear-gradient(135deg, rgba(22,199,154,0.15), rgba(132,94,194,0.15));">ð¤</div>
+          <div class="team-avatar" style="background: linear-gradient(135deg, rgba(22,199,154,0.15), rgba(132,94,194,0.15));">🤖</div>
           <div class="team-name">Meta AI</div>
           <div class="team-role">Ere-lid</div>
           <div class="team-bio">Werd getrolld. Werd een legende.</div>
@@ -2960,7 +3297,7 @@
         bericht: bericht,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(function() {
-        btn.textContent = 'â Verstuurd!';
+        btn.textContent = '✓ Verstuurd!';
         btn.style.background = '#16C79A';
         document.querySelector('.contact-form input[type="text"]').value = '';
         document.querySelector('.contact-form input[type="email"]').value = '';
@@ -2971,7 +3308,7 @@
           btn.disabled = false;
         }, 2500);
       }).catch(function(err) {
-        btn.textContent = 'Fout â probeer opnieuw';
+        btn.textContent = 'Fout — probeer opnieuw';
         btn.style.background = 'var(--coral)';
         btn.disabled = false;
         console.error(err);
@@ -2997,7 +3334,7 @@
     var completedBracketMatches = 0;
 
     var presets = {
-      leden: ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'DaniÃ«l', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping'],
+      leden: ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'Daniël', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping'],
       docenten: ['Burgmans', 'Doremalen', 'Gelder', 'De Groot', 'Ploeg', 'Prins', 'Riep', 'De Roode', 'Sahin', 'De Vos', 'Wijnants', 'Zilfhout', 'Keeren', 'Hugens', 'De Jong', 'Goff', 'Otten', 'Blokland', 'Salemink', 'Profoost', 'Peters', 'Verlee', 'Steltman', 'Roshdi', 'Rijnenberg', 'Koobs', 'Abdullah', 'Van der Meer', 'Groenland', 'Seghedi', 'De Boer', 'Duiven']
     };
 
@@ -3035,14 +3372,16 @@
 
       list.innerHTML = rankerItems.map(function(item, i) {
         return '<div class="ranker-chip">' + item +
-          '<button class="ranker-chip-remove" onclick="removeRankerItem(' + i + ')">Ã</button></div>';
+          '<button class="ranker-chip-remove" onclick="removeRankerItem(' + i + ')">×</button></div>';
       }).join('');
 
       count.textContent = rankerItems.length + ' item' + (rankerItems.length !== 1 ? 's' : '') + ' toegevoegd';
 
       if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
-        if (rankMode === 'bracket') {
+        if (rankMode === 'tierlist') {
+          btn.textContent = 'Start Tierlist (' + rankerItems.length + ' items)';
+        } else if (rankMode === 'bracket') {
           var bracketMatches = rankerItems.length - 1;
           btn.textContent = 'Start Bracket (' + bracketMatches + ' rondes)';
         } else {
@@ -3076,6 +3415,7 @@
       rankMode = mode;
       document.getElementById('modePair').className = 'mode-card' + (mode === 'pair' ? ' selected' : '');
       document.getElementById('modeBracket').className = 'mode-card' + (mode === 'bracket' ? ' selected' : '');
+      document.getElementById('modeTierlist').className = 'mode-card' + (mode === 'tierlist' ? ' selected' : '');
       renderRankerItems();
     }
 
@@ -3084,12 +3424,17 @@
       rankerItems.forEach(function(item) { wins[item] = 0; });
 
       document.getElementById('rankerSetup').style.display = 'none';
-      document.getElementById('battleContainer').classList.add('active');
+      document.getElementById('battleContainer').classList.remove('active');
       document.getElementById('resultsContainer').classList.remove('active');
+      document.getElementById('tierlistContainer').style.display = 'none';
 
-      if (rankMode === 'bracket') {
+      if (rankMode === 'tierlist') {
+        startTierlist();
+      } else if (rankMode === 'bracket') {
+        document.getElementById('battleContainer').classList.add('active');
         startBracket();
       } else {
+        document.getElementById('battleContainer').classList.add('active');
         generateBattles();
         currentBattle = 0;
         showBattle();
@@ -3305,6 +3650,7 @@
       document.getElementById('rankerSetup').style.display = 'block';
       document.getElementById('battleContainer').classList.remove('active');
       document.getElementById('resultsContainer').classList.remove('active');
+      document.getElementById('tierlistContainer').style.display = 'none';
 
       renderRankerItems();
     }
@@ -3357,7 +3703,7 @@
         baseMemes.push(text);
         renderMemes(baseMemes);
         input.value = '';
-        btn.textContent = 'â Toegevoegd!';
+        btn.textContent = '✓ Toegevoegd!';
         setTimeout(function() {
           btn.textContent = '+ Toevoegen';
           btn.disabled = false;
@@ -3405,11 +3751,23 @@
   <script>
     var catItems = [];
     var customCategories = {};
+    var editingCategoryId = null;
 
-    function openCategoryModal() {
+    function openCategoryModal(editId) {
+      editingCategoryId = editId || null;
       catItems = [];
-      document.getElementById('catName').value = '';
-      document.getElementById('catEmoji').value = '';
+
+      if (editId && customCategories[editId]) {
+        var cat = customCategories[editId];
+        document.getElementById('catName').value = cat.name;
+        document.getElementById('catEmoji').value = cat.emoji || '';
+        catItems = presets[editId] ? presets[editId].slice() : [];
+        document.getElementById('catSaveBtn').textContent = 'Wijzigingen Opslaan';
+      } else {
+        document.getElementById('catName').value = '';
+        document.getElementById('catEmoji').value = '';
+        document.getElementById('catSaveBtn').textContent = 'Opslaan';
+      }
       document.getElementById('catItemInput').value = '';
       renderCatItems();
       document.getElementById('categoryModal').classList.add('active');
@@ -3448,14 +3806,14 @@
 
     function saveCategory() {
       var name = document.getElementById('catName').value.trim();
-      var emoji = document.getElementById('catEmoji').value.trim() || 'ð·ï¸';
+      var emoji = document.getElementById('catEmoji').value.trim() || '🏷️';
       if (!name || catItems.length < 3) return;
 
       var btn = document.getElementById('catSaveBtn');
       btn.textContent = 'Opslaan...';
       btn.disabled = true;
 
-      var catId = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      var catId = editingCategoryId || name.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
       db.collection('categories').doc(catId).set({
         name: name,
@@ -3469,14 +3827,16 @@
         closeCategoryModal();
         btn.textContent = 'Opslaan';
         btn.disabled = false;
-        loadPreset(catId);
-      }).catch(function(err) {
+        if (!editingCategoryId) loadPreset(catId);
+        editingCategoryId = null;
+      }).catch(function() {
         presets[catId] = catItems.slice();
         customCategories[catId] = { name: name, emoji: emoji };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
         btn.disabled = false;
+        editingCategoryId = null;
         loadPreset(catId);
       });
     }
@@ -3499,8 +3859,9 @@
         html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
           cat.emoji + ' ' + cat.name;
         if (isAdmin) {
-        html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
-      }
+          html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">&#x270F;&#xFE0F;</button>';
+          html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
+        }
         html += '</button>';
       });
 
@@ -3529,14 +3890,500 @@
         snapshot.forEach(function(doc) {
           var data = doc.data();
           presets[doc.id] = data.items;
-          customCategories[doc.id] = { name: data.name, emoji: data.emoji || 'ð·ï¸' };
+          customCategories[doc.id] = { name: data.name, emoji: data.emoji || '🏷️' };
         });
         renderPresetButtons();
       }).catch(function() {});
     }
 
     loadCustomCategories();
+
+    // ===== TIERLIST MODE =====
+    var tierData = { S:[], A:[], B:[], C:[], D:[], F:[] };
+    var tierPool = [];
+    var tierSelectingItem = null;
+    var tierColors = { S:'#E94560', A:'#FF9A3C', B:'#F5C518', C:'#16C79A', D:'#0F3460', F:'#1A1A2E' };
+
+    function startTierlist() {
+      tierData = { S:[], A:[], B:[], C:[], D:[], F:[] };
+      tierPool = rankerItems.slice();
+      document.getElementById('tierlistContainer').style.display = 'block';
+      renderTierlist();
+    }
+
+    function renderTierlist() {
+      var board = document.getElementById('tierlistBoard');
+      var pool = document.getElementById('tierlistPool');
+      var tiers = ['S','A','B','C','D','F'];
+
+      board.innerHTML = tiers.map(function(t) {
+        return '<div class="tier-row">' +
+          '<div class="tier-label tier-' + t.toLowerCase() + '">' + t + '</div>' +
+          '<div class="tier-items" onclick="moveTierItem(event, \'' + t + '\')">' +
+            tierData[t].map(function(item) {
+              return '<span class="tier-chip">' + item +
+                '<button class="tier-chip-remove" onclick="event.stopPropagation();removeFromTier(\'' + t + '\',\'' + item.replace(/'/g, "\\'") + '\')">x</button></span>';
+            }).join('') +
+          '</div></div>';
+      }).join('');
+
+      if (tierPool.length > 0) {
+        pool.innerHTML = '<div class="tier-pool"><div class="tier-pool-label">Items om te plaatsen (' + tierPool.length + ' over)</div>' +
+          '<div class="tier-pool-items">' +
+            tierPool.map(function(item) {
+              return '<div class="tier-pool-chip" onclick="selectTierItem(\'' + item.replace(/'/g, "\\'") + '\')">' + item + '</div>';
+            }).join('') +
+          '</div></div>';
+      } else {
+        pool.innerHTML = '';
+      }
+
+      document.getElementById('tierlistSaveBtn').disabled = tierPool.length > 0;
+      if (tierPool.length > 0) {
+        document.getElementById('tierlistSaveBtn').textContent = 'Plaats eerst alle items (' + tierPool.length + ' over)';
+      } else {
+        document.getElementById('tierlistSaveBtn').textContent = 'Tierlist Opslaan';
+      }
+    }
+
+    function selectTierItem(item) {
+      tierSelectingItem = item;
+      document.getElementById('tierSelectName').textContent = item;
+      document.getElementById('tierSelectOverlay').classList.add('active');
+    }
+
+    function assignTier(tier) {
+      if (!tierSelectingItem) return;
+      tierPool = tierPool.filter(function(x) { return x !== tierSelectingItem; });
+      tierData[tier].push(tierSelectingItem);
+      tierSelectingItem = null;
+      document.getElementById('tierSelectOverlay').classList.remove('active');
+      renderTierlist();
+    }
+
+    function removeFromTier(tier, item) {
+      tierData[tier] = tierData[tier].filter(function(x) { return x !== item; });
+      tierPool.push(item);
+      renderTierlist();
+    }
+
+    function moveTierItem(event, targetTier) {
+      if (event.target.closest('.tier-chip')) return;
+    }
+
+    function saveTierlist() {
+      if (tierPool.length > 0) return;
+      var tierScores = { S:5, A:4, B:3, C:2, D:1, F:0 };
+      var winsData = {};
+      ['S','A','B','C','D','F'].forEach(function(t) {
+        tierData[t].forEach(function(item) {
+          winsData[item] = tierScores[t];
+        });
+      });
+
+      if (activePresetCategory) {
+        saveRankingToFirebase(activePresetCategory, winsData);
+      }
+
+      document.getElementById('tierlistContainer').style.display = 'none';
+      document.getElementById('resultsContainer').classList.add('active');
+
+      var tiers = ['S','A','B','C','D','F'];
+      var list = document.getElementById('resultsList');
+      var html = '<div style="margin-bottom:24px;">';
+      tiers.forEach(function(t) {
+        if (tierData[t].length === 0) return;
+        html += '<div class="tier-row" style="margin-bottom:6px;">' +
+          '<div class="tier-label tier-' + t.toLowerCase() + '">' + t + '</div>' +
+          '<div class="tier-items">' +
+            tierData[t].map(function(item) {
+              return '<span class="tier-chip">' + item + '</span>';
+            }).join('') +
+          '</div></div>';
+      });
+      html += '</div>';
+      list.innerHTML = html;
+    }
+
+    // ===== LORE STORIES =====
+    var editingStoryId = null;
+
+    function loadStories() {
+      var container = document.getElementById('storiesContainer');
+      if (!container) return;
+      db.collection('stories').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        if (snapshot.empty) {
+          container.innerHTML = '<div class="stories-empty">Nog geen verhalen. Voeg de eerste toe!</div>';
+          return;
+        }
+        var html = '';
+        snapshot.forEach(function(doc) {
+          var s = doc.data();
+          var safe = function(t) { return (t || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+          html += '<div class="story-card">' +
+            '<div class="story-card-tag">' + safe(s.tag || 'Lore') + '</div>' +
+            '<h3>' + safe(s.title) + '</h3>' +
+            '<p>' + safe(s.text) + '</p>';
+          if (s.people) html += '<div class="story-card-people">Betrokken: ' + safe(s.people) + '</div>';
+          if (s.author) html += '<div style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">Toegevoegd door ' + safe(s.author) + '</div>';
+          html += '<div class="story-card-admin">' +
+            '<button class="preset-btn-delete" style="display:inline;color:var(--blue);font-size:0.7rem;" onclick="openStoryModal(\'' + doc.id + '\')">bewerken</button>' +
+            '<button class="preset-btn-delete" style="display:inline;font-size:0.7rem;" onclick="deleteStory(\'' + doc.id + '\')">verwijder</button>' +
+          '</div></div>';
+        });
+        container.innerHTML = html;
+      }).catch(function() {
+        container.innerHTML = '<div class="stories-empty">Kon verhalen niet laden</div>';
+      });
+    }
+
+    function openStoryModal(editId) {
+      editingStoryId = editId || null;
+      if (editId) {
+        document.getElementById('storyModalTitle').textContent = 'Verhaal Bewerken';
+        db.collection('stories').doc(editId).get().then(function(doc) {
+          if (doc.exists) {
+            var s = doc.data();
+            document.getElementById('storyTitle').value = s.title || '';
+            document.getElementById('storyTag').value = s.tag || '';
+            document.getElementById('storyText').value = s.text || '';
+            document.getElementById('storyPeople').value = s.people || '';
+            document.getElementById('storyAuthor').value = s.author || '';
+          }
+        });
+      } else {
+        document.getElementById('storyModalTitle').innerHTML = 'Verhaal Toevoegen &#x1F4D6;';
+        document.getElementById('storyTitle').value = '';
+        document.getElementById('storyTag').value = '';
+        document.getElementById('storyText').value = '';
+        document.getElementById('storyPeople').value = '';
+        document.getElementById('storyAuthor').value = '';
+      }
+      document.getElementById('storyModal').classList.add('active');
+    }
+
+    function closeStoryModal() {
+      document.getElementById('storyModal').classList.remove('active');
+      editingStoryId = null;
+    }
+
+    function saveStory() {
+      var title = document.getElementById('storyTitle').value.trim();
+      var text = document.getElementById('storyText').value.trim();
+      if (!title || !text) { alert('Vul minimaal een titel en verhaal in'); return; }
+
+      var btn = document.getElementById('storySaveBtn');
+      btn.textContent = 'Opslaan...';
+      btn.disabled = true;
+
+      var data = {
+        title: title,
+        tag: document.getElementById('storyTag').value.trim() || 'Lore',
+        text: text,
+        people: document.getElementById('storyPeople').value.trim(),
+        author: document.getElementById('storyAuthor').value.trim(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      var p = editingStoryId
+        ? db.collection('stories').doc(editingStoryId).update(data)
+        : db.collection('stories').add(data);
+
+      p.then(function() {
+        loadStories();
+        closeStoryModal();
+        btn.textContent = 'Publiceren';
+        btn.disabled = false;
+      }).catch(function() {
+        closeStoryModal();
+        btn.textContent = 'Publiceren';
+        btn.disabled = false;
+      });
+    }
+
+    function deleteStory(id) {
+      if (!confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) return;
+      db.collection('stories').doc(id).delete().then(function() { loadStories(); });
+    }
+
+    loadStories();
+
+    // ===== WHATSAPP STATS =====
+    var barColors = ['#E94560','#F5C518','#16C79A','#845EC2','#FF9A3C','#0F3460','#FF6B6B','#16213E','#CD7F32','#A0A0A0','#c73450','#0fa57e','#6b4aa0','#d4802f','#1a4a8a'];
+
+    function parseWhatsApp(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var text = e.target.result;
+        var lines = text.split('\n');
+        var counts = {};
+        var total = 0;
+        var msgPattern = /^\[?\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?\]?\s+(.+?):\s/;
+        var systemNames = ['Wat in de ranking','You','you'];
+
+        lines.forEach(function(line) {
+          var m = line.match(msgPattern);
+          if (m) {
+            var name = m[1].replace(/^[‎~\s]+/,'').replace(/[‎]+$/,'').trim();
+            if (!name || systemNames.indexOf(name) !== -1) return;
+            if (name.length > 40) return;
+            if (!counts[name]) counts[name] = 0;
+            counts[name]++;
+            total++;
+          }
+        });
+
+        if (total === 0) {
+          alert('Geen berichten gevonden. Zorg dat je een WhatsApp _chat.txt bestand upload.');
+          return;
+        }
+
+        var sorted = Object.keys(counts).sort(function(a,b) { return counts[b] - counts[a]; });
+        var maxCount = counts[sorted[0]];
+
+        document.getElementById('statsTotalNum').textContent = total.toLocaleString();
+        var html = '';
+        sorted.forEach(function(name, i) {
+          var pct = ((counts[name] / total) * 100).toFixed(1);
+          var barPct = Math.round((counts[name] / maxCount) * 100);
+          var color = barColors[i % barColors.length];
+          html += '<div class="stats-bar-item" style="animation-delay:' + (i * 0.05) + 's;">' +
+            '<div class="stats-bar-name">' + name + '</div>' +
+            '<div class="stats-bar-track"><div class="stats-bar-fill" style="width:' + barPct + '%;background:' + color + ';">' + pct + '%</div></div>' +
+            '<div class="stats-bar-count">' + counts[name].toLocaleString() + '</div>' +
+          '</div>';
+        });
+        document.getElementById('statsBarList').innerHTML = html;
+        document.getElementById('statsUpload').style.display = 'none';
+        document.getElementById('statsResults').classList.add('active');
+      };
+      reader.readAsText(file);
+    }
+
+    function resetStats() {
+      document.getElementById('statsUpload').style.display = 'block';
+      document.getElementById('statsResults').classList.remove('active');
+    }
+
+    // ===== MEMBERS SYSTEM =====
+    var defaultMembers = [
+      { id:'josh', name:'Josh Ibrahim', emoji:'👑', title:'Admin & Oprichter', desc:'Houdt van rankings, polls en orde proberen te houden, maar raakt uiteindelijk altijd betrokken bij de chaos.', group:'admin', color:'var(--gold)' },
+      { id:'lors', name:'Lors Jocohobo', emoji:'🃏', title:'Professionele Ragebaiter', desc:'Sticker-spammer en professionele troller. Houdt ervan om gesprekken expres chaotischer te maken en overal een grap van te maken.', group:'kern', color:'var(--accent)' },
+      { id:'fionn', name:'Fionn', emoji:'😑', title:'Sarcasme Expert', desc:'Droge humor en sarcastische opmerkingen. Reageert alsof hij klaar is met de groep, maar doet altijd mee aan de onzin.', group:'kern', color:'var(--mint)' },
+      { id:'nath', name:'Nathananiel Timoty Good', emoji:'😤', title:'Frustratie Master', desc:'Master van overdreven frustratie. Reageert alsof alles hem irriteert, wat juist voor veel humor zorgt.', group:'kern', color:'var(--coral)' },
+      { id:'reshman', name:'Reshman', emoji:'🌀', title:'Agent of Chaos', desc:'Onvoorspelbaar en chaotisch. Stuurt random Engelse reacties, stickers en opmerkingen die uit het niets komen.', group:'kern', color:'var(--purple)' },
+      { id:'daniel', name:'Daniël', emoji:'💀', title:'Absurdist', desc:'Specialist in ongemakkelijke en absurde grappen. Staat bekend om zijn interacties met Meta AI en bizarre scenario\'s.', group:'kern', color:'var(--orange)' },
+      { id:'milo', name:'Milo Van Der Meijs', emoji:'🧊', title:'Storyteller', desc:'Relaxte deelnemer die regelmatig droge humor toevoegt. Kan van de kleinste gebeurtenis een groot verhaal maken.', group:'kern', color:'var(--blue)' },
+      { id:'adam', name:'Adam', emoji:'🎯', title:'Sticker Spammer', desc:'Sticker-spammer en professionele troller. Houdt ervan om gesprekken expres chaotischer te maken en overal een grap van te maken.', group:'kern', color:'var(--accent)' },
+      { id:'metaai', name:'Meta AI', emoji:'🤖', title:'GC Legende', desc:'Ere-lid van de groep. Werd voortdurend getrolld, misleid en gebruikt voor fanfictions, waardoor het een belangrijk onderdeel van de gc-lore werd.', group:'ere', color:'var(--mint)' },
+      { id:'maciek', name:'Maciek', emoji:'⚡', title:'Surprise Element', desc:'Minder actief dan de kernleden, maar verschijnt regelmatig met onverwachte opmerkingen en reacties.', group:'stil', color:'rgba(26,26,46,0.4)' },
+      { id:'denize', name:'Denize', emoji:'🌙', title:'Stille Waarnemer', desc:'Rustige deelnemer die af en toe opduikt in gesprekken en groepsactiviteiten. Bekend van zijn "tot morgen" uitspraak.', group:'stil', color:'rgba(26,26,46,0.4)' },
+      { id:'sichen', name:'Sichen Ping', emoji:'🔮', title:'Mythisch Lid', desc:'Zelden actief, maar wel onderdeel van de groep en de lore.', group:'stil', color:'rgba(26,26,46,0.4)' }
+    ];
+    var membersData = [];
+    var editingMemberId = null;
+    var groupLabels = { admin:'👑 Admin', kern:'🔥 Kernleden', ere:'🤖 Ere-lid', stil:'👻 De Stille Krachten' };
+    var groupColors = { admin:'rgba(245,197,24,0.15)', kern:'rgba(233,69,96,0.12)', ere:'linear-gradient(135deg,rgba(22,199,154,0.15),rgba(132,94,194,0.15))', stil:'rgba(26,26,46,0.06)' };
+
+    function loadMembers() {
+      membersData = defaultMembers.slice();
+      db.collection('members').get().then(function(snapshot) {
+        if (!snapshot.empty) {
+          membersData = [];
+          snapshot.forEach(function(doc) {
+            var d = doc.data();
+            d.id = doc.id;
+            membersData.push(d);
+          });
+        }
+        renderMembers();
+      }).catch(function() { renderMembers(); });
+    }
+
+    function renderMembers() {
+      var container = document.getElementById('membersContainer');
+      if (!container) return;
+      var groups = ['admin','kern','ere','stil'];
+      var html = '';
+      groups.forEach(function(g) {
+        var items = membersData.filter(function(m) { return m.group === g; });
+        if (items.length === 0) return;
+        html += '<div class="members-section-label">' + groupLabels[g] + '</div><div class="members-grid">';
+        items.forEach(function(m) {
+          var bg = groupColors[m.group] || 'rgba(26,26,46,0.06)';
+          html += '<div class="member-card">' +
+            '<div class="member-card-avatar" style="background:' + bg + ';">' + m.emoji + '</div>' +
+            '<div class="member-card-info">' +
+              '<div class="member-card-name">' + m.name + '</div>' +
+              '<div class="member-card-title" style="color:' + (m.color || 'var(--accent)') + ';">' + m.title + '</div>' +
+              '<div class="member-card-desc">' + m.desc + '</div>';
+          if (isAdmin) {
+            html += '<div style="margin-top:10px;">' +
+              '<button class="preset-btn-delete" style="display:inline;color:var(--blue);font-size:0.7rem;" onclick="openMemberModal(\'' + m.id + '\')">bewerken</button>' +
+              '<button class="preset-btn-delete" style="display:inline;font-size:0.7rem;" onclick="deleteMember(\'' + m.id + '\')">verwijder</button>' +
+            '</div>';
+          }
+          html += '</div></div>';
+        });
+        html += '</div>';
+      });
+      container.innerHTML = html;
+    }
+
+    function openMemberModal(editId) {
+      editingMemberId = editId || null;
+      if (editId) {
+        var m = membersData.find(function(x) { return x.id === editId; });
+        if (m) {
+          document.getElementById('memName').value = m.name;
+          document.getElementById('memEmoji').value = m.emoji;
+          document.getElementById('memTitle').value = m.title;
+          document.getElementById('memDesc').value = m.desc;
+          document.getElementById('memGroup').value = m.group;
+          document.getElementById('memberModalTitle').textContent = 'Lid Bewerken';
+        }
+      } else {
+        document.getElementById('memName').value = '';
+        document.getElementById('memEmoji').value = '';
+        document.getElementById('memTitle').value = '';
+        document.getElementById('memDesc').value = '';
+        document.getElementById('memGroup').value = 'kern';
+        document.getElementById('memberModalTitle').textContent = 'Lid Toevoegen';
+      }
+      document.getElementById('memberModal').classList.add('active');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModal').classList.remove('active');
+      editingMemberId = null;
+    }
+
+    function saveMember() {
+      var name = document.getElementById('memName').value.trim();
+      var emoji = document.getElementById('memEmoji').value.trim() || '👤';
+      var title = document.getElementById('memTitle').value.trim() || 'Lid';
+      var desc = document.getElementById('memDesc').value.trim();
+      var group = document.getElementById('memGroup').value;
+      if (!name) return;
+
+      var colorMap = { admin:'var(--gold)', kern:'var(--accent)', ere:'var(--mint)', stil:'rgba(26,26,46,0.4)' };
+      var memId = editingMemberId || name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      var data = { name:name, emoji:emoji, title:title, desc:desc, group:group, color:colorMap[group] || 'var(--accent)' };
+
+      var btn = document.getElementById('memSaveBtn');
+      btn.textContent = 'Opslaan...';
+      btn.disabled = true;
+
+      // Save all members to Firebase
+      var idx = membersData.findIndex(function(x) { return x.id === memId; });
+      if (idx >= 0) {
+        membersData[idx] = Object.assign(membersData[idx], data);
+      } else {
+        data.id = memId;
+        membersData.push(data);
+      }
+
+      db.collection('members').doc(memId).set(data).then(function() {
+        renderMembers();
+        closeMemberModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      }).catch(function() {
+        renderMembers();
+        closeMemberModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      });
+    }
+
+    function deleteMember(memId) {
+      var m = membersData.find(function(x) { return x.id === memId; });
+      if (!confirm('Weet je zeker dat je "' + (m ? m.name : memId) + '" wilt verwijderen?')) return;
+      membersData = membersData.filter(function(x) { return x.id !== memId; });
+      db.collection('members').doc(memId).delete().catch(function() {});
+      renderMembers();
+    }
+
+    loadMembers();
   </script>
+
+  <!-- TIER SELECT -->
+  <div class="tier-select-overlay" id="tierSelectOverlay">
+    <div class="tier-select-box">
+      <div class="tier-select-title" id="tierSelectName">Item</div>
+      <div class="tier-select-sub">Kies een tier</div>
+      <div class="tier-select-options">
+        <button class="tier-select-btn tier-s" onclick="assignTier('S')">S</button>
+        <button class="tier-select-btn tier-a" onclick="assignTier('A')">A</button>
+        <button class="tier-select-btn tier-b" onclick="assignTier('B')">B</button>
+        <button class="tier-select-btn tier-c" onclick="assignTier('C')">C</button>
+        <button class="tier-select-btn tier-d" onclick="assignTier('D')">D</button>
+        <button class="tier-select-btn tier-f" onclick="assignTier('F')">F</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORY MODAL -->
+  <div class="modal-overlay" id="storyModal">
+    <div class="modal">
+      <h2 id="storyModalTitle">Verhaal Toevoegen &#x1F4D6;</h2>
+      <div class="modal-sub">Voeg een legendarisch moment toe aan de lore</div>
+
+      <label class="modal-label">Titel</label>
+      <input type="text" class="modal-input" id="storyTitle" placeholder="bijv. De Grote Sticker Oorlog">
+
+      <label class="modal-label">Tag</label>
+      <input type="text" class="modal-input" id="storyTag" placeholder="bijv. Iconisch, Pure Chaos, Legendarisch..." style="max-width:280px;">
+
+      <label class="modal-label">Het Verhaal</label>
+      <textarea class="modal-input" id="storyText" placeholder="Vertel het verhaal..." style="min-height:120px;resize:vertical;font-family:inherit;"></textarea>
+
+      <label class="modal-label">Betrokken personen</label>
+      <input type="text" class="modal-input" id="storyPeople" placeholder="bijv. Josh, Lors, Adam">
+
+      <label class="modal-label">Jouw naam</label>
+      <input type="text" class="modal-input" id="storyAuthor" placeholder="Wie voegt dit toe?">
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeStoryModal()">Annuleren</button>
+        <button class="modal-save" id="storySaveBtn" onclick="saveStory()">Publiceren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBER MODAL -->
+  <div class="modal-overlay" id="memberModal">
+    <div class="modal">
+      <h2 id="memberModalTitle">Lid Toevoegen</h2>
+      <div class="modal-sub">Voeg een nieuw lid toe of bewerk een bestaand lid</div>
+
+      <label class="modal-label">Naam</label>
+      <input type="text" class="modal-input" id="memName" placeholder="Naam van het lid">
+
+      <label class="modal-label">Emoji</label>
+      <input type="text" class="modal-input" id="memEmoji" placeholder="bijv. 👑 🃏 😤" style="max-width:160px;">
+
+      <label class="modal-label">Titel / Rol</label>
+      <input type="text" class="modal-input" id="memTitle" placeholder="bijv. Admin, Troller, Sarcast...">
+
+      <label class="modal-label">Beschrijving</label>
+      <input type="text" class="modal-input" id="memDesc" placeholder="Korte beschrijving...">
+
+      <label class="modal-label">Groep</label>
+      <select class="modal-input" id="memGroup" style="padding:12px 16px;">
+        <option value="admin">👑 Admin</option>
+        <option value="kern" selected>🔥 Kernleden</option>
+        <option value="ere">🤖 Ere-lid</option>
+        <option value="stil">👻 Stille Krachten</option>
+      </select>
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeMemberModal()">Annuleren</button>
+        <button class="modal-save" id="memSaveBtn" onclick="saveMember()">Opslaan</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ADMIN LOGIN MODAL -->
   <div class="modal-overlay" id="adminModal">
@@ -3666,6 +4513,7 @@
       renderPresetButtons();
       loadRankings(currentCategory);
       loadAdminMessages();
+      renderMembers();
     }
 
     function logoutAdmin() {
@@ -3673,6 +4521,7 @@
       document.body.classList.remove('admin-mode');
       document.getElementById('adminBadge').classList.remove('active');
       renderPresetButtons();
+      renderMembers();
     }
 
     function loadAdminMessages() {
