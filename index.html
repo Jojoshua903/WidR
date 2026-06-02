@@ -2876,9 +2876,9 @@
       <div class="lang-dropdown" id="langDropdown">
         <button class="lang-option active" data-lang="nl" onclick="setLang('nl')">🇳🇱 Nederlands</button>
         <button class="lang-option" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="lang-option" data-lang="de" onclick="setLang('de')">🇩🇪 Deutsch</button>
         <button class="lang-option" data-lang="pirate" onclick="setLang('pirate')">🏴‍☠️ Pirate</button>
         <button class="lang-option" data-lang="genz" onclick="setLang('genz')">💀 Gen Z</button>
-        <button class="lang-option" id="addLangBtn" onclick="addCustomLanguage()" style="color:rgba(255,255,255,0.25);border-top:1px solid rgba(255,255,255,0.08);margin-top:4px;padding-top:10px;">+ Taal Toevoegen</button>
       </div>
     </div>
     <div class="hamburger" onclick="toggleMenu()">
@@ -5200,39 +5200,229 @@
     var firebaseTranslations = {};
     var builtinTranslations = {
       en: {
-        'App Groep 2026':'App Group 2026','Start met Ranken':'Start Ranking','Leden':'Members','Chaos':'Chaos',
-        'Waarom Wij':'Why Us','Alles Verdient een Ranking':'Everything Deserves a Ranking','Rank Alles':'Rank Everything',
-        'Live Rankings':'Live Rankings','Community':'Community','Alle rechten voorbehouden.':'All rights reserved.',
-        'Wat wil je ranken?':'What do you want to rank?','+ Toevoegen':'+ Add','+ Nieuwe Categorie':'+ New Category',
-        'Jouw naam':'Your name','Groepsleden':'Group Members','Docenten':'Teachers',
-        'De Rankings':'The Rankings','De Leden':'The Members','Over Ons':'About Us','Contact':'Contact',
-        'Stuur Ons een Bericht':'Send Us a Message','Naam':'Name','Bericht':'Message','Verstuur Bericht':'Send Message',
+        'App Groep 2026':'App Group 2026',
+        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.':'The ultimate app group where everything gets ranked. From the best movies to the worst excuses — we rank it all.',
+        'Start met Ranken':'Start Ranking',
+        'Leden':'Members','Rankings':'Rankings','Chaos':'Chaos',
+        'Waarom Wij':'Why Us','Alles Verdient een Ranking':'Everything Deserves a Ranking',
+        'Rank Alles':'Rank Everything',
+        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.':'From your favorite snacks to the best holiday spots. If it exists, we rank it.',
+        'Live Rankings':'Live Rankings',
+        'Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.':'Watch rankings change in real-time. Every vote counts and every opinion matters.',
+        'Community':'Community',
+        'Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.':'Join a growing community of rankers who have an opinion about everything.',
+        'Alle rechten voorbehouden.':'All rights reserved.',
+        'Wat wil je ranken?':'What do you want to rank?',
+        'Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.':'Add at least 3 items. Type a name and press Enter or click +. Use a preset to start quickly.',
+        '+ Nieuwe Categorie':'+ New Category','+ Toevoegen':'+ Add',
+        'Jouw naam':'Your name',
+        'Vul je naam in om te stemmen...':'Enter your name to vote...',
+        'Typ een item...':'Type an item...',
+        'Pair Ranking':'Pair Ranking','Bracket':'Bracket','Tierlist':'Tierlist','Blind Ranking':'Blind Ranking',
+        'Iedereen vs iedereen.':'Everyone vs everyone.','Tournament eliminatie.':'Tournament elimination.',
+        'S, A, B, C, D, F tiers.':'S, A, B, C, D, F tiers.','Sorteer op gevoel.':'Sort by feeling.',
+        'Groepsleden':'Group Members','Docenten':'Teachers',
+        'Kies een modus':'Choose a mode',
+        'De Rankings':'The Rankings',
+        'Live resultaten van alle stemmers — powered by Firebase':'Live results from all voters — powered by Firebase',
+        'De Leden':'The Members',
+        '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.':'11 people. 11 opinions. 0 consensus. Meet the chaos behind the rankings.',
+        '+ Lid Toevoegen':'+ Add Member',
+        'De Lore 📜':'The Lore 📜',
+        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.':'Every legendary moment, every iconic quote, every time it went completely off the rails. This is our story.',
+        '📖 De Verhalen':'📖 The Stories','+ Verhaal Toevoegen':'+ Add Story',
+        'Words of Wisdom 💣':'Words of Wisdom 💣',
+        'Alle uitspraken, inside jokes en legendarische quotes uit de gc':'All quotes, inside jokes and legendary quotes from the gc',
+        'Nieuwe meme toevoegen ✏️':'Add new meme ✏️',
+        'Typ een meme of uitspraak...':'Type a meme or quote...',
+        'Chat Stats 📊':'Chat Stats 📊',
+        'Upload je WhatsApp chat export en ontdek wie het meest praat':'Upload your WhatsApp chat export and discover who talks the most',
+        'WhatsApp Chat Uploaden':'Upload WhatsApp Chat',
+        'Klik of sleep een _chat.txt bestand hierheen':'Click or drag a _chat.txt file here',
+        'Stickers 🎨':'Stickers 🎨',
+        'Alle officiële stickerpacks van Wat in de Ranking':'All official sticker packs from Wat in de Ranking',
+        'WhatsApp Sticker Kanaal':'WhatsApp Sticker Channel',
+        'Volg ons WhatsApp kanaal voor alle officiële stickerpacks. Nieuwe packs worden daar gedeeld!':'Follow our WhatsApp channel for all official sticker packs. New packs are shared there!',
+        'Open WhatsApp Kanaal':'Open WhatsApp Channel','Opent in WhatsApp':'Opens in WhatsApp',
+        'Over Ons':'About Us',
+        'Een groep vrienden met te veel meningen en te weinig geduld. Dus bouwden we er een hele ranking-cultuur omheen.':'A group of friends with too many opinions and too little patience. So we built a whole ranking culture around it.',
+        'Het Begon Met Een Discussie':'It Started With a Discussion',
+        'Het Team':'The Team','11 Rankers. Oneindig Chaos.':'11 Rankers. Infinite Chaos.',
+        'Bekijk Alle Leden':'View All Members',
+        'Contact':'Contact',
+        'Heb je een idee voor een ranking? Wil je samenwerken? Laat het ons weten!':'Got an idea for a ranking? Want to collaborate? Let us know!',
+        'Stuur Ons een Bericht':'Send Us a Message',
+        'Naam':'Name','E-mail':'Email','Bericht':'Message','Onderwerp':'Subject','Verstuur Bericht':'Send Message',
         'Welke vind je beter?':'Which do you prefer?','Klik om te kiezen':'Click to choose',
-        'Opnieuw Beginnen':'Start Over','Laden...':'Loading...','Ronde':'Round','Winnaar':'Winner','Finale':'Final'
+        'Opnieuw Beginnen':'Start Over','Ranking Opslaan':'Save Ranking','Tierlist Opslaan':'Save Tierlist',
+        'Laden...':'Loading...','Nog geen rankings':'No rankings yet',
+        'Ga naar Rank It en maak een ranking om hier te verschijnen!':'Go to Rank It and make a ranking to appear here!',
+        'Ronde':'Round','Score':'Score','Winnaar':'Winner','Finale':'Final',
+        'Jouw Ranking':'Your Ranking','Op basis van jouw keuzes — dit is jouw definitieve ranking!':'Based on your choices — this is your final ranking!',
+        'Totaal berichten':'Total messages','Andere chat uploaden':'Upload another chat',
+        'Nog geen verhalen. Voeg de eerste toe!':'No stories yet. Add the first one!',
+        'Nog geen items gescoord':'No items scored yet',
+        'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Stats','Stickers':'Stickers',
+        'Home':'Home','Leden':'Members','Over Ons':'About Us','Contact':'Contact',
+        'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Add items, pick your favorite from two options, and discover your final ranking',
+        'items toegevoegd':'items added',
+        'Kies een tier':'Choose a tier'
+      },
+      de: {
+        'App Groep 2026':'App Gruppe 2026',
+        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.':'Die ultimative App-Gruppe, in der alles gerankt wird. Von den besten Filmen bis zu den schlechtesten Ausreden — wir ranken alles.',
+        'Start met Ranken':'Ranking starten',
+        'Leden':'Mitglieder','Rankings':'Rankings','Chaos':'Chaos',
+        'Waarom Wij':'Warum Wir','Alles Verdient een Ranking':'Alles verdient ein Ranking',
+        'Rank Alles':'Ranke Alles',
+        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.':'Von deinen Lieblingssnacks bis zu den besten Urlaubszielen. Wenn es existiert, ranken wir es.',
+        'Live Rankings':'Live Rankings',
+        'Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.':'Sieh in Echtzeit wie sich die Rankings verändern. Jede Stimme zählt.',
+        'Community':'Community',
+        'Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.':'Schließe dich einer wachsenden Community von Rankern an, die über alles eine Meinung haben.',
+        'Alle rechten voorbehouden.':'Alle Rechte vorbehalten.',
+        'Wat wil je ranken?':'Was willst du ranken?',
+        'Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.':'Füge mindestens 3 Items hinzu. Tippe einen Namen und drücke Enter oder klicke +.',
+        '+ Nieuwe Categorie':'+ Neue Kategorie','+ Toevoegen':'+ Hinzufügen',
+        'Jouw naam':'Dein Name','Vul je naam in om te stemmen...':'Gib deinen Namen ein um abzustimmen...',
+        'Typ een item...':'Tippe ein Item...',
+        'Kies een modus':'Wähle einen Modus',
+        'Iedereen vs iedereen.':'Jeder gegen jeden.','Tournament eliminatie.':'Turnier Eliminierung.',
+        'S, A, B, C, D, F tiers.':'S, A, B, C, D, F Stufen.','Sorteer op gevoel.':'Nach Gefühl sortieren.',
+        'Groepsleden':'Gruppenmitglieder','Docenten':'Lehrer',
+        'De Rankings':'Die Rankings',
+        'Live resultaten van alle stemmers — powered by Firebase':'Live Ergebnisse aller Wähler — powered by Firebase',
+        'De Leden':'Die Mitglieder',
+        '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.':'11 Menschen. 11 Meinungen. 0 Konsens. Lerne das Chaos hinter den Rankings kennen.',
+        '+ Lid Toevoegen':'+ Mitglied hinzufügen',
+        'De Lore 📜':'Die Lore 📜',
+        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.':'Jeder legendäre Moment, jedes ikonische Zitat, jedes Mal als es komplett eskalierte. Das ist unsere Geschichte.',
+        '📖 De Verhalen':'📖 Die Geschichten','+ Verhaal Toevoegen':'+ Geschichte hinzufügen',
+        'Words of Wisdom 💣':'Weisheiten 💣',
+        'Alle uitspraken, inside jokes en legendarische quotes uit de gc':'Alle Sprüche, Insider-Witze und legendären Zitate aus dem GC',
+        'Nieuwe meme toevoegen ✏️':'Neues Meme hinzufügen ✏️','Typ een meme of uitspraak...':'Tippe ein Meme oder Spruch...',
+        'Chat Stats 📊':'Chat Statistiken 📊',
+        'Upload je WhatsApp chat export en ontdek wie het meest praat':'Lade deinen WhatsApp Chat-Export hoch und entdecke wer am meisten redet',
+        'WhatsApp Chat Uploaden':'WhatsApp Chat hochladen',
+        'Klik of sleep een _chat.txt bestand hierheen':'Klicke oder ziehe eine _chat.txt Datei hierher',
+        'Stickers 🎨':'Sticker 🎨',
+        'Alle officiële stickerpacks van Wat in de Ranking':'Alle offiziellen Stickerpacks von Wat in de Ranking',
+        'WhatsApp Sticker Kanaal':'WhatsApp Sticker Kanal',
+        'Volg ons WhatsApp kanaal voor alle officiële stickerpacks. Nieuwe packs worden daar gedeeld!':'Folge unserem WhatsApp Kanal für alle offiziellen Stickerpacks!',
+        'Open WhatsApp Kanaal':'WhatsApp Kanal öffnen','Opent in WhatsApp':'Öffnet in WhatsApp',
+        'Over Ons':'Über Uns',
+        'Een groep vrienden met te veel meningen en te weinig geduld. Dus bouwden we er een hele ranking-cultuur omheen.':'Eine Gruppe Freunde mit zu vielen Meinungen und zu wenig Geduld. Also haben wir eine ganze Ranking-Kultur aufgebaut.',
+        'Het Begon Met Een Discussie':'Es begann mit einer Diskussion',
+        'Het Team':'Das Team','11 Rankers. Oneindig Chaos.':'11 Ranker. Unendlich Chaos.',
+        'Bekijk Alle Leden':'Alle Mitglieder ansehen',
+        'Contact':'Kontakt',
+        'Heb je een idee voor een ranking? Wil je samenwerken? Laat het ons weten!':'Hast du eine Idee für ein Ranking? Willst du zusammenarbeiten? Lass es uns wissen!',
+        'Stuur Ons een Bericht':'Schick uns eine Nachricht',
+        'Naam':'Name','E-mail':'E-Mail','Bericht':'Nachricht','Onderwerp':'Betreff','Verstuur Bericht':'Nachricht senden',
+        'Welke vind je beter?':'Welches findest du besser?','Klik om te kiezen':'Klicke zum Wählen',
+        'Opnieuw Beginnen':'Neu starten','Ranking Opslaan':'Ranking speichern','Tierlist Opslaan':'Tierlist speichern',
+        'Laden...':'Laden...','Nog geen rankings':'Noch keine Rankings',
+        'Ga naar Rank It en maak een ranking om hier te verschijnen!':'Gehe zu Rank It und erstelle ein Ranking!',
+        'Ronde':'Runde','Score':'Punkte','Winnaar':'Gewinner','Finale':'Finale',
+        'Jouw Ranking':'Dein Ranking','Op basis van jouw keuzes — dit is jouw definitieve ranking!':'Basierend auf deinen Entscheidungen — das ist dein endgültiges Ranking!',
+        'Totaal berichten':'Gesamtnachrichten','Andere chat uploaden':'Anderen Chat hochladen',
+        'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Stats','Stickers':'Sticker',
+        'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Füge Items hinzu, wähle deinen Favoriten aus zwei Optionen und entdecke dein endgültiges Ranking',
+        'Kies een tier':'Wähle eine Stufe',
+        'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Statistiken','Stickers':'Sticker',
+        'Home':'Startseite','Leden':'Mitglieder','Over Ons':'Über Uns','Contact':'Kontakt',
+        'Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.':'Wie alle guten Dinge begann es mit einer hitzigen Diskussion über etwas Unwichtiges. Wer ist am meisten chopped? Wir kamen nicht raus — also bauten wir eine App, in der jeder abstimmen kann.',
+        'Opent in WhatsApp':'Öffnet in WhatsApp',
+        'Open WhatsApp Kanaal':'WhatsApp Kanal öffnen',
+        '+ Verhaal Toevoegen':'+ Geschichte hinzufügen',
+        '+ Lid Toevoegen':'+ Mitglied hinzufügen',
+        'Bekijk Alle Leden':'Alle Mitglieder ansehen',
+        'Nog geen verhalen. Voeg de eerste toe!':'Noch keine Geschichten. Füge die erste hinzu!',
+        'Nog geen items gescoord':'Noch keine Items bewertet',
+        'items toegevoegd':'Items hinzugefügt',
+        'Nieuwe meme toevoegen ✏️':'Neues Meme hinzufügen ✏️',
+        'Typ een meme of uitspraak...':'Tippe ein Meme oder Spruch...',
+        '11 Rankers. Oneindig Chaos.':'11 Ranker. Unendlich Chaos.',
+        'Het Team':'Das Team',
+        'Ga naar Rank It en maak een ranking om hier te verschijnen!':'Gehe zu Rank It und erstelle ein Ranking!'
       },
       pirate: {
-        'App Groep 2026':'Crew o\' 2026','Start met Ranken':'Set Sail fer Rankin\'','Leden':'Crew','Chaos':'Mayhem',
+        'App Groep 2026':'Crew o\' 2026',
+        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.':'The ultimate pirate crew where everythin\' gets ranked. From the finest rum to the worst excuses — we rank \'em all, savvy?',
+        'Start met Ranken':'Set Sail fer Rankin\'',
+        'Leden':'Crew','Rankings':'Plunder Board','Chaos':'Mayhem',
         'Waarom Wij':'Why Us Scallywags','Alles Verdient een Ranking':'Everythin\' Deserves a Rankin\'',
-        'Rank Alles':'Rank Everythin\'','Live Rankings':'Live Plunder','Community':'The Crew',
-        'Alle rechten voorbehouden.':'All treasures reserved.','Wat wil je ranken?':'What ye wanna rank, matey?',
-        '+ Toevoegen':'+ Add to Cargo','Groepsleden':'The Crew','Docenten':'Captains',
-        'De Rankings':'The Plunder Board','De Leden':'The Crew','Over Ons':'About the Crew',
-        'Contact':'Send a Bottle','Stuur Ons een Bericht':'Send a Message in a Bottle',
+        'Rank Alles':'Rank Everythin\'',
+        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.':'From yer favorite grub to the finest islands. If it exists, we rank it, ye scurvy dog.',
+        'Live Rankings':'Live Plunder',
+        'Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.':'Watch the plunder change in real-time. Every vote counts, ye hear?',
+        'Community':'The Crew',
+        'Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.':'Join a growin\' crew of pirates who have an opinion about everythin\'.',
+        'Alle rechten voorbehouden.':'All treasures reserved.',
+        'Wat wil je ranken?':'What ye wanna rank, matey?',
+        'Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.':'Add at least 3 items to yer cargo. Type a name and press Enter, savvy?',
+        '+ Toevoegen':'+ Add to Cargo','+ Nieuwe Categorie':'+ New Treasure',
+        'Jouw naam':'Yer pirate name','Vul je naam in om te stemmen...':'Enter yer name to vote, landlubber...',
+        'Kies een modus':'Choose yer battle style',
+        'Iedereen vs iedereen.':'All hands on deck.','Tournament eliminatie.':'Last pirate standin\'.',
+        'Sorteer op gevoel.':'Rank by gut feelin\'.','Groepsleden':'The Crew','Docenten':'Captains',
+        'De Rankings':'The Plunder Board',
+        'Live resultaten van alle stemmers — powered by Firebase':'Live booty from all pirates — powered by cannon fire',
+        'De Leden':'The Crew',
+        '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.':'11 pirates. 11 opinions. 0 consensus. Meet the chaos behind the plunder.',
+        'De Lore 📜':'The Tales 📜',
+        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.':'Every legendary tale, every battle cry, every time the ship nearly sank. This be our story, arrr.',
+        '📖 De Verhalen':'📖 The Tales','Words of Wisdom 💣':'Words o\' Wisdom 💣',
+        'Chat Stats 📊':'Ship\'s Log 📊','Stickers 🎨':'Jolly Rogers 🎨',
+        'Over Ons':'About the Crew','Het Team':'The Crew','Contact':'Send a Bottle',
+        'Heb je een idee voor een ranking? Wil je samenwerken? Laat het ons weten!':'Got an idea fer a ranking? Want to join the crew? Send a bottle!',
+        'Stuur Ons een Bericht':'Send a Message in a Bottle',
         'Naam':'Yer Name','Bericht':'Message','Verstuur Bericht':'Send Bottle',
         'Welke vind je beter?':'Which be better, matey?','Klik om te kiezen':'Click to choose, arr',
-        'Opnieuw Beginnen':'Start Again, Arr','Laden...':'Sailin\'...','Ronde':'Battle','Winnaar':'Captain','Finale':'Final Battle'
+        'Opnieuw Beginnen':'Start Again, Arr','Laden...':'Sailin\'...',
+        'Ronde':'Battle','Winnaar':'Captain','Finale':'Final Battle',
+        'Rank It 🔥':'Rank It 🔥','Lore':'Tales','Stats':'Ship Log','Stickers':'Flags',
+        'Home':'Port','Leden':'Crew','Over Ons':'About the Crew','Contact':'Send a Bottle',
+        'Kies een tier':'Choose yer tier, matey'
       },
       genz: {
-        'App Groep 2026':'the squad 2026','Start met Ranken':'start rankin\' bestie','Leden':'the gang','Chaos':'chaos',
+        'App Groep 2026':'the squad 2026',
+        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.':'the squad where everything gets ranked fr fr. from the best movies to the most mid excuses — we rank it all no cap.',
+        'Start met Ranken':'start rankin\' bestie',
+        'Leden':'the gang','Rankings':'rankings','Chaos':'chaos',
         'Waarom Wij':'why tho','Alles Verdient een Ranking':'everything deserves a ranking fr',
-        'Rank Alles':'rank everything','Live Rankings':'live rankings','Community':'the community',
-        'Alle rechten voorbehouden.':'all rights reserved bestie.','Wat wil je ranken?':'what u wanna rank?',
-        '+ Toevoegen':'+ add','Groepsleden':'the squad','Docenten':'teachers',
-        'De Rankings':'the rankings','De Leden':'the gang','Over Ons':'about us',
-        'Contact':'hit us up','Stuur Ons een Bericht':'slide into our dms',
+        'Rank Alles':'rank everything',
+        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.':'from ur fav snacks to the best vacay spots. if it exists, we rank it. periodt.',
+        'Live Rankings':'live rankings',
+        'Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.':'watch rankings change in real-time. every vote hits different.',
+        'Community':'the community',
+        'Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.':'join the unhinged community that has an opinion about literally everything.',
+        'Alle rechten voorbehouden.':'all rights reserved bestie.',
+        'Wat wil je ranken?':'what u wanna rank?',
+        'Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.':'add at least 3 items. type a name and press enter. use a preset to speed run it.',
+        '+ Toevoegen':'+ add','+ Nieuwe Categorie':'+ new category',
+        'Jouw naam':'ur name','Vul je naam in om te stemmen...':'drop ur name to vote...',
+        'Kies een modus':'pick ur mode',
+        'Iedereen vs iedereen.':'everyone vs everyone.','Tournament eliminatie.':'elimination arc.',
+        'Sorteer op gevoel.':'rank by vibes.','Groepsleden':'the squad','Docenten':'teachers',
+        'De Rankings':'the rankings',
+        'Live resultaten van alle stemmers — powered by Firebase':'live results from all voters — its giving firebase',
+        'De Leden':'the gang',
+        '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.':'11 ppl. 11 opinions. 0 consensus. meet the unhinged energy behind the rankings.',
+        'De Lore 📜':'the lore 📜',
+        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.':'every iconic moment, every legendary quote, every time it was giving chaos. this is our story.',
+        '📖 De Verhalen':'📖 the stories','Words of Wisdom 💣':'words of wisdom 💣',
+        'Chat Stats 📊':'chat stats 📊','Stickers 🎨':'stickers 🎨',
+        'Over Ons':'about us','Het Team':'the team','11 Rankers. Oneindig Chaos.':'11 rankers. infinite chaos. slay.',
+        'Contact':'hit us up',
+        'Heb je een idee voor een ranking? Wil je samenwerken? Laat het ons weten!':'got an idea? wanna collab? lmk bestie.',
+        'Stuur Ons een Bericht':'slide into our dms',
         'Naam':'name','Bericht':'message','Verstuur Bericht':'send it bestie',
         'Welke vind je beter?':'which one hits different?','Klik om te kiezen':'tap to choose',
-        'Opnieuw Beginnen':'reset','Laden...':'loading...','Ronde':'round','Winnaar':'winner','Finale':'final'
+        'Opnieuw Beginnen':'reset','Laden...':'loading...','Ronde':'round','Winnaar':'winner','Finale':'final',
+        'Rank It 🔥':'Rank It 🔥','Lore':'lore','Stats':'stats','Stickers':'stickers',
+        'Home':'home','Leden':'the gang','Over Ons':'about us','Contact':'hit us up',
+        'Kies een tier':'pick a tier'
       }
     };
 
@@ -5269,14 +5459,19 @@
     }
 
     function markTranslatableElements() {
-      var els = document.querySelectorAll('h1,h2,h3,p,.card-title,.card-desc,.section-tag,.section-title,.hero-badge,.stat-label,.mode-card-name,.mode-card-desc,.voter-name-label,.battle-question,.battle-card-hint,.results-header p,.results-header h2,.meme-wall-header h2,.meme-wall-header p,.lore-stories-header h2,.stats-hero h1,.stats-hero p,.stats-upload h2,.stats-upload-sub,.ranking-tab,.preset-btn,.ranker-setup h2,.ranker-setup-sub,.ranker-start-btn,.form-submit,.contact-hero h1,.contact-hero p,.about-hero h1,.about-hero p,.members-hero h1,.members-hero p,.lore-hero h1,.lore-hero p,.rankings-hero h1,.rankings-hero p,.apps-hero h1,.apps-hero p');
-      els.forEach(function(el) {
-        if (el.closest('script') || el.closest('style') || el.closest('.modal') || el.closest('.lang-switcher')) return;
-        var text = el.textContent.trim();
-        if (text && text.length > 1 && text.length < 300) {
-          if (!el.getAttribute('data-translatable')) {
-            el.setAttribute('data-translatable', text);
+      var all = document.querySelectorAll('h1,h2,h3,h4,p,button,a,label,span,div');
+      all.forEach(function(el) {
+        if (el.closest('script') || el.closest('style') || el.closest('.modal') || el.closest('.lang-switcher') || el.closest('.translate-bar') || el.closest('.admin-badge') || el.closest('.meme-wall') || el.closest('.meme-chip') || el.closest('.member-card') || el.closest('.ranking-item') || el.closest('.vote-entry') || el.closest('.msg-entry') || el.closest('.blind-scored-chip') || el.closest('#statsBarList') || el.closest('.story-card')) return;
+        if (el.children.length > 0 && el.tagName !== 'BUTTON' && el.tagName !== 'A') {
+          var hasOnlyText = true;
+          for (var i = 0; i < el.childNodes.length; i++) {
+            if (el.childNodes[i].nodeType === 1 && el.childNodes[i].tagName !== 'SPAN') { hasOnlyText = false; break; }
           }
+          if (!hasOnlyText) return;
+        }
+        var text = el.textContent.trim();
+        if (text && text.length > 1 && text.length < 500 && !el.getAttribute('data-translatable')) {
+          el.setAttribute('data-translatable', text);
         }
       });
     }
@@ -5291,6 +5486,14 @@
         } else if (dict[orig]) {
           el.textContent = dict[orig];
         }
+      });
+      // Also translate nav links
+      var navMap = getTranslationDict(lang);
+      document.querySelectorAll('.nav-links a').forEach(function(a) {
+        var t = a.textContent.trim();
+        if (!a._origNav) a._origNav = t;
+        if (lang === 'nl') { a.textContent = a._origNav; }
+        else if (navMap[a._origNav]) { a.textContent = navMap[a._origNav]; }
       });
     }
 
@@ -5356,53 +5559,6 @@
             firebaseTranslations[doc.id] = doc.data();
           });
           // Also load custom languages
-          loadCustomLanguages();
-        }).catch(function() {});
-      } catch(e) {}
-    }
-
-    function loadCustomLanguages() {
-      try {
-        db.collection('config').doc('languages').get().then(function(doc) {
-          if (doc.exists && doc.data().custom) {
-            var customs = doc.data().custom;
-            var dropdown = document.getElementById('langDropdown');
-            var addBtn = document.getElementById('addLangBtn');
-            customs.forEach(function(lang) {
-              if (document.querySelector('.lang-option[data-lang="' + lang.id + '"]')) return;
-              var btn = document.createElement('button');
-              btn.className = 'lang-option';
-              btn.setAttribute('data-lang', lang.id);
-              btn.textContent = lang.emoji + ' ' + lang.name;
-              btn.onclick = function() { setLang(lang.id); };
-              dropdown.insertBefore(btn, addBtn);
-            });
-          }
-        }).catch(function() {});
-      } catch(e) {}
-    }
-
-    function addCustomLanguage() {
-      var name = prompt('Naam van de taal (bijv. Yoda, Shakespeare):');
-      if (!name) return;
-      var emoji = prompt('Emoji voor de taal (bijv. 🟢, 🎭):') || '🌐';
-      var id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-      try {
-        db.collection('config').doc('languages').get().then(function(doc) {
-          var customs = (doc.exists && doc.data().custom) || [];
-          customs.push({ id: id, name: name, emoji: emoji });
-          return db.collection('config').doc('languages').set({ custom: customs });
-        }).then(function() {
-          var dropdown = document.getElementById('langDropdown');
-          var addBtn = document.getElementById('addLangBtn');
-          var btn = document.createElement('button');
-          btn.className = 'lang-option';
-          btn.setAttribute('data-lang', id);
-          btn.textContent = emoji + ' ' + name;
-          btn.onclick = function() { setLang(id); };
-          dropdown.insertBefore(btn, addBtn);
-          setLang(id);
         }).catch(function() {});
       } catch(e) {}
     }
