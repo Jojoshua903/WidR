@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WidR Party</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1A2E'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='36' fill='%23F5C518' text-anchor='middle'%3EW%3C/text%3E%3Crect x='12' y='48' width='40' height='4' rx='2' fill='%23E94560'/%3E%3C/svg%3E">
+<style>
+:root{--primary:#1A1A2E;--accent:#E94560;--gold:#F5C518;--blue:#0F3460;--mint:#16C79A;--purple:#845EC2;--orange:#FF9A3C;--bg:#0d0d1a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:white;min-height:100vh;overflow-x:hidden;}
+
+/* ANIMATED BG */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 50%,rgba(15,52,96,0.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(233,69,96,0.15) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(132,94,194,0.15) 0%,transparent 50%);z-index:-1;}
+
+/* PARTICLES */
+.particles{position:fixed;top:0;left:0;right:0;bottom:0;z-index:-1;overflow:hidden;}
+.particle{position:absolute;width:4px;height:4px;background:rgba(245,197,24,0.2);border-radius:50%;animation:float linear infinite;}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-10vh) rotate(720deg);opacity:0;}}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;padding:20px;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* LOBBY */
+.lobby{text-align:center;max-width:500px;width:100%;}
+.lobby h1{font-size:3.5rem;font-weight:900;letter-spacing:-2px;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lobby-sub{color:rgba(255,255,255,0.4);margin-bottom:40px;font-size:0.95rem;}
+.lobby-btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:12px;transition:all 0.3s;text-transform:uppercase;letter-spacing:1.5px;}
+.lobby-btn:hover{transform:translateY(-3px);}
+.btn-create{background:linear-gradient(135deg,var(--accent),#c73450);color:white;box-shadow:0 4px 20px rgba(233,69,96,0.3);}
+.btn-create:hover{box-shadow:0 8px 32px rgba(233,69,96,0.4);}
+.btn-join{background:rgba(255,255,255,0.06);color:white;border:2px solid rgba(255,255,255,0.1);}
+.btn-join:hover{border-color:var(--gold);background:rgba(245,197,24,0.05);}
+.lobby-input{width:100%;padding:16px;border:2px solid rgba(255,255,255,0.1);border-radius:14px;font-size:1.2rem;font-family:inherit;text-align:center;letter-spacing:8px;font-weight:800;background:rgba(255,255,255,0.05);color:white;margin-bottom:12px;text-transform:uppercase;}
+.lobby-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 20px rgba(245,197,24,0.15);}
+.lobby-input::placeholder{color:rgba(255,255,255,0.2);}
+.lobby-back{background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-weight:700;font-size:0.85rem;margin-top:12px;}
+.room-code-display{font-size:3rem;font-weight:900;color:var(--gold);letter-spacing:8px;background:rgba(245,197,24,0.08);border:2px solid rgba(245,197,24,0.2);padding:20px 40px;border-radius:16px;margin:20px 0;display:inline-block;text-shadow:0 0 30px rgba(245,197,24,0.3);}
+.player-list{text-align:left;margin:20px 0;width:100%;}
+.player-item{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:14px;margin-bottom:8px;backdrop-filter:blur(10px);}
+.player-emoji{font-size:1.5rem;}
+.player-name{font-weight:700;flex:1;color:rgba(255,255,255,0.8);}
+.waiting-text{color:rgba(255,255,255,0.3);font-size:0.85rem;margin:16px 0;}
+
+/* CHARACTER SELECT */
+.char-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:500px;width:100%;margin:24px 0;}
+.char-card{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px 8px;text-align:center;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(5px);}
+.char-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.15);}
+.char-card.selected{border-color:var(--gold);background:rgba(245,197,24,0.1);box-shadow:0 0 24px rgba(245,197,24,0.2);}
+.char-card.taken{opacity:0.2;cursor:not-allowed;}
+.char-emoji{font-size:2.5rem;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));}
+.char-name{font-size:0.7rem;font-weight:700;color:rgba(255,255,255,0.5);}
+
+/* BOARD */
+.board-container{width:100%;max-width:800px;position:relative;}
+.board-top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 8px;}
+.turn-info{background:linear-gradient(135deg,var(--accent),#c73450);padding:10px 24px;border-radius:100px;font-weight:800;font-size:0.85rem;box-shadow:0 4px 16px rgba(233,69,96,0.3);}
+.turn-info span{color:var(--gold);}
+.board-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:20px;}
+.board-space{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 8px;text-align:center;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:0.75rem;font-weight:700;transition:all 0.3s;backdrop-filter:blur(5px);}
+.board-space.blue{border-bottom:3px solid #4A90D9;color:#4A90D9;}
+.board-space.red{border-bottom:3px solid var(--accent);color:var(--accent);}
+.board-space.green{border-bottom:3px solid var(--mint);color:var(--mint);}
+.board-space.star{border-bottom:3px solid var(--gold);background:rgba(245,197,24,0.06);color:var(--gold);}
+.board-space.mini{border-bottom:3px solid var(--purple);color:var(--purple);}
+.board-space.current{box-shadow:0 0 0 2px var(--gold),0 0 24px rgba(245,197,24,0.3);background:rgba(245,197,24,0.08);}
+.space-players{display:flex;gap:2px;justify-content:center;margin-top:4px;font-size:1.1rem;}
+.player-scores{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.score-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px 18px;flex:1;min-width:130px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(5px);}
+.score-card.active-turn{border-color:var(--gold);box-shadow:0 0 20px rgba(245,197,24,0.15);}
+.score-emoji{font-size:1.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3));}
+.score-name{font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.4);}
+.score-stats{display:flex;gap:12px;font-size:0.82rem;font-weight:800;}
+.score-stars{color:var(--gold);}
+.score-coins{color:var(--orange);}
+
+/* DICE */
+.dice-area{text-align:center;margin:20px 0;}
+.dice{width:90px;height:90px;background:white;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:2.8rem;font-weight:900;color:var(--primary);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 -3px 0 rgba(0,0,0,0.1);margin-bottom:16px;transition:all 0.3s;}
+.dice.rolling{animation:diceRoll 0.08s infinite;}
+@keyframes diceRoll{0%{transform:rotate(0deg) scale(1.05);}50%{transform:rotate(12deg) scale(0.95);}100%{transform:rotate(-12deg) scale(1.05);}}
+.roll-btn{padding:16px 48px;background:linear-gradient(135deg,var(--gold),var(--orange));color:var(--primary);border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all 0.3s;box-shadow:0 4px 20px rgba(245,197,24,0.3);}
+.roll-btn:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(245,197,24,0.4);}
+.roll-btn:disabled{opacity:0.2;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* MINIGAMES */
+.mini-container{text-align:center;max-width:500px;width:100%;}
+.mini-title{font-size:1.8rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mini-desc{color:rgba(255,255,255,0.4);margin-bottom:24px;font-size:0.9rem;}
+.mini-area{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px;box-shadow:0 8px 32px rgba(0,0,0,0.2);margin-bottom:20px;min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(10px);position:relative;overflow:hidden;}
+.mini-big-btn{width:150px;height:150px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#c73450);color:white;border:none;font-size:1.5rem;font-weight:900;cursor:pointer;transition:all 0.1s;box-shadow:0 8px 32px rgba(233,69,96,0.4);}
+.mini-big-btn:active{transform:scale(0.9);box-shadow:0 4px 16px rgba(233,69,96,0.3);}
+.mini-score{font-size:3.5rem;font-weight:900;color:var(--gold);text-shadow:0 0 30px rgba(245,197,24,0.3);}
+.mini-timer{font-size:1.4rem;font-weight:800;color:var(--accent);}
+
+/* RESULTS */
+.game-results{text-align:center;max-width:500px;width:100%;}
+.result-crown{font-size:5rem;margin-bottom:16px;animation:crownBounce 1s ease infinite;}
+@keyframes crownBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.result-winner{font-size:2.2rem;font-weight:900;margin-bottom:24px;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.result-list{text-align:left;margin:20px 0;}
+.result-row{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:14px;margin-bottom:8px;backdrop-filter:blur(5px);}
+.result-row:first-child{background:linear-gradient(135deg,rgba(245,197,24,0.15),rgba(255,154,60,0.1));border-color:rgba(245,197,24,0.2);box-shadow:0 8px 24px rgba(245,197,24,0.1);}
+.result-pos{font-size:1.2rem;font-weight:900;min-width:30px;color:rgba(255,255,255,0.15);}
+.result-row:first-child .result-pos{color:var(--gold);}
+
+/* EVENT LOG */
+.event-log{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;}
+.event-msg{background:linear-gradient(135deg,var(--primary),var(--blue));color:white;padding:12px 28px;border-radius:100px;font-size:0.85rem;font-weight:700;margin-bottom:8px;animation:eventIn 0.3s ease,eventOut 0.5s ease 2s forwards;box-shadow:0 8px 32px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);}
+@keyframes eventIn{from{opacity:0;transform:translateY(-20px) scale(0.9);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes eventOut{to{opacity:0;transform:translateY(-20px) scale(0.9);}}
+
+.back-link{position:fixed;top:16px;left:16px;color:rgba(255,255,255,0.3);text-decoration:none;font-weight:700;font-size:0.85rem;z-index:50;transition:color 0.3s;}
+.back-link:hover{color:var(--gold);}
+
+@media(max-width:600px){
+  .char-grid{grid-template-columns:repeat(3,1fr);}
+  .board-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .board-space{padding:8px 4px;min-height:48px;font-size:0.6rem;}
+  .score-card{min-width:80px;padding:10px;}
+  .player-scores{gap:6px;}
+  .lobby h1{font-size:2.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<a href="index.html" class="back-link">← Terug naar site</a>
+<div class="event-log" id="eventLog"></div>
+
+<!-- LOBBY -->
+<div class="screen active" id="screenLobby">
+<div class="lobby">
+  <h1>WidR Party</h1>
+  <div class="lobby-sub">De ultieme groeps game — Mario Party style</div>
+  <input type="text" class="lobby-input" id="playerNameInput" placeholder="Jouw naam" style="letter-spacing:2px;text-transform:none;margin-bottom:24px;">
+  <button class="lobby-btn btn-create" onclick="createRoom()">🎮 Maak Room</button>
+  <button class="lobby-btn btn-join" onclick="showJoinUI()">🔗 Join Room</button>
+  <div id="joinUI" style="display:none;margin-top:20px;">
+    <input type="text" class="lobby-input" id="joinCodeInput" placeholder="CODE" maxlength="5">
+    <button class="lobby-btn btn-create" onclick="joinRoom()">Join</button>
+    <button class="lobby-back" onclick="document.getElementById('joinUI').style.display='none'">Annuleren</button>
+  </div>
+</div>
+</div>
+
+<!-- WAITING ROOM -->
+<div class="screen" id="screenWaiting">
+<div class="lobby">
+  <h1>Room</h1>
+  <div class="room-code-display" id="roomCodeDisplay">-----</div>
+  <div class="lobby-sub">Deel deze code met je vrienden</div>
+  <div class="player-list" id="waitingPlayerList"></div>
+  <div class="waiting-text" id="waitingText">Wachten op spelers...</div>
+  <button class="lobby-btn btn-create" id="startGameBtn" onclick="startGame()" style="display:none;">🚀 Start Game</button>
+</div>
+</div>
+
+<!-- CHARACTER SELECT -->
+<div class="screen" id="screenCharSelect">
+<div class="lobby">
+  <h1>Kies je Character</h1>
+  <div class="lobby-sub">Selecteer je personage</div>
+  <div class="char-grid" id="charGrid"></div>
+  <button class="lobby-btn btn-create" id="confirmCharBtn" onclick="confirmCharacter()" style="display:none;">Bevestig Keuze</button>
+</div>
+</div>
+
+<!-- BOARD GAME -->
+<div class="screen" id="screenBoard">
+<div class="board-container">
+  <div class="player-scores" id="playerScores"></div>
+  <div class="board-top-bar">
+    <div class="turn-info" id="turnInfo">Beurt van: <span>-</span></div>
+    <div style="font-size:0.75rem;color:rgba(26,26,46,0.4);font-weight:700;">Ronde <span id="roundNum">1</span>/10</div>
+  </div>
+  <div class="board-grid" id="boardGrid"></div>
+  <div class="dice-area" id="diceArea">
+    <div class="dice" id="dice">?</div><br>
+    <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 Gooi!</button>
+  </div>
+</div>
+</div>
+
+<!-- MINIGAME -->
+<div class="screen" id="screenMini">
+<div class="mini-container">
+  <div class="mini-title" id="miniTitle">Minigame</div>
+  <div class="mini-desc" id="miniDesc">-</div>
+  <div class="mini-area" id="miniArea"></div>
+  <div id="miniControls"></div>
+</div>
+</div>
+
+<!-- GAME OVER -->
+<div class="screen" id="screenResults">
+<div class="game-results">
+  <div class="result-crown">🏆</div>
+  <div class="result-winner" id="resultWinner">-</div>
+  <div class="lobby-sub">Winnaar van WidR Party!</div>
+  <div class="result-list" id="resultList"></div>
+  <button class="lobby-btn btn-create" onclick="location.reload()" style="margin-top:24px;">🔄 Opnieuw Spelen</button>
+  <a href="index.html" class="lobby-btn btn-join" style="text-decoration:none;text-align:center;display:block;margin-top:8px;">← Terug naar site</a>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// Firebase
+try {
+  firebase.initializeApp({
+    apiKey:"AIzaSyBIQwVxZhUnb_bH5DiTIEADSxGzTc6Iljg",
+    authDomain:"wat-in-de-ranking-rankings.firebaseapp.com",
+    projectId:"wat-in-de-ranking-rankings",
+    storageBucket:"wat-in-de-ranking-rankings.firebasestorage.app",
+    messagingSenderId:"138866882601",
+    appId:"1:138866882601:web:eee27036c5d95bdbc2c438"
+  });
+} catch(e){}
+var db = firebase.firestore();
+var roomRef = null;
+var unsubscribe = null;
+
+// Characters
+var characters = [
+  {id:'josh',name:'Josh',emoji:'👑'},{id:'lors',name:'Lors',emoji:'🃏'},
+  {id:'fionn',name:'Fionn',emoji:'😑'},{id:'nath',name:'Nathan',emoji:'😤'},
+  {id:'reshman',name:'Reshman',emoji:'🌀'},{id:'daniel',name:'Daniël',emoji:'💀'},
+  {id:'milo',name:'Milo',emoji:'🧊'},{id:'adam',name:'Adam',emoji:'🎯'},
+  {id:'metaai',name:'Meta AI',emoji:'🤖'},{id:'maciek',name:'Maciek',emoji:'⚡'},
+  {id:'denize',name:'Denize',emoji:'🌙'},{id:'sichen',name:'Sichen',emoji:'🔮'}
+];
+
+// Board spaces
+var boardSpaces = [
+  {type:'blue',label:'+3'},{type:'green',label:'🎁'},{type:'blue',label:'+3'},
+  {type:'mini',label:'🎮'},{type:'blue',label:'+3'},{type:'red',label:'-2'},
+  {type:'star',label:'⭐'},{type:'blue',label:'+3'},{type:'green',label:'🎁'},
+  {type:'blue',label:'+3'},{type:'red',label:'-2'},{type:'mini',label:'🎮'},
+  {type:'blue',label:'+3'},{type:'star',label:'⭐'},{type:'green',label:'🎁'},
+  {type:'blue',label:'+3'},{type:'mini',label:'🎮'},{type:'red',label:'-2'},
+  {type:'blue',label:'+3'},{type:'green',label:'🎁'},{type:'star',label:'⭐'},
+  {type:'blue',label:'+3'},{type:'red',label:'-2'},{type:'mini',label:'🎮'}
+];
+
+var myId = '';
+var myName = '';
+var roomCode = '';
+var gameState = null;
+var selectedChar = null;
+var isHost = false;
+
+// SCREENS
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+function showEvent(msg){
+  var log = document.getElementById('eventLog');
+  var div = document.createElement('div');
+  div.className = 'event-msg';
+  div.textContent = msg;
+  log.appendChild(div);
+  setTimeout(function(){div.remove();},2500);
+}
+
+// LOBBY
+function showJoinUI(){document.getElementById('joinUI').style.display='block';}
+
+function createRoom(){
+  myName = document.getElementById('playerNameInput').value.trim();
+  if(!myName){alert('Vul je naam in!');return;}
+  myId = 'p_'+Math.random().toString(36).substr(2,6);
+  roomCode = Math.random().toString(36).substr(2,5).toUpperCase();
+  isHost = true;
+
+  var data = {
+    code:roomCode, host:myId, state:'waiting', round:1, turn:0,
+    players:{}, charsTaken:{}, board:{}, currentMini:null, miniResults:{}
+  };
+  data.players[myId] = {name:myName,char:null,pos:0,stars:0,coins:10,ready:false};
+
+  db.collection('games').doc(roomCode).set(data).then(function(){
+    roomRef = db.collection('games').doc(roomCode);
+    listenToRoom();
+    showScreen('screenWaiting');
+    document.getElementById('roomCodeDisplay').textContent = roomCode;
+  });
+}
+
+function joinRoom(){
+  myName = document.getElementById('playerNameInput').value.trim();
+  if(!myName){alert('Vul je naam in!');return;}
+  var code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+  if(!code){alert('Vul een code in!');return;}
+  myId = 'p_'+Math.random().toString(36).substr(2,6);
+
+  db.collection('games').doc(code).get().then(function(doc){
+    if(!doc.exists){alert('Room niet gevonden!');return;}
+    var data = doc.data();
+    if(data.state !== 'waiting' && data.state !== 'charselect'){alert('Game is al bezig!');return;}
+    if(Object.keys(data.players).length >= 4){alert('Room is vol! (max 4)');return;}
+    roomCode = code;
+    roomRef = db.collection('games').doc(roomCode);
+
+    var update = {};
+    update['players.'+myId] = {name:myName,char:null,pos:0,stars:0,coins:10,ready:false};
+    roomRef.update(update).then(function(){
+      listenToRoom();
+      showScreen('screenWaiting');
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
+    });
+  });
+}
+
+function listenToRoom(){
+  if(unsubscribe) unsubscribe();
+  unsubscribe = roomRef.onSnapshot(function(doc){
+    if(!doc.exists) return;
+    gameState = doc.data();
+    handleStateChange();
+  });
+}
+
+function handleStateChange(){
+  if(!gameState) return;
+  if(gameState.state === 'waiting') renderWaiting();
+  else if(gameState.state === 'charselect') renderCharSelect();
+  else if(gameState.state === 'board') renderBoard();
+  else if(gameState.state === 'minigame') renderMinigame();
+  else if(gameState.state === 'gameover') renderGameOver();
+}
+
+// WAITING ROOM
+function renderWaiting(){
+  showScreen('screenWaiting');
+  var list = document.getElementById('waitingPlayerList');
+  var players = gameState.players;
+  var keys = Object.keys(players);
+  list.innerHTML = keys.map(function(id){
+    var p = players[id];
+    return '<div class="player-item"><div class="player-emoji">👤</div><div class="player-name">'+p.name+(id===myId?' (jij)':'')+'</div></div>';
+  }).join('');
+  document.getElementById('waitingText').textContent = keys.length+'/4 spelers — minimaal 2 nodig';
+  var btn = document.getElementById('startGameBtn');
+  if(isHost && keys.length >= 2){btn.style.display='block';}
+  else{btn.style.display='none';}
+}
+
+function startGame(){
+  roomRef.update({state:'charselect'});
+}
+
+// CHARACTER SELECT
+function renderCharSelect(){
+  showScreen('screenCharSelect');
+  var grid = document.getElementById('charGrid');
+  var taken = gameState.charsTaken || {};
+  var takenIds = Object.values(taken);
+  grid.innerHTML = characters.map(function(c){
+    var isTaken = takenIds.indexOf(c.id) !== -1 && taken[myId] !== c.id;
+    var isMine = taken[myId] === c.id;
+    return '<div class="char-card'+(isMine?' selected':'')+(isTaken?' taken':'')+'" onclick="'+(isTaken?'':'selectChar(\''+c.id+'\')')+'">' +
+      '<div class="char-emoji">'+c.emoji+'</div><div class="char-name">'+c.name+'</div></div>';
+  }).join('');
+  document.getElementById('confirmCharBtn').style.display = taken[myId] ? 'block' : 'none';
+
+  // Check if all players have confirmed
+  var allReady = true;
+  Object.keys(gameState.players).forEach(function(id){
+    if(!gameState.players[id].ready) allReady = false;
+  });
+  if(allReady && Object.keys(gameState.players).length >= 2 && isHost){
+    roomRef.update({state:'board'});
+  }
+}
+
+function selectChar(charId){
+  selectedChar = charId;
+  var update = {};
+  update['charsTaken.'+myId] = charId;
+  roomRef.update(update);
+}
+
+function confirmCharacter(){
+  if(!selectedChar) return;
+  var update = {};
+  update['players.'+myId+'.char'] = selectedChar;
+  update['players.'+myId+'.ready'] = true;
+  roomRef.update(update);
+  showEvent('Character gekozen!');
+}
+
+// BOARD
+function renderBoard(){
+  showScreen('screenBoard');
+  var players = gameState.players;
+  var keys = Object.keys(players);
+  var currentTurnId = keys[gameState.turn % keys.length];
+
+  // Scores
+  document.getElementById('playerScores').innerHTML = keys.map(function(id){
+    var p = players[id];
+    var c = characters.find(function(x){return x.id===p.char;}) || {emoji:'👤'};
+    return '<div class="score-card'+(id===currentTurnId?' active-turn':'')+'">' +
+      '<div class="score-emoji">'+c.emoji+'</div><div><div class="score-name">'+p.name+(id===myId?' (jij)':'')+'</div>' +
+      '<div class="score-stats"><span class="score-stars">⭐'+p.stars+'</span><span class="score-coins">🪙'+p.coins+'</span></div></div></div>';
+  }).join('');
+
+  // Turn info
+  var turnPlayer = players[currentTurnId];
+  document.getElementById('turnInfo').innerHTML = 'Beurt van: <span>'+turnPlayer.name+'</span>';
+  document.getElementById('roundNum').textContent = Math.floor(gameState.turn / keys.length) + 1;
+
+  // Board
+  var grid = document.getElementById('boardGrid');
+  grid.innerHTML = boardSpaces.map(function(space,i){
+    var playersHere = keys.filter(function(id){return players[id].pos === i;});
+    var isCurrentPos = playersHere.indexOf(currentTurnId) !== -1;
+    return '<div class="board-space '+space.type+(isCurrentPos?' current':'')+'">'+space.label+
+      '<div class="space-players">'+playersHere.map(function(id){
+        var c = characters.find(function(x){return x.id===players[id].char;}) || {emoji:'👤'};
+        return c.emoji;
+      }).join('')+'</div></div>';
+  }).join('');
+
+  // Dice
+  var isMyTurn = currentTurnId === myId;
+  document.getElementById('rollBtn').disabled = !isMyTurn;
+  document.getElementById('rollBtn').textContent = isMyTurn ? '🎲 Gooi!' : 'Wachten...';
+
+  // Check game over
+  var maxRounds = 10;
+  if(Math.floor(gameState.turn / keys.length) >= maxRounds && isHost){
+    roomRef.update({state:'gameover'});
+  }
+}
+
+function rollDice(){
+  var btn = document.getElementById('rollBtn');
+  var diceEl = document.getElementById('dice');
+  btn.disabled = true;
+  diceEl.classList.add('rolling');
+
+  var roll = Math.floor(Math.random()*6)+1;
+  var count = 0;
+  var interval = setInterval(function(){
+    diceEl.textContent = Math.floor(Math.random()*6)+1;
+    count++;
+    if(count > 15){
+      clearInterval(interval);
+      diceEl.classList.remove('rolling');
+      diceEl.textContent = roll;
+      processMove(roll);
+    }
+  },80);
+}
+
+function processMove(roll){
+  var players = gameState.players;
+  var keys = Object.keys(players);
+  var currentId = keys[gameState.turn % keys.length];
+  if(currentId !== myId) return;
+
+  var p = players[currentId];
+  var newPos = (p.pos + roll) % boardSpaces.length;
+  var space = boardSpaces[newPos];
+
+  var update = {};
+  update['players.'+myId+'.pos'] = newPos;
+
+  if(space.type === 'blue') { update['players.'+myId+'.coins'] = p.coins + 3; showEvent('+3 coins!'); }
+  else if(space.type === 'red') { update['players.'+myId+'.coins'] = Math.max(0, p.coins - 2); showEvent('-2 coins!'); }
+  else if(space.type === 'green') { var bonus = Math.floor(Math.random()*5)+1; update['players.'+myId+'.coins'] = p.coins + bonus; showEvent('Bonus! +'+bonus+' coins!'); }
+  else if(space.type === 'star') {
+    if(p.coins >= 10) {
+      update['players.'+myId+'.stars'] = p.stars + 1;
+      update['players.'+myId+'.coins'] = p.coins - 10;
+      showEvent('⭐ Ster gekocht!');
+    } else { showEvent('Niet genoeg coins voor een ster (10 nodig)'); }
+  }
+  else if(space.type === 'mini') {
+    update.currentMini = Math.floor(Math.random()*3);
+    update.miniResults = {};
+    setTimeout(function(){roomRef.update({state:'minigame'});},1500);
+    showEvent('🎮 Minigame!');
+  }
+
+  update.turn = gameState.turn + 1;
+  roomRef.update(update);
+}
+
+// MINIGAMES
+var miniTimer = null;
+var miniScore = 0;
+
+function renderMinigame(){
+  showScreen('screenMini');
+  var miniId = gameState.currentMini || 0;
+  var minis = [
+    {title:'Button Smasher',desc:'Klik zo snel mogelijk in 5 seconden!',fn:startButtonSmash},
+    {title:'Reactie Test',desc:'Klik wanneer het scherm groen wordt!',fn:startReaction},
+    {title:'Geheugen',desc:'Onthoud de volgorde en herhaal het!',fn:startMemory}
+  ];
+  var mini = minis[miniId % minis.length];
+  document.getElementById('miniTitle').textContent = mini.title;
+  document.getElementById('miniDesc').textContent = mini.desc;
+
+  if(gameState.miniResults && gameState.miniResults[myId] !== undefined){
+    document.getElementById('miniArea').innerHTML = '<div class="mini-score">'+gameState.miniResults[myId]+'</div><div style="color:rgba(26,26,46,0.4);margin-top:8px;">Jouw score — wachten op anderen...</div>';
+    document.getElementById('miniControls').innerHTML = '';
+    checkMiniComplete();
+    return;
+  }
+
+  mini.fn();
+}
+
+function checkMiniComplete(){
+  if(!gameState.miniResults) return;
+  var keys = Object.keys(gameState.players);
+  var allDone = keys.every(function(id){return gameState.miniResults[id] !== undefined;});
+  if(allDone && isHost){
+    var best = null, bestScore = -1;
+    keys.forEach(function(id){
+      if(gameState.miniResults[id] > bestScore){bestScore = gameState.miniResults[id]; best = id;}
+    });
+    var update = {};
+    update['players.'+best+'.coins'] = (gameState.players[best].coins||0) + 5;
+    update.state = 'board';
+    roomRef.update(update);
+    showEvent(gameState.players[best].name + ' wint de minigame! +5 coins');
+  }
+}
+
+function submitMiniScore(score){
+  var update = {};
+  update['miniResults.'+myId] = score;
+  roomRef.update(update);
+}
+
+// BUTTON SMASH
+function startButtonSmash(){
+  miniScore = 0;
+  var area = document.getElementById('miniArea');
+  area.innerHTML = '<div class="mini-score" id="smashScore">0</div><div class="mini-timer" id="smashTimer">5.0</div>';
+  document.getElementById('miniControls').innerHTML = '<button class="mini-big-btn" id="smashBtn" onclick="smashClick()">TAP!</button>';
+
+  var timeLeft = 5.0;
+  miniTimer = setInterval(function(){
+    timeLeft -= 0.1;
+    document.getElementById('smashTimer').textContent = timeLeft.toFixed(1);
+    if(timeLeft <= 0){
+      clearInterval(miniTimer);
+      document.getElementById('smashBtn').disabled = true;
+      submitMiniScore(miniScore);
+    }
+  },100);
+}
+
+function smashClick(){
+  miniScore++;
+  document.getElementById('smashScore').textContent = miniScore;
+}
+
+// REACTION
+function startReaction(){
+  var area = document.getElementById('miniArea');
+  area.innerHTML = '<div style="font-size:1.2rem;font-weight:700;">Wacht tot het GROEN wordt...</div>';
+  area.style.background = '#E94560';
+  document.getElementById('miniControls').innerHTML = '';
+
+  var delay = 1500 + Math.random() * 4000;
+  var reactionStart = 0;
+  var clicked = false;
+
+  setTimeout(function(){
+    area.style.background = '#16C79A';
+    area.innerHTML = '<div style="font-size:2rem;font-weight:900;color:white;">NU!</div>';
+    reactionStart = Date.now();
+    area.onclick = function(){
+      if(clicked) return;
+      clicked = true;
+      var time = Date.now() - reactionStart;
+      area.innerHTML = '<div class="mini-score">'+time+'ms</div>';
+      area.style.background = 'white';
+      area.onclick = null;
+      submitMiniScore(Math.max(0, 1000 - time));
+    };
+  }, delay);
+
+  area.onclick = function(){
+    if(reactionStart > 0) return;
+    clicked = true;
+    area.innerHTML = '<div style="font-size:1.2rem;font-weight:700;color:white;">Te vroeg! 😬</div>';
+    area.onclick = null;
+    submitMiniScore(0);
+  };
+}
+
+// MEMORY
+function startMemory(){
+  var area = document.getElementById('miniArea');
+  var symbols = ['🎯','⭐','🔥','💀','🌀','😤','🃏','🧊'];
+  var sequence = [];
+  for(var i=0;i<4;i++) sequence.push(symbols[Math.floor(Math.random()*symbols.length)]);
+
+  area.innerHTML = '<div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">Onthoud de volgorde!</div><div style="font-size:3rem;letter-spacing:16px;">'+sequence.join(' ')+'</div>';
+  document.getElementById('miniControls').innerHTML = '';
+
+  setTimeout(function(){
+    var userSeq = [];
+    area.innerHTML = '<div style="font-size:1rem;font-weight:700;margin-bottom:16px;">Klik in de juiste volgorde:</div><div id="memProgress" style="font-size:2rem;letter-spacing:8px;margin-bottom:16px;min-height:40px;">-</div>';
+    var btns = symbols.slice(0,6).map(function(s){
+      return '<button style="font-size:1.5rem;width:56px;height:56px;border:none;border-radius:12px;background:white;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin:4px;" onclick="memoryPick(\''+s+'\')">'+s+'</button>';
+    }).join('');
+    document.getElementById('miniControls').innerHTML = '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;">'+btns+'</div>';
+
+    window.memoryPick = function(s){
+      userSeq.push(s);
+      document.getElementById('memProgress').textContent = userSeq.join(' ');
+      if(userSeq.length === sequence.length){
+        var correct = 0;
+        for(var i=0;i<sequence.length;i++){if(userSeq[i]===sequence[i])correct++;}
+        var score = correct * 25;
+        area.innerHTML = '<div class="mini-score">'+correct+'/'+sequence.length+'</div><div style="color:rgba(26,26,46,0.4);margin-top:8px;">'+score+' punten</div>';
+        document.getElementById('miniControls').innerHTML = '';
+        submitMiniScore(score);
+      }
+    };
+  }, 3000);
+}
+
+// GAME OVER
+function renderGameOver(){
+  showScreen('screenResults');
+  var players = gameState.players;
+  var keys = Object.keys(players);
+  keys.sort(function(a,b){
+    if(players[b].stars !== players[a].stars) return players[b].stars - players[a].stars;
+    return players[b].coins - players[a].coins;
+  });
+
+  var winner = players[keys[0]];
+  var wChar = characters.find(function(x){return x.id===winner.char;}) || {emoji:'🏆'};
+  document.getElementById('resultWinner').textContent = wChar.emoji + ' ' + winner.name;
+
+  document.getElementById('resultList').innerHTML = keys.map(function(id,i){
+    var p = players[id];
+    var c = characters.find(function(x){return x.id===p.char;}) || {emoji:'👤'};
+    return '<div class="result-row"><div class="result-pos">'+(i+1)+'</div><div style="font-size:1.3rem;">'+c.emoji+'</div><div style="flex:1;font-weight:700;">'+p.name+'</div><div class="score-stats"><span class="score-stars">⭐'+p.stars+'</span><span class="score-coins">🪙'+p.coins+'</span></div></div>';
+  }).join('');
+}
+
+// PARTICLES
+function spawnParticles(){
+  var container = document.getElementById('particles');
+  for(var i=0;i<20;i++){
+    var p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.animationDuration = (8+Math.random()*12)+'s';
+    p.style.animationDelay = Math.random()*10+'s';
+    p.style.width = (2+Math.random()*4)+'px';
+    p.style.height = p.style.width;
+    var colors = ['rgba(245,197,24,0.15)','rgba(233,69,96,0.1)','rgba(132,94,194,0.1)','rgba(22,199,154,0.1)'];
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    container.appendChild(p);
+  }
+}
+spawnParticles();
+</script>
+</body>
+</html>
