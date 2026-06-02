@@ -3113,6 +3113,16 @@
   <script>
     // ===== FIREBASE =====
     var db = null;
+    var isAdmin = false;
+    var adminRole = null;
+    function hasPermission(perm) {
+      if (!isAdmin || !adminRole) return false;
+      if (adminRole === 'master') return true;
+      var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'] };
+      var r = adminRoles[adminRole];
+      return r && r.indexOf(perm) !== -1;
+    }
+    var db = null;
     try {
       firebase.initializeApp({
         apiKey: "AIzaSyBIQwVxZhUnb_bH5DiTIEADSxGzTc6Iljg",
@@ -4471,8 +4481,6 @@
   <div class="admin-badge" id="adminBadge"><span id="adminBadgeText">🛡 Admin</span> <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
 
   <script>
-    var isAdmin = false;
-    var adminRole = null;
     var adminRoles = {
       master: { label: '👑 Master Admin', desc: 'Volledige toegang', perms: ['all'] },
       lore: { label: '📜 Lore Admin', desc: 'Verhalen & memes beheren', perms: ['lore'] },
@@ -4480,13 +4488,6 @@
       ranking: { label: '🏆 Ranking Admin', desc: 'Categorieën & stemmen', perms: ['ranking'] },
       berichten: { label: '📬 Berichten Admin', desc: 'Berichten bekijken', perms: ['berichten'] }
     };
-
-    function hasPermission(perm) {
-      if (!isAdmin || !adminRole) return false;
-      if (adminRole === 'master') return true;
-      var r = adminRoles[adminRole];
-      return r && r.perms.indexOf(perm) !== -1;
-    }
 
     function simpleHash(str) {
       var hash = 0;
