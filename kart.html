@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wat in de Ranking - Kart Championship</title>
+
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="kart-style.css">
+</head>
+<body>
+
+  <!-- Background Canvas Grid Animation (CSS/HTML effect) -->
+  <div class="grid-background"></div>
+
+  <!-- Screen 1: Main Menu / Room Selection -->
+  <div id="screen-menu" class="screen active">
+    <div class="hero-container">
+      <div class="logo-area animate-title">
+        <h1 class="game-title">WIDR <span class="highlight">KART</span></h1>
+        <p class="tagline">De Ultieme Groepsapp Championship</p>
+      </div>
+
+      <div class="menu-card glass-panel">
+        <div class="input-group">
+          <label for="input-nickname">KIES JE NAAM</label>
+          <input type="text" id="input-nickname" placeholder="Bijv. Schumacher..." maxlength="15">
+        </div>
+
+        <div class="lobby-actions">
+          <div class="action-block">
+            <button id="btn-create-room" class="btn btn-primary btn-glow">
+              <span class="btn-icon">🏎️</span> LOBBY AANMAKEN
+            </button>
+          </div>
+          
+          <div class="divider"><span>OF</span></div>
+          
+          <div class="action-block">
+            <div class="join-row">
+              <input type="text" id="input-room-code" placeholder="ROOM CODE" maxlength="4" autocomplete="off">
+              <button id="btn-join-room" class="btn btn-accent">MEEDOEN</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="solo-option">
+        <button id="btn-solo-race" class="btn btn-secondary">Offline oefenen (VS Bots)</button>
+        <button id="btn-menu-options" class="btn btn-secondary" style="margin-top:8px">Instellingen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Room Lobby (Lobby screen waiting for players) -->
+  <div id="screen-lobby" class="screen">
+    <div class="lobby-container">
+      <header class="lobby-header glass-panel">
+        <div class="lobby-info">
+          <h2>ROOM CODE: <span id="display-room-code">----</span></h2>
+          <p id="lobby-player-count">Wachten op racers...</p>
+        </div>
+        <button id="btn-leave-lobby" class="btn btn-danger btn-sm">VERLAAT</button>
+      </header>
+
+      <div class="lobby-grid">
+        <!-- Players List -->
+        <div class="lobby-left glass-panel">
+          <h3>DE RACERS</h3>
+          <div id="lobby-players-list" class="players-list">
+            <!-- Rendered dynamically -->
+          </div>
+          
+          <div class="lobby-ready-toggle">
+            <button id="btn-toggle-ready" class="btn btn-success btn-glow w-100">IK BEN ER KLAAR VOOR</button>
+          </div>
+        </div>
+
+        <!-- Room Options (Track select, Bot count) -->
+        <div class="lobby-right glass-panel">
+          <h3>RACE INSTELLINGEN</h3>
+          
+          <div class="option-group">
+            <label>KIES EEN CIRCUIT</label>
+            <div class="track-selector">
+              <div class="track-card active" data-track="chatroom">
+                <div class="track-thumb thumb-chatroom">💬</div>
+                <div class="track-info">
+                  <h4>Chatroom Circuit</h4>
+                  <p>Difficulty: Makkelijk</p>
+                </div>
+              </div>
+              
+              <div class="track-card" data-track="ragebait">
+                <div class="track-thumb thumb-ragebait">🔥</div>
+                <div class="track-info">
+                  <h4>Ragebait Runway</h4>
+                  <p>Difficulty: Gemiddeld</p>
+                </div>
+              </div>
+              
+              <div class="track-card" data-track="matrix">
+                <div class="track-thumb thumb-matrix">🤖</div>
+                <div class="track-info">
+                  <h4>Meta AI Matrix</h4>
+                  <p>Difficulty: Moeilijk</p>
+                </div>
+              </div>
+
+              <div class="track-card" data-track="sticker">
+                <div class="track-thumb thumb-sticker">🃏</div>
+                <div class="track-info">
+                  <h4>Sticker Speedway</h4>
+                  <p>Difficulty: Gemiddeld</p>
+                </div>
+              </div>
+
+              <div class="track-card" data-track="poll">
+                <div class="track-thumb thumb-poll">📊</div>
+                <div class="track-info">
+                  <h4>Poll Pitstop</h4>
+                  <p>Difficulty: Gemiddeld</p>
+                </div>
+              </div>
+
+              <div class="track-card" data-track="nacht">
+                <div class="track-thumb thumb-nacht">🌙</div>
+                <div class="track-info">
+                  <h4>Tot Morgen Nachtrace</h4>
+                  <p>Difficulty: Moeilijk</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <label for="select-bots">AI BOT RACERS</label>
+            <select id="select-bots" class="custom-select">
+              <option value="0">Geen Bots (Alleen spelers)</option>
+              <option value="2">2 Bots</option>
+              <option value="4" selected>4 Bots</option>
+              <option value="6">6 Bots</option>
+              <option value="8">8 Bots</option>
+            </select>
+          </div>
+
+          <div class="lobby-start-area">
+            <button id="btn-start-game" class="btn btn-primary btn-glow w-100" disabled>
+              START RACE (0/0 KLAAR)
+            </button>
+            <p class="host-notice">Alleen de host kan de race starten</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Character Selection (Triggered when lobby loads/modifies) -->
+  <div id="modal-char-select" class="modal-overlay">
+    <div class="modal-container glass-panel animate-scale">
+      <header class="modal-header">
+        <h2>SELECTEER JOUW RACER</h2>
+      </header>
+      
+      <div class="char-selection-grid">
+        <!-- Left: Character List -->
+        <div class="char-list-panel" id="char-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Right: Character Details Preview -->
+        <div class="char-detail-panel" id="char-detail-preview">
+          <!-- Rendered dynamically on selection -->
+          <div class="char-placeholder">
+            <div class="placeholder-emoji">🏎️</div>
+            <p>Klik op een racer om hun unieke statistieken en speciale aanval te bekijken.</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button id="btn-confirm-character" class="btn btn-primary btn-glow" disabled>BEVESTIG JOUW KEUZE</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Screen 4: Game Screen (Locked at 60 FPS) -->
+  <div id="screen-game" class="screen">
+    <!-- Main game rendering canvas -->
+    <div class="canvas-container">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- HUD Overlay -->
+    <div class="hud-overlay">
+      <!-- Top Left: Lap and Item -->
+      <div class="hud-top-left">
+        <div class="hud-box stat-box">
+          <div class="hud-label">LAP</div>
+          <div class="hud-value" id="hud-lap">1/3</div>
+        </div>
+        <div class="hud-box item-slot-box">
+          <div class="item-slot" id="hud-item-slot">
+            <span class="item-placeholder">?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Right: Placement and Status -->
+      <div class="hud-top-right">
+        <div class="hud-box stat-box position-box">
+          <div class="hud-label">POS</div>
+          <div class="hud-value" id="hud-position">1st</div>
+        </div>
+      </div>
+
+      <!-- Bottom Right: Speedometer & Drift Spark indicator -->
+      <div class="hud-bottom-right">
+        <div class="hud-box speedometer">
+          <div class="speed-value" id="hud-speed">0</div>
+          <div class="speed-unit">KM/H</div>
+        </div>
+        <div class="drift-indicator" id="drift-spark-meter">
+          <div class="spark-bar" id="spark-fill"></div>
+        </div>
+      </div>
+
+      <!-- Center Countdown Overlay -->
+      <div class="countdown-overlay" id="game-countdown">
+        <span class="countdown-number" id="countdown-text">READY</span>
+      </div>
+
+      <!-- Sticker Spam Screen Attack Overlay -->
+      <div class="sticker-attack-overlay" id="sticker-spam-overlay">
+        <!-- Stickers will be spawned here dynamically -->
+      </div>
+      
+      <!-- Mobile Controls Overlay (Only shown on touch devices) -->
+      <div class="mobile-controls" id="touch-controls">
+        <div class="joystick-area">
+          <div class="joystick-base" id="joystick-base">
+            <div class="joystick-knob" id="joystick-knob"></div>
+          </div>
+        </div>
+        <div class="buttons-area">
+          <button class="mobile-btn btn-drift" id="btn-mobile-drift">DRIFT</button>
+          <button class="mobile-btn btn-use" id="btn-mobile-use">ITEM</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 5: Race Finish / Leaderboard -->
+  <div id="modal-finish" class="modal-overlay">
+    <div class="modal-container glass-panel animate-scale max-w-sm">
+      <header class="modal-header">
+        <h2 id="finish-title">FINISH! 🏁</h2>
+      </header>
+      
+      <div class="finish-leaderboard">
+        <h3>EINDRESULTAAT</h3>
+        <div id="finish-board-list" class="leaderboard-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <footer class="modal-footer flex-col">
+        <button id="btn-lobby-return" class="btn btn-primary btn-glow w-100">TERUG NAAR LOBBY</button>
+        <button id="btn-main-menu" class="btn btn-secondary w-100">HOOFDMENU</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Sound Controller Toggle / Audio Synthesizer Controls -->
+  <div class="audio-controls">
+    <button id="btn-toggle-sound" class="btn-sound" title="Geluid Aan/Uit">🔊</button>
+  </div>
+
+  <!-- Pause Menu (ESC during race) -->
+  <div id="modal-pause" class="modal-overlay">
+    <div class="modal-container glass-panel animate-scale max-w-sm">
+      <header class="modal-header">
+        <h2>GEPAUZEERD</h2>
+      </header>
+      <div class="pause-menu-body">
+        <button id="btn-resume" class="btn btn-primary btn-glow w-100">HERVATTEN</button>
+        <button id="btn-open-options" class="btn btn-secondary w-100">INSTELLINGEN</button>
+        <button id="btn-pause-quit" class="btn btn-danger w-100">STOPPEN</button>
+      </div>
+      <p class="pause-hint">Druk op ESC om te hervatten</p>
+    </div>
+  </div>
+
+  <!-- Options / Settings Menu -->
+  <div id="modal-options" class="modal-overlay">
+    <div class="modal-container glass-panel animate-scale options-container">
+      <header class="modal-header">
+        <h2>INSTELLINGEN</h2>
+      </header>
+
+      <div class="options-body">
+        <!-- Keybinds Section -->
+        <div class="options-section">
+          <h3 class="options-section-title">BESTURING</h3>
+          <div class="keybind-list" id="keybind-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Sensitivity Section -->
+        <div class="options-section">
+          <h3 class="options-section-title">GEVOELIGHEID</h3>
+          <div class="sensitivity-group">
+            <div class="slider-row">
+              <label>STUUR GEVOELIGHEID</label>
+              <div class="slider-control">
+                <input type="range" id="slider-steer" min="30" max="200" value="100" class="custom-slider">
+                <span class="slider-value" id="val-steer">1.00x</span>
+              </div>
+            </div>
+            <div class="slider-row">
+              <label>CAMERA ZOOM</label>
+              <div class="slider-control">
+                <input type="range" id="slider-zoom" min="50" max="150" value="100" class="custom-slider">
+                <span class="slider-value" id="val-zoom">1.00x</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button id="btn-reset-defaults" class="btn btn-secondary">RESET</button>
+        <button id="btn-close-options" class="btn btn-primary btn-glow">OPSLAAN & SLUITEN</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="firebase-sync.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>
