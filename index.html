@@ -2040,6 +2040,148 @@
 
     .tier-select-btn:hover { transform: scale(1.15); }
 
+    /* BLIND RANKING */
+    .blind-container { display: none; }
+    .blind-container.active { display: block; }
+
+    .blind-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .blind-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.2s;
+    }
+
+    .blind-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+    .blind-pos {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: rgba(26,26,46,0.15);
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .blind-item:first-child .blind-pos { color: var(--gold); }
+    .blind-item:nth-child(2) .blind-pos { color: #A0A0A0; }
+    .blind-item:nth-child(3) .blind-pos { color: #CD7F32; }
+
+    .blind-name {
+      flex: 1;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .blind-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .blind-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 2px solid rgba(26,26,46,0.08);
+      background: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .blind-btn:hover {
+      background: var(--primary);
+      color: var(--gold);
+      border-color: var(--primary);
+    }
+
+    /* BRACKET DIAGRAM */
+    .bracket-diagram {
+      overflow-x: auto;
+      padding: 20px 0;
+    }
+
+    .bracket-rounds {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      min-width: max-content;
+    }
+
+    .bracket-round-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 160px;
+    }
+
+    .bracket-round-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .bracket-matchup {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .bracket-player {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(26,26,46,0.04);
+      color: rgba(26,26,46,0.4);
+    }
+
+    .bracket-player:last-child { border-bottom: none; }
+
+    .bracket-player.winner {
+      color: var(--primary);
+      font-weight: 800;
+      background: rgba(245,197,24,0.08);
+    }
+
+    .bracket-champion {
+      background: linear-gradient(135deg, var(--primary), var(--blue));
+      color: var(--gold);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(26,26,46,0.2);
+    }
+
+    .bracket-champion-name {
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+
+    .bracket-champion-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(245,197,24,0.6);
+      margin-top: 4px;
+    }
+
     /* STATS PAGE */
     .stats-hero {
       background: linear-gradient(135deg, #16213E 0%, var(--primary) 100%);
@@ -2759,21 +2901,26 @@
 
         <div class="mode-section">
           <div class="mode-label">Kies een modus</div>
-          <div class="mode-options" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="mode-options" style="grid-template-columns:1fr 1fr;gap:10px;">
             <div class="mode-card selected" id="modePair" onclick="selectMode('pair')">
               <div class="mode-card-icon">⚖️</div>
               <div class="mode-card-name">Pair Ranking</div>
-              <div class="mode-card-desc">Iedereen vs iedereen. Volledige ranking.</div>
+              <div class="mode-card-desc">Iedereen vs iedereen.</div>
             </div>
             <div class="mode-card" id="modeBracket" onclick="selectMode('bracket')">
               <div class="mode-card-icon">🏆</div>
               <div class="mode-card-name">Bracket</div>
-              <div class="mode-card-desc">Tournament eliminatie. Kroont 1 winnaar.</div>
+              <div class="mode-card-desc">Tournament eliminatie.</div>
             </div>
             <div class="mode-card" id="modeTierlist" onclick="selectMode('tierlist')">
               <div class="mode-card-icon">📊</div>
               <div class="mode-card-name">Tierlist</div>
-              <div class="mode-card-desc">Sorteer items in S, A, B, C, D, F tiers.</div>
+              <div class="mode-card-desc">S, A, B, C, D, F tiers.</div>
+            </div>
+            <div class="mode-card" id="modeBlind" onclick="selectMode('blind')">
+              <div class="mode-card-icon">🎲</div>
+              <div class="mode-card-name">Blind Ranking</div>
+              <div class="mode-card-desc">Sorteer op gevoel.</div>
             </div>
           </div>
         </div>
@@ -2829,6 +2976,19 @@
         <div id="tierlistPool" style="margin-top:24px;"></div>
         <div style="margin-top:24px;display:flex;gap:12px;">
           <button class="ranker-start-btn" id="tierlistSaveBtn" onclick="saveTierlist()" style="flex:1;" disabled>Tierlist Opslaan</button>
+          <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">🔄 Reset</button>
+        </div>
+      </div>
+
+      <!-- BLIND RANKING -->
+      <div id="blindContainer" class="blind-container">
+        <div class="results-header">
+          <h2>🎲 Blind Ranking</h2>
+          <p>Sorteer de items op gevoel — gebruik de pijlen om te verplaatsen</p>
+        </div>
+        <div class="blind-list" id="blindList"></div>
+        <div style="display:flex;gap:12px;">
+          <button class="ranker-start-btn" id="blindSaveBtn" onclick="saveBlindRanking()" style="flex:1;">Ranking Opslaan</button>
           <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">🔄 Reset</button>
         </div>
       </div>
@@ -3394,7 +3554,9 @@
 
       if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
-        if (rankMode === 'tierlist') {
+        if (rankMode === 'blind') {
+          btn.textContent = 'Start Blind Ranking (' + rankerItems.length + ' items)';
+        } else if (rankMode === 'tierlist') {
           btn.textContent = 'Start Tierlist (' + rankerItems.length + ' items)';
         } else if (rankMode === 'bracket') {
           var bracketMatches = rankerItems.length - 1;
@@ -3431,6 +3593,7 @@
       document.getElementById('modePair').className = 'mode-card' + (mode === 'pair' ? ' selected' : '');
       document.getElementById('modeBracket').className = 'mode-card' + (mode === 'bracket' ? ' selected' : '');
       document.getElementById('modeTierlist').className = 'mode-card' + (mode === 'tierlist' ? ' selected' : '');
+      document.getElementById('modeBlind').className = 'mode-card' + (mode === 'blind' ? ' selected' : '');
       renderRankerItems();
     }
 
@@ -3442,8 +3605,11 @@
       document.getElementById('battleContainer').classList.remove('active');
       document.getElementById('resultsContainer').classList.remove('active');
       document.getElementById('tierlistContainer').style.display = 'none';
+      document.getElementById('blindContainer').classList.remove('active');
 
-      if (rankMode === 'tierlist') {
+      if (rankMode === 'blind') {
+        startBlindRanking();
+      } else if (rankMode === 'tierlist') {
         startTierlist();
       } else if (rankMode === 'bracket') {
         document.getElementById('battleContainer').classList.add('active');
@@ -3599,20 +3765,49 @@
       document.getElementById('battleProgressFill').style.width = '100%';
 
       var list = document.getElementById('resultsList');
-      var html = '<div class="bracket-winner">' +
+
+      // Build bracket diagram by rounds
+      var rounds = {};
+      bracketHistory.forEach(function(m) {
+        if (!rounds[m.round]) rounds[m.round] = [];
+        rounds[m.round].push(m);
+      });
+
+      var roundNames = { 1:'Ronde 1', 2:'Ronde 2', 3:'Kwartfinale', 4:'Halve Finale' };
+      var roundKeys = Object.keys(rounds).sort(function(a,b) { return a - b; });
+      var lastRound = roundKeys[roundKeys.length - 1];
+
+      var html = '<div class="bracket-winner" style="margin-bottom:32px;">' +
         '<div class="bracket-winner-emoji">🏆</div>' +
         '<div class="bracket-winner-name">' + winner + '</div>' +
         '<div class="bracket-winner-sub">Winnaar van het bracket!</div>' +
-        '<div class="bracket-history">';
+      '</div>';
 
-      bracketHistory.forEach(function(m) {
-        html += '<div class="bracket-match">' +
-          '<div class="bracket-match-round">Ronde ' + m.round + '</div>' +
-          '<span class="bracket-match-winner">' + m.winner + '</span>' +
-          '<span class="bracket-match-vs"> vs </span>' +
-          '<span class="bracket-match-loser">' + m.loser + '</span>' +
-        '</div>';
+      // Visual bracket diagram
+      html += '<div class="bracket-diagram"><div class="bracket-rounds">';
+
+      roundKeys.forEach(function(rnd) {
+        var label = rnd == lastRound ? 'Finale' : (roundNames[rnd] || 'Ronde ' + rnd);
+        html += '<div class="bracket-round-col">' +
+          '<div class="bracket-round-title">' + label + '</div>';
+
+        rounds[rnd].forEach(function(m) {
+          html += '<div class="bracket-matchup">' +
+            '<div class="bracket-player winner">' + m.winner + '</div>' +
+            '<div class="bracket-player">' + m.loser + '</div>' +
+          '</div>';
+        });
+
+        html += '</div>';
       });
+
+      // Champion column
+      html += '<div class="bracket-round-col">' +
+        '<div class="bracket-round-title">Winnaar</div>' +
+        '<div class="bracket-champion">' +
+          '<div class="bracket-champion-name">🏆 ' + winner + '</div>' +
+          '<div class="bracket-champion-label">Kampioen</div>' +
+        '</div></div>';
 
       html += '</div></div>';
       list.innerHTML = html;
@@ -3666,6 +3861,7 @@
       document.getElementById('battleContainer').classList.remove('active');
       document.getElementById('resultsContainer').classList.remove('active');
       document.getElementById('tierlistContainer').style.display = 'none';
+      document.getElementById('blindContainer').classList.remove('active');
 
       renderRankerItems();
     }
@@ -4154,6 +4350,67 @@
     }
 
     loadStories();
+
+    // ===== BLIND RANKING =====
+    var blindOrder = [];
+
+    function startBlindRanking() {
+      blindOrder = rankerItems.slice();
+      for (var i = blindOrder.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = blindOrder[i]; blindOrder[i] = blindOrder[j]; blindOrder[j] = tmp;
+      }
+      document.getElementById('blindContainer').classList.add('active');
+      renderBlindList();
+    }
+
+    function renderBlindList() {
+      var list = document.getElementById('blindList');
+      list.innerHTML = blindOrder.map(function(item, i) {
+        return '<div class="blind-item">' +
+          '<div class="blind-pos">' + (i + 1) + '</div>' +
+          '<div class="blind-name">' + item + '</div>' +
+          '<div class="blind-btns">' +
+            (i > 0 ? '<button class="blind-btn" onclick="blindMove(' + i + ',-1)">▲</button>' : '<button class="blind-btn" style="opacity:0.2">▲</button>') +
+            (i < blindOrder.length - 1 ? '<button class="blind-btn" onclick="blindMove(' + i + ',1)">▼</button>' : '<button class="blind-btn" style="opacity:0.2">▼</button>') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function blindMove(idx, dir) {
+      var newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= blindOrder.length) return;
+      var tmp = blindOrder[idx];
+      blindOrder[idx] = blindOrder[newIdx];
+      blindOrder[newIdx] = tmp;
+      renderBlindList();
+    }
+
+    function saveBlindRanking() {
+      var winsData = {};
+      blindOrder.forEach(function(item, i) {
+        winsData[item] = blindOrder.length - i;
+      });
+
+      if (activePresetCategory) {
+        saveRankingToFirebase(activePresetCategory, winsData);
+      }
+
+      document.getElementById('blindContainer').classList.remove('active');
+      document.getElementById('resultsContainer').classList.add('active');
+
+      var list = document.getElementById('resultsList');
+      list.innerHTML = blindOrder.map(function(item, i) {
+        var pct = Math.round(((blindOrder.length - i) / blindOrder.length) * 100);
+        return '<div class="result-item" style="animation-delay:' + (i * 0.06) + 's;">' +
+          '<div class="result-pos">' + (i + 1) + '</div>' +
+          '<div class="result-name">' + item + '</div>' +
+          '<div class="result-bar"><div class="result-bar-fill" style="width:' + pct + '%;"></div></div>' +
+          '<div class="result-wins"><div class="result-wins-number">#' + (i + 1) + '</div><div class="result-wins-label">positie</div></div>' +
+        '</div>';
+      }).join('');
+    }
 
     // ===== WHATSAPP STATS =====
     var barColors = ['#E94560','#F5C518','#16C79A','#845EC2','#FF9A3C','#0F3460','#FF6B6B','#16213E','#CD7F32','#A0A0A0','#c73450','#0fa57e','#6b4aa0','#d4802f','#1a4a8a'];
