@@ -4622,6 +4622,7 @@
       renderPresetButtons();
       if (hasPermission('ranking')) loadRankings(currentCategory);
       if (hasPermission('berichten')) loadAdminMessages();
+      if (hasPermission('lore')) renderMemes(allMemes);
       renderMembers();
     }
 
@@ -4633,6 +4634,7 @@
       document.getElementById('adminBadge').classList.remove('active');
       renderPresetButtons();
       renderMembers();
+      renderMemes(allMemes);
     }
 
     function showRoleManager() {
