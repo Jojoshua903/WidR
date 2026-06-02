@@ -3681,16 +3681,11 @@
     function renderMemes(memes) {
       var wall = document.getElementById('memeWall');
       var count = document.getElementById('memeCount');
-      wall.innerHTML = memes.map(function(m) {
+      wall.innerHTML = memes.map(function(m, idx) {
         var safe = m.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        var safeAttr = m.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         var delBtn = '';
         if (hasPermission('lore')) {
-          if (firebaseMemeIds[m]) {
-            delBtn = '<button class="tier-chip-remove" onclick="event.stopPropagation();deleteMeme(\'' + safeAttr + '\',\'' + firebaseMemeIds[m] + '\')" style="margin-left:6px;">x</button>';
-          } else {
-            delBtn = '<button class="tier-chip-remove" onclick="event.stopPropagation();deleteBaseMeme(\'' + safeAttr + '\')" style="margin-left:6px;">x</button>';
-          }
+          delBtn = '<button class="tier-chip-remove" onclick="event.stopPropagation();deleteMemeByIndex(' + idx + ')" style="margin-left:6px;">x</button>';
         }
         return '<span class="meme-chip">' + safe + delBtn + '</span>';
       }).join('');
@@ -3713,7 +3708,7 @@
       }).then(function(snapshot) {
         snapshot.forEach(function(doc) {
           var text = doc.data().text;
-          if (text && baseMemes.indexOf(text) === -1) {
+          if (text && baseMemes.indexOf(text) === -1 && allMemes.indexOf(text) === -1) {
             allMemes.push(text);
             firebaseMemeIds[text] = doc.id;
           }
@@ -3722,20 +3717,19 @@
       }).catch(function() {});
     }
 
-    function deleteMeme(text, docId) {
+    function deleteMemeByIndex(idx) {
+      var text = allMemes[idx];
+      if (!text) return;
       if (!confirm('Meme verwijderen: "' + text + '"?')) return;
-      db.collection('memes').doc(docId).delete().then(function() {
-        delete firebaseMemeIds[text];
-        allMemes = allMemes.filter(function(m) { return m !== text; });
-        renderMemes(allMemes);
-      }).catch(function() {});
-    }
 
-    function deleteBaseMeme(text) {
-      if (!confirm('Meme verwijderen: "' + text + '"?')) return;
-      baseMemes = baseMemes.filter(function(m) { return m !== text; });
-      allMemes = allMemes.filter(function(m) { return m !== text; });
-      db.collection('deletedMemes').doc(text.substring(0,40)).set({ text: text }).catch(function() {});
+      if (firebaseMemeIds[text]) {
+        db.collection('memes').doc(firebaseMemeIds[text]).delete().catch(function() {});
+        delete firebaseMemeIds[text];
+      } else {
+        db.collection('deletedMemes').add({ text: text }).catch(function() {});
+        baseMemes = baseMemes.filter(function(m) { return m !== text; });
+      }
+      allMemes.splice(idx, 1);
       renderMemes(allMemes);
     }
 
@@ -4245,11 +4239,24 @@
       try {
         db.collection('members').get().then(function(snapshot) {
           if (!snapshot.empty) {
-            membersData = [];
+            var fbMembers = {};
             snapshot.forEach(function(doc) {
               var d = doc.data();
               d.id = doc.id;
-              membersData.push(d);
+              fbMembers[doc.id] = d;
+            });
+            // Merge: update existing defaults with Firebase data, add new ones
+            membersData = defaultMembers.slice().map(function(m) {
+              if (fbMembers[m.id]) {
+                var updated = fbMembers[m.id];
+                delete fbMembers[m.id];
+                return updated;
+              }
+              return m;
+            });
+            // Add any Firebase-only members
+            Object.keys(fbMembers).forEach(function(id) {
+              membersData.push(fbMembers[id]);
             });
             renderMembers();
           }
