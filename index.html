@@ -1859,7 +1859,7 @@
       display: none;
     }
 
-    body.admin-mode .story-card-admin { display: block; }
+    body.perm-lore .story-card-admin { display: block; }
 
     .stories-empty {
       text-align: center;
@@ -2411,8 +2411,8 @@
       border-top: 1px dashed rgba(26,26,46,0.1);
     }
 
-    body.admin-mode .admin-controls { display: block; }
-    body.admin-mode .preset-btn-delete { display: inline; }
+    body.perm-leden .admin-controls { display: block; }
+    body.perm-ranking .preset-btn-delete { display: inline; }
 
     .admin-logout {
       cursor: pointer;
@@ -2461,7 +2461,7 @@
       border-top: 3px solid var(--mint);
     }
 
-    body.admin-mode .admin-votes-section { display: block; }
+    body.perm-ranking .admin-votes-section { display: block; }
 
     .admin-votes-title {
       font-size: 0.7rem;
@@ -2541,7 +2541,7 @@
       margin-top: 24px;
     }
 
-    body.admin-mode .admin-msg-section { display: block; }
+    body.perm-berichten .admin-msg-section { display: block; }
 
     .msg-entry {
       background: white;
@@ -3858,7 +3858,7 @@
         var cat = customCategories[id];
         html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
           cat.emoji + ' ' + cat.name;
-        if (isAdmin) {
+        if (hasPermission('ranking')) {
           html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
           html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
         }
@@ -4218,7 +4218,7 @@
               '<div class="member-card-name">' + m.name + '</div>' +
               '<div class="member-card-title" style="color:' + (m.color || 'var(--accent)') + ';">' + m.title + '</div>' +
               '<div class="member-card-desc">' + m.desc + '</div>';
-          if (isAdmin) {
+          if (hasPermission('leden')) {
             html += '<div style="margin-top:10px;">' +
               '<button class="preset-btn-delete" style="display:inline;color:var(--blue);font-size:0.7rem;" onclick="openMemberModal(\'' + m.id + '\')">bewerken</button>' +
               '<button class="preset-btn-delete" style="display:inline;font-size:0.7rem;" onclick="deleteMember(\'' + m.id + '\')">verwijder</button>' +
@@ -4389,10 +4389,10 @@
   <div class="modal-overlay" id="adminModal">
     <div class="modal">
       <h2 id="adminTitle">Admin Login 🔒</h2>
-      <div class="modal-sub" id="adminSub">Voer je wachtwoord in om admin modus te activeren</div>
+      <div class="modal-sub" id="adminSub">Voer je wachtwoord in</div>
 
       <div id="adminSetup" style="display:none;">
-        <label class="modal-label">Kies een wachtwoord</label>
+        <label class="modal-label">Kies een master wachtwoord</label>
         <input type="password" class="modal-input" id="adminNewPass" placeholder="Nieuw wachtwoord...">
         <label class="modal-label">Bevestig wachtwoord</label>
         <input type="password" class="modal-input" id="adminConfirmPass" placeholder="Herhaal wachtwoord...">
@@ -4411,14 +4411,36 @@
           <button class="modal-save" onclick="attemptLogin()">Inloggen</button>
         </div>
       </div>
+
+      <!-- ROLE MANAGER (master only) -->
+      <div id="roleManager" style="display:none;margin-top:24px;padding-top:24px;border-top:2px solid rgba(26,26,46,0.06);">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--mint);margin-bottom:16px;">🔐 Rol Wachtwoorden Beheren</div>
+        <div id="roleList"></div>
+        <div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-top:12px;line-height:1.5;">Geef deze wachtwoorden aan anderen. Ze krijgen alleen toegang tot de bijbehorende functies.</div>
+      </div>
     </div>
   </div>
 
   <!-- ADMIN BADGE -->
-  <div class="admin-badge" id="adminBadge">🛡 Admin <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
+  <div class="admin-badge" id="adminBadge"><span id="adminBadgeText">🛡 Admin</span> <span class="admin-logout" onclick="logoutAdmin()">Uitloggen</span></div>
 
   <script>
     var isAdmin = false;
+    var adminRole = null;
+    var adminRoles = {
+      master: { label: '👑 Master Admin', desc: 'Volledige toegang', perms: ['all'] },
+      lore: { label: '📜 Lore Admin', desc: 'Verhalen & memes beheren', perms: ['lore'] },
+      leden: { label: '👥 Leden Admin', desc: 'Leden toevoegen/bewerken', perms: ['leden'] },
+      ranking: { label: '🏆 Ranking Admin', desc: 'Categorieën & stemmen', perms: ['ranking'] },
+      berichten: { label: '📬 Berichten Admin', desc: 'Berichten bekijken', perms: ['berichten'] }
+    };
+
+    function hasPermission(perm) {
+      if (!isAdmin || !adminRole) return false;
+      if (adminRole === 'master') return true;
+      var r = adminRoles[adminRole];
+      return r && r.perms.indexOf(perm) !== -1;
+    }
 
     function simpleHash(str) {
       var hash = 0;
@@ -4432,6 +4454,10 @@
 
     function openAdminLogin() {
       if (isAdmin) {
+        if (adminRole === 'master') {
+          showRoleManager();
+          return;
+        }
         logoutAdmin();
         return;
       }
@@ -4439,25 +4465,26 @@
       document.getElementById('adminPass').value = '';
       document.getElementById('adminNewPass').value = '';
       document.getElementById('adminConfirmPass').value = '';
+      document.getElementById('roleManager').style.display = 'none';
 
       db.collection('config').doc('admin').get().then(function(doc) {
         if (doc.exists && doc.data().passwordHash) {
           document.getElementById('adminSetup').style.display = 'none';
           document.getElementById('adminLogin').style.display = 'block';
           document.getElementById('adminTitle').innerHTML = 'Admin Login 🔒';
-          document.getElementById('adminSub').textContent = 'Voer je wachtwoord in om admin modus te activeren';
+          document.getElementById('adminSub').textContent = 'Voer je wachtwoord in';
         } else {
           document.getElementById('adminSetup').style.display = 'block';
           document.getElementById('adminLogin').style.display = 'none';
           document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
-          document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
+          document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
         }
         document.getElementById('adminModal').classList.add('active');
       }).catch(function() {
         document.getElementById('adminSetup').style.display = 'block';
         document.getElementById('adminLogin').style.display = 'none';
         document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
-        document.getElementById('adminSub').textContent = 'Eerste keer? Stel een admin wachtwoord in';
+        document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
         document.getElementById('adminModal').classList.add('active');
       });
     }
@@ -4479,9 +4506,11 @@
       }
       var hash = simpleHash(pass);
       db.collection('config').doc('admin').set({
-        passwordHash: hash
+        passwordHash: hash,
+        roles: {}
       }).then(function() {
         isAdmin = true;
+        adminRole = 'master';
         activateAdmin();
         closeAdminModal();
       }).catch(function() {
@@ -4494,8 +4523,26 @@
       var hash = simpleHash(pass);
 
       db.collection('config').doc('admin').get().then(function(doc) {
-        if (doc.exists && doc.data().passwordHash === hash) {
+        if (!doc.exists) {
+          document.getElementById('adminError').style.display = 'block';
+          return;
+        }
+        var data = doc.data();
+        if (data.passwordHash === hash) {
           isAdmin = true;
+          adminRole = 'master';
+          activateAdmin();
+          closeAdminModal();
+          return;
+        }
+        var roles = data.roles || {};
+        var foundRole = null;
+        Object.keys(roles).forEach(function(role) {
+          if (roles[role] === hash) foundRole = role;
+        });
+        if (foundRole) {
+          isAdmin = true;
+          adminRole = foundRole;
           activateAdmin();
           closeAdminModal();
         } else {
@@ -4509,19 +4556,92 @@
 
     function activateAdmin() {
       document.body.classList.add('admin-mode');
+      if (adminRole === 'master') {
+        ['lore','leden','ranking','berichten'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+      } else {
+        var r = adminRoles[adminRole];
+        if (r) r.perms.forEach(function(p) { document.body.classList.add('perm-' + p); });
+      }
       document.getElementById('adminBadge').classList.add('active');
+      var roleInfo = adminRoles[adminRole] || adminRoles.master;
+      document.getElementById('adminBadgeText').textContent = roleInfo.label;
       renderPresetButtons();
-      loadRankings(currentCategory);
-      loadAdminMessages();
+      if (hasPermission('ranking')) loadRankings(currentCategory);
+      if (hasPermission('berichten')) loadAdminMessages();
       renderMembers();
     }
 
     function logoutAdmin() {
       isAdmin = false;
+      adminRole = null;
       document.body.classList.remove('admin-mode');
+      ['lore','leden','ranking','berichten'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
       document.getElementById('adminBadge').classList.remove('active');
       renderPresetButtons();
       renderMembers();
+    }
+
+    function showRoleManager() {
+      document.getElementById('adminSetup').style.display = 'none';
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminTitle').innerHTML = '🔐 Rol Beheer';
+      document.getElementById('adminSub').textContent = 'Stel wachtwoorden in voor sub-admins';
+      document.getElementById('roleManager').style.display = 'block';
+
+      db.collection('config').doc('admin').get().then(function(doc) {
+        var roles = (doc.exists && doc.data().roles) || {};
+        renderRoleManager(roles);
+      });
+
+      document.getElementById('adminModal').classList.add('active');
+    }
+
+    function renderRoleManager(currentRoles) {
+      var list = document.getElementById('roleList');
+      var subRoles = ['lore','leden','ranking','berichten'];
+      list.innerHTML = subRoles.map(function(role) {
+        var info = adminRoles[role];
+        var hasPass = currentRoles[role] ? true : false;
+        return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:14px;background:var(--bg);border-radius:12px;">' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:700;font-size:0.9rem;">' + info.label + '</div>' +
+            '<div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + info.desc + '</div>' +
+            (hasPass ? '<div style="font-size:0.65rem;color:var(--mint);font-weight:700;margin-top:4px;">✓ Wachtwoord ingesteld</div>' : '') +
+          '</div>' +
+          '<input type="password" id="rolePass_' + role + '" placeholder="' + (hasPass ? 'Nieuw wachtwoord...' : 'Stel wachtwoord in...') + '" style="width:160px;padding:8px 12px;border:2px solid rgba(26,26,46,0.08);border-radius:8px;font-size:0.8rem;font-family:inherit;background:white;">' +
+          '<button onclick="saveRolePassword(\'' + role + '\')" style="padding:8px 16px;background:var(--primary);color:var(--gold);border:none;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;">Opslaan</button>' +
+          (hasPass ? '<button onclick="removeRolePassword(\'' + role + '\')" style="padding:8px 12px;background:none;border:none;color:var(--accent);font-weight:700;font-size:0.75rem;cursor:pointer;">×</button>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    function saveRolePassword(role) {
+      var input = document.getElementById('rolePass_' + role);
+      var pass = input.value.trim();
+      if (!pass || pass.length < 4) { alert('Minimaal 4 tekens'); return; }
+      var hash = simpleHash(pass);
+
+      db.collection('config').doc('admin').get().then(function(doc) {
+        var data = doc.exists ? doc.data() : {};
+        var roles = data.roles || {};
+        roles[role] = hash;
+        return db.collection('config').doc('admin').update({ roles: roles });
+      }).then(function() {
+        input.value = '';
+        showRoleManager();
+      });
+    }
+
+    function removeRolePassword(role) {
+      if (!confirm('Wachtwoord voor ' + adminRoles[role].label + ' verwijderen?')) return;
+      db.collection('config').doc('admin').get().then(function(doc) {
+        var data = doc.exists ? doc.data() : {};
+        var roles = data.roles || {};
+        delete roles[role];
+        return db.collection('config').doc('admin').update({ roles: roles });
+      }).then(function() {
+        showRoleManager();
+      });
     }
 
     function loadAdminMessages() {
