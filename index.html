@@ -92,6 +92,55 @@
       z-index: 1001;
     }
 
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown-btn {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+
+    .nav-dropdown-btn:hover {
+      color: var(--gold);
+      background: rgba(245, 197, 24, 0.1);
+    }
+
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      background: var(--primary);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 180px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      z-index: 1002;
+    }
+
+    .nav-dropdown-menu.open { display: block; }
+
+    .nav-dropdown-menu a {
+      display: block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+
     .hamburger span {
       width: 28px;
       height: 3px;
@@ -2800,9 +2849,23 @@
 
       .nav-links.open { transform: translateY(0); }
 
-      .nav-links a {
+      .nav-links a, .nav-dropdown-btn {
         padding: 14px 20px;
         border-radius: 10px;
+        width: 100%;
+        text-align: left;
+      }
+
+      .nav-dropdown { width: 100%; }
+
+      .nav-dropdown-menu {
+        position: static;
+        margin-top: 0;
+        box-shadow: none;
+        border: none;
+        padding-left: 16px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 0 0 10px 10px;
       }
 
       .stats-bar {
@@ -2886,15 +2949,34 @@
     </div>
     <ul class="nav-links" id="navLinks">
       <a href="#home" class="active" onclick="navigate('home')">Home</a>
-      <a href="#apps" onclick="navigate('apps')">Rank It</a>
-      <a href="#rankings" onclick="navigate('rankings')">Rankings</a>
-      <a href="#members" onclick="navigate('members')">Leden</a>
-      <a href="#lore" onclick="navigate('lore')">Lore</a>
-      <a href="#stats" onclick="navigate('stats')">Stats</a>
-      <a href="#stickers" onclick="navigate('stickers')">Stickers</a>
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn" onclick="toggleNavDrop('dropRanking')">🏆 Ranking ▾</button>
+        <div class="nav-dropdown-menu" id="dropRanking">
+          <a href="#apps" onclick="navigate('apps');closeNavDrops()">🔥 Rank It</a>
+          <a href="#rankings" onclick="navigate('rankings');closeNavDrops()">📊 Rankings</a>
+        </div>
+      </div>
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn" onclick="toggleNavDrop('dropCommunity')">👥 Community ▾</button>
+        <div class="nav-dropdown-menu" id="dropCommunity">
+          <a href="#members" onclick="navigate('members');closeNavDrops()">👥 Leden</a>
+          <a href="#lore" onclick="navigate('lore');closeNavDrops()">📜 Lore</a>
+          <a href="#stickers" onclick="navigate('stickers');closeNavDrops()">🎨 Stickers</a>
+          <a href="#stats" onclick="navigate('stats');closeNavDrops()">📊 Chat Stats</a>
+        </div>
+      </div>
+
       <a href="game.html" style="color:var(--gold);">🎮 Game</a>
-      <a href="#about" onclick="navigate('about')">Over Ons</a>
-      <a href="#contact" onclick="navigate('contact')">Contact</a>
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn" onclick="toggleNavDrop('dropInfo')">ℹ️ Info ▾</button>
+        <div class="nav-dropdown-menu" id="dropInfo">
+          <a href="#about" onclick="navigate('about');closeNavDrops()">📖 Over Ons</a>
+          <a href="#contact" onclick="navigate('contact');closeNavDrops()">✉️ Contact</a>
+        </div>
+      </div>
     </ul>
   </nav>
 
@@ -3440,6 +3522,21 @@
     function toggleMenu() {
       document.getElementById('navLinks').classList.toggle('open');
     }
+
+    function toggleNavDrop(id) {
+      var el = document.getElementById(id);
+      var isOpen = el.classList.contains('open');
+      closeNavDrops();
+      if (!isOpen) el.classList.add('open');
+    }
+
+    function closeNavDrops() {
+      document.querySelectorAll('.nav-dropdown-menu').forEach(function(d) { d.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) closeNavDrops();
+    });
 
     // ===== LIVE RANKINGS (FIREBASE) =====
     function switchTab(el, category) {
