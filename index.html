@@ -2044,67 +2044,44 @@
     .blind-container { display: none; }
     .blind-container.active { display: block; }
 
-    .blind-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 24px;
-    }
-
-    .blind-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: white;
-      padding: 14px 18px;
+    .blind-score-btn {
+      width: 52px;
+      height: 52px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: all 0.2s;
-    }
-
-    .blind-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-
-    .blind-pos {
-      font-size: 1.1rem;
-      font-weight: 900;
-      color: rgba(26,26,46,0.15);
-      min-width: 32px;
-      text-align: center;
-    }
-
-    .blind-item:first-child .blind-pos { color: var(--gold); }
-    .blind-item:nth-child(2) .blind-pos { color: #A0A0A0; }
-    .blind-item:nth-child(3) .blind-pos { color: #CD7F32; }
-
-    .blind-name {
-      flex: 1;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .blind-btns {
-      display: flex;
-      gap: 4px;
-    }
-
-    .blind-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 2px solid rgba(26,26,46,0.08);
+      border: 3px solid rgba(26,26,46,0.08);
       background: white;
+      font-size: 1.2rem;
+      font-weight: 900;
       cursor: pointer;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       transition: all 0.2s;
+      color: var(--primary);
     }
 
-    .blind-btn:hover {
-      background: var(--primary);
-      color: var(--gold);
-      border-color: var(--primary);
+    .blind-score-btn:hover {
+      transform: translateY(-4px) scale(1.1);
+      border-color: var(--gold);
+      box-shadow: 0 8px 24px rgba(245,197,24,0.2);
+    }
+
+    .blind-score-btn:active {
+      transform: scale(0.95);
+    }
+
+    .blind-scored-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .blind-scored-name { font-weight: 600; }
+
+    .blind-scored-score {
+      font-weight: 800;
+      color: var(--accent);
     }
 
     /* BRACKET DIAGRAM */
@@ -2982,14 +2959,21 @@
 
       <!-- BLIND RANKING -->
       <div id="blindContainer" class="blind-container">
-        <div class="results-header">
-          <h2>🎲 Blind Ranking</h2>
-          <p>Sorteer de items op gevoel — gebruik de pijlen om te verplaatsen</p>
+        <div class="battle-progress">
+          <div class="battle-progress-text">Item</div>
+          <div class="battle-progress-bar"><div class="battle-progress-fill" id="blindProgressFill"></div></div>
+          <div class="battle-progress-count" id="blindProgressCount">0/0</div>
         </div>
-        <div class="blind-list" id="blindList"></div>
-        <div style="display:flex;gap:12px;">
-          <button class="ranker-start-btn" id="blindSaveBtn" onclick="saveBlindRanking()" style="flex:1;">Ranking Opslaan</button>
-          <button class="ranker-reset-btn" onclick="resetRanker()" style="flex:0 0 auto;width:auto;padding:16px 32px;">🔄 Reset</button>
+
+        <div style="text-align:center;margin:32px 0;">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:rgba(26,26,46,0.35);font-weight:700;margin-bottom:12px;" id="blindHint">Geef een score zonder te weten wat er nog komt</div>
+          <div style="font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:24px;" id="blindItemName">-</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;" id="blindScoreButtons"></div>
+        </div>
+
+        <div style="margin-top:24px;background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(26,26,46,0.3);margin-bottom:12px;">Al gescoord</div>
+          <div id="blindScoredList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
       </div>
 
@@ -4353,6 +4337,9 @@
 
     // ===== BLIND RANKING =====
     var blindOrder = [];
+    var blindScores = {};
+    var blindCurrent = 0;
+    var blindMaxScore = 10;
 
     function startBlindRanking() {
       blindOrder = rankerItems.slice();
@@ -4360,54 +4347,71 @@
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = blindOrder[i]; blindOrder[i] = blindOrder[j]; blindOrder[j] = tmp;
       }
+      blindScores = {};
+      blindCurrent = 0;
+      blindMaxScore = blindOrder.length <= 5 ? 5 : 10;
       document.getElementById('blindContainer').classList.add('active');
-      renderBlindList();
+      showBlindItem();
     }
 
-    function renderBlindList() {
-      var list = document.getElementById('blindList');
-      list.innerHTML = blindOrder.map(function(item, i) {
-        return '<div class="blind-item">' +
-          '<div class="blind-pos">' + (i + 1) + '</div>' +
-          '<div class="blind-name">' + item + '</div>' +
-          '<div class="blind-btns">' +
-            (i > 0 ? '<button class="blind-btn" onclick="blindMove(' + i + ',-1)">▲</button>' : '<button class="blind-btn" style="opacity:0.2">▲</button>') +
-            (i < blindOrder.length - 1 ? '<button class="blind-btn" onclick="blindMove(' + i + ',1)">▼</button>' : '<button class="blind-btn" style="opacity:0.2">▼</button>') +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
+    function showBlindItem() {
+      if (blindCurrent >= blindOrder.length) {
+        finishBlindRanking();
+        return;
+      }
 
-    function blindMove(idx, dir) {
-      var newIdx = idx + dir;
-      if (newIdx < 0 || newIdx >= blindOrder.length) return;
-      var tmp = blindOrder[idx];
-      blindOrder[idx] = blindOrder[newIdx];
-      blindOrder[newIdx] = tmp;
-      renderBlindList();
-    }
+      var item = blindOrder[blindCurrent];
+      document.getElementById('blindItemName').textContent = item;
+      document.getElementById('blindProgressCount').textContent = (blindCurrent + 1) + '/' + blindOrder.length;
+      document.getElementById('blindProgressFill').style.width = ((blindCurrent / blindOrder.length) * 100) + '%';
+      document.getElementById('blindHint').textContent = 'Item ' + (blindCurrent + 1) + ' van ' + blindOrder.length + ' — je weet niet wat er nog komt!';
 
-    function saveBlindRanking() {
-      var winsData = {};
-      blindOrder.forEach(function(item, i) {
-        winsData[item] = blindOrder.length - i;
+      var btns = document.getElementById('blindScoreButtons');
+      var html = '';
+      var scoreColors = ['#1A1A2E','#0F3460','#0F3460','#845EC2','#845EC2','#E94560','#FF9A3C','#F5C518','#F5C518','#16C79A'];
+      if (blindMaxScore === 5) scoreColors = ['#1A1A2E','#E94560','#FF9A3C','#F5C518','#16C79A'];
+
+      for (var s = 1; s <= blindMaxScore; s++) {
+        var col = scoreColors[(s - 1) % scoreColors.length];
+        html += '<button class="blind-score-btn" style="border-color:' + col + ';color:' + col + ';" onclick="blindScore(' + s + ')">' + s + '</button>';
+      }
+      btns.innerHTML = html;
+
+      var scoredList = document.getElementById('blindScoredList');
+      var scoredHtml = '';
+      Object.keys(blindScores).forEach(function(name) {
+        scoredHtml += '<div class="blind-scored-chip"><span class="blind-scored-name">' + name + '</span><span class="blind-scored-score">' + blindScores[name] + '/' + blindMaxScore + '</span></div>';
       });
+      scoredList.innerHTML = scoredHtml || '<span style="color:rgba(26,26,46,0.2);font-size:0.8rem;">Nog geen items gescoord</span>';
+    }
+
+    function blindScore(score) {
+      var item = blindOrder[blindCurrent];
+      blindScores[item] = score;
+      blindCurrent++;
+      showBlindItem();
+    }
+
+    function finishBlindRanking() {
+      document.getElementById('blindContainer').classList.remove('active');
+      document.getElementById('resultsContainer').classList.add('active');
+
+      var winsData = {};
+      Object.keys(blindScores).forEach(function(name) { winsData[name] = blindScores[name]; });
 
       if (activePresetCategory) {
         saveRankingToFirebase(activePresetCategory, winsData);
       }
 
-      document.getElementById('blindContainer').classList.remove('active');
-      document.getElementById('resultsContainer').classList.add('active');
-
+      var sorted = Object.keys(blindScores).sort(function(a, b) { return blindScores[b] - blindScores[a]; });
       var list = document.getElementById('resultsList');
-      list.innerHTML = blindOrder.map(function(item, i) {
-        var pct = Math.round(((blindOrder.length - i) / blindOrder.length) * 100);
+      list.innerHTML = sorted.map(function(item, i) {
+        var pct = Math.round((blindScores[item] / blindMaxScore) * 100);
         return '<div class="result-item" style="animation-delay:' + (i * 0.06) + 's;">' +
           '<div class="result-pos">' + (i + 1) + '</div>' +
           '<div class="result-name">' + item + '</div>' +
           '<div class="result-bar"><div class="result-bar-fill" style="width:' + pct + '%;"></div></div>' +
-          '<div class="result-wins"><div class="result-wins-number">#' + (i + 1) + '</div><div class="result-wins-label">positie</div></div>' +
+          '<div class="result-wins"><div class="result-wins-number">' + blindScores[item] + '/' + blindMaxScore + '</div><div class="result-wins-label">score</div></div>' +
         '</div>';
       }).join('');
     }
