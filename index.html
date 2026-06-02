@@ -4340,16 +4340,24 @@
     var blindScores = {};
     var blindCurrent = 0;
     var blindMaxScore = 10;
+    var blindUsedScores = {};
 
     function startBlindRanking() {
       blindOrder = rankerItems.slice();
+      // Shuffle
       for (var i = blindOrder.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = blindOrder[i]; blindOrder[i] = blindOrder[j]; blindOrder[j] = tmp;
       }
+      // Limit to max 10 items
+      if (blindOrder.length > 10) {
+        blindOrder = blindOrder.slice(0, 10);
+      }
+      // Score range = number of items
+      blindMaxScore = blindOrder.length;
       blindScores = {};
+      blindUsedScores = {};
       blindCurrent = 0;
-      blindMaxScore = blindOrder.length <= 5 ? 5 : 10;
       document.getElementById('blindContainer').classList.add('active');
       showBlindItem();
     }
@@ -4361,19 +4369,25 @@
       }
 
       var item = blindOrder[blindCurrent];
+      var remaining = blindOrder.length - blindCurrent;
       document.getElementById('blindItemName').textContent = item;
       document.getElementById('blindProgressCount').textContent = (blindCurrent + 1) + '/' + blindOrder.length;
       document.getElementById('blindProgressFill').style.width = ((blindCurrent / blindOrder.length) * 100) + '%';
-      document.getElementById('blindHint').textContent = 'Item ' + (blindCurrent + 1) + ' van ' + blindOrder.length + ' — je weet niet wat er nog komt!';
+      document.getElementById('blindHint').textContent = 'Item ' + (blindCurrent + 1) + ' van ' + blindOrder.length + ' — elke score kan maar 1x! Nog ' + remaining + ' items.';
 
       var btns = document.getElementById('blindScoreButtons');
       var html = '';
-      var scoreColors = ['#1A1A2E','#0F3460','#0F3460','#845EC2','#845EC2','#E94560','#FF9A3C','#F5C518','#F5C518','#16C79A'];
-      if (blindMaxScore === 5) scoreColors = ['#1A1A2E','#E94560','#FF9A3C','#F5C518','#16C79A'];
+      var scoreColors10 = ['#1A1A2E','#0F3460','#0F3460','#845EC2','#845EC2','#E94560','#FF9A3C','#F5C518','#F5C518','#16C79A'];
+      var scoreColors5 = ['#1A1A2E','#E94560','#FF9A3C','#F5C518','#16C79A'];
 
       for (var s = 1; s <= blindMaxScore; s++) {
-        var col = scoreColors[(s - 1) % scoreColors.length];
-        html += '<button class="blind-score-btn" style="border-color:' + col + ';color:' + col + ';" onclick="blindScore(' + s + ')">' + s + '</button>';
+        var colors = blindMaxScore <= 5 ? scoreColors5 : scoreColors10;
+        var col = colors[(s - 1) % colors.length];
+        if (blindUsedScores[s]) {
+          html += '<button class="blind-score-btn" style="opacity:0.15;border-color:rgba(26,26,46,0.1);color:rgba(26,26,46,0.2);cursor:not-allowed;" disabled>' + s + '</button>';
+        } else {
+          html += '<button class="blind-score-btn" style="border-color:' + col + ';color:' + col + ';" onclick="blindScore(' + s + ')">' + s + '</button>';
+        }
       }
       btns.innerHTML = html;
 
@@ -4386,8 +4400,10 @@
     }
 
     function blindScore(score) {
+      if (blindUsedScores[score]) return;
       var item = blindOrder[blindCurrent];
       blindScores[item] = score;
+      blindUsedScores[score] = true;
       blindCurrent++;
       showBlindItem();
     }
@@ -4491,6 +4507,34 @@
     ];
     var membersData = [];
     var editingMemberId = null;
+    var memberSocials = [];
+
+    function renderMemberSocials() {
+      var list = document.getElementById('memSocialsList');
+      if (!list) return;
+      list.innerHTML = memberSocials.map(function(s, i) {
+        return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:0.85rem;">' +
+          '<span style="font-weight:700;">' + s.service + '</span>' +
+          '<span style="color:rgba(26,26,46,0.5);">' + s.username + '</span>' +
+          '<button onclick="removeMemberSocial(' + i + ')" style="margin-left:auto;background:none;border:none;color:var(--accent);cursor:pointer;font-weight:700;">×</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addMemberSocial() {
+      var service = document.getElementById('memSocialService').value.trim();
+      var username = document.getElementById('memSocialUser').value.trim();
+      if (!service || !username) return;
+      memberSocials.push({ service: service, username: username });
+      document.getElementById('memSocialService').value = '';
+      document.getElementById('memSocialUser').value = '';
+      renderMemberSocials();
+    }
+
+    function removeMemberSocial(idx) {
+      memberSocials.splice(idx, 1);
+      renderMemberSocials();
+    }
     var groupLabels = { admin:'👑 Admin', kern:'🔥 Kernleden', ere:'🤖 Ere-lid', stil:'👻 De Stille Krachten' };
     var groupColors = { admin:'rgba(245,197,24,0.15)', kern:'rgba(233,69,96,0.12)', ere:'linear-gradient(135deg,rgba(22,199,154,0.15),rgba(132,94,194,0.15))', stil:'rgba(26,26,46,0.06)' };
 
@@ -4542,6 +4586,22 @@
               '<div class="member-card-name">' + m.name + '</div>' +
               '<div class="member-card-title" style="color:' + (m.color || 'var(--accent)') + ';">' + m.title + '</div>' +
               '<div class="member-card-desc">' + m.desc + '</div>';
+          if (m.socials && Array.isArray(m.socials) && m.socials.length > 0) {
+            html += '<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;font-size:0.7rem;color:rgba(26,26,46,0.45);font-weight:600;">';
+            m.socials.forEach(function(s) {
+              html += '<span style="cursor:default;">' + s.service + ': ' + s.username + '</span>';
+            });
+            html += '</div>';
+          } else if (m.socials && !Array.isArray(m.socials)) {
+            var socialIcons = [];
+            if (m.socials.snapchat) socialIcons.push('📸 ' + m.socials.snapchat);
+            if (m.socials.insta) socialIcons.push('📷 ' + m.socials.insta);
+            if (m.socials.discord) socialIcons.push('🎮 ' + m.socials.discord);
+            if (m.socials.tiktok) socialIcons.push('🎵 ' + m.socials.tiktok);
+            if (socialIcons.length > 0) {
+              html += '<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;font-size:0.7rem;color:rgba(26,26,46,0.45);font-weight:600;">' + socialIcons.map(function(s) { return '<span>' + s + '</span>'; }).join('') + '</div>';
+            }
+          }
           if (hasPermission('leden')) {
             html += '<div style="margin-top:10px;">' +
               '<button class="preset-btn-delete" style="display:inline;color:var(--blue);font-size:0.7rem;" onclick="openMemberModal(\'' + m.id + '\')">bewerken</button>' +
@@ -4565,6 +4625,8 @@
           document.getElementById('memTitle').value = m.title;
           document.getElementById('memDesc').value = m.desc;
           document.getElementById('memGroup').value = m.group;
+          memberSocials = m.socials ? m.socials.slice() : [];
+          renderMemberSocials();
           document.getElementById('memberModalTitle').textContent = 'Lid Bewerken';
         }
       } else {
@@ -4573,6 +4635,8 @@
         document.getElementById('memTitle').value = '';
         document.getElementById('memDesc').value = '';
         document.getElementById('memGroup').value = 'kern';
+        memberSocials = [];
+        renderMemberSocials();
         document.getElementById('memberModalTitle').textContent = 'Lid Toevoegen';
       }
       document.getElementById('memberModal').classList.add('active');
@@ -4593,7 +4657,7 @@
 
       var colorMap = { admin:'var(--gold)', kern:'var(--accent)', ere:'var(--mint)', stil:'rgba(26,26,46,0.4)' };
       var memId = editingMemberId || name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      var data = { name:name, emoji:emoji, title:title, desc:desc, group:group, color:colorMap[group] || 'var(--accent)' };
+      var data = { name:name, emoji:emoji, title:title, desc:desc, group:group, color:colorMap[group] || 'var(--accent)', socials:memberSocials.slice() };
 
       var btn = document.getElementById('memSaveBtn');
       btn.textContent = 'Opslaan...';
@@ -4701,6 +4765,16 @@
         <option value="ere">🤖 Ere-lid</option>
         <option value="stil">👻 Stille Krachten</option>
       </select>
+
+      <div style="margin-top:8px;padding-top:16px;border-top:2px solid rgba(26,26,46,0.06);">
+        <label class="modal-label">Socials</label>
+        <div id="memSocialsList"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <input type="text" class="modal-input" id="memSocialService" placeholder="Service (bijv. Discord)" style="margin-bottom:0;font-size:0.85rem;flex:1;">
+          <input type="text" class="modal-input" id="memSocialUser" placeholder="Gebruikersnaam" style="margin-bottom:0;font-size:0.85rem;flex:1;">
+          <button onclick="addMemberSocial()" style="padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;white-space:nowrap;">+</button>
+        </div>
+      </div>
 
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeMemberModal()">Annuleren</button>
