@@ -152,6 +152,53 @@
     .lang-option:hover { background: rgba(245,197,24,0.1); color: var(--gold); }
     .lang-option.active { color: var(--gold); }
 
+    .translate-mode [data-translatable] {
+      outline: 2px dashed rgba(22,199,154,0.4);
+      outline-offset: 2px;
+      cursor: text;
+      border-radius: 4px;
+      transition: outline-color 0.2s;
+    }
+
+    .translate-mode [data-translatable]:hover {
+      outline-color: var(--mint);
+      background: rgba(22,199,154,0.05);
+    }
+
+    .translate-bar {
+      display: none;
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      z-index: 1001;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .translate-bar.active { display: flex; }
+
+    .translate-bar-close {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 100px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    .translate-bar-close:hover { background: rgba(255,255,255,0.25); }
+
     /* PAGES */
     .page {
       display: none;
@@ -2827,10 +2874,11 @@
     <div class="lang-switcher">
       <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">🇳🇱 NL</button>
       <div class="lang-dropdown" id="langDropdown">
-        <button class="lang-option active" onclick="setLang('nl')">🇳🇱 Nederlands</button>
-        <button class="lang-option" onclick="setLang('en')">🇬🇧 English</button>
-        <button class="lang-option" onclick="setLang('pirate')">🏴‍☠️ Pirate</button>
-        <button class="lang-option" onclick="setLang('genz')">💀 Gen Z</button>
+        <button class="lang-option active" data-lang="nl" onclick="setLang('nl')">🇳🇱 Nederlands</button>
+        <button class="lang-option" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="lang-option" data-lang="pirate" onclick="setLang('pirate')">🏴‍☠️ Pirate</button>
+        <button class="lang-option" data-lang="genz" onclick="setLang('genz')">💀 Gen Z</button>
+        <button class="lang-option" id="addLangBtn" onclick="addCustomLanguage()" style="color:rgba(255,255,255,0.25);border-top:1px solid rgba(255,255,255,0.08);margin-top:4px;padding-top:10px;">+ Taal Toevoegen</button>
       </div>
     </div>
     <div class="hamburger" onclick="toggleMenu()">
@@ -5044,6 +5092,7 @@
       if (hasPermission('berichten')) loadAdminMessages();
       if (hasPermission('lore')) renderMemes(allMemes);
       renderMembers();
+      if (typeof updateTranslateBar === 'function') updateTranslateBar();
     }
 
     function logoutAdmin() {
@@ -5147,117 +5196,54 @@
 
   <script>
     var currentLang = 'nl';
-    var translations = {
-      nl: {},
+    var translateMode = false;
+    var firebaseTranslations = {};
+    var builtinTranslations = {
       en: {
-        'App Groep 2026': 'App Group 2026',
-        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.': 'The ultimate app group where everything gets ranked. From the best movies to the worst excuses — we rank it all.',
-        'Start met Ranken': 'Start Ranking',
-        'Leden': 'Members', 'Rankings': 'Rankings', 'Chaos': 'Chaos',
-        'Waarom Wij': 'Why Us', 'Alles Verdient een Ranking': 'Everything Deserves a Ranking',
-        'Rank Alles': 'Rank Everything',
-        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.': 'From your favorite snacks to the best holiday spots. If it exists, we rank it.',
-        'Live Rankings': 'Live Rankings',
-        'Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.': 'Watch rankings change in real-time. Every vote counts and every opinion matters.',
-        'Community': 'Community',
-        'Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.': 'Join a growing community of rankers who have an opinion about everything.',
-        'Alle rechten voorbehouden.': 'All rights reserved.',
-        'Wat wil je ranken?': 'What do you want to rank?',
-        'Voeg minimaal 3 items toe. Typ een naam en druk op Enter of klik +. Gebruik een preset om snel te starten.': 'Add at least 3 items. Type a name and press Enter or click +. Use a preset to start quickly.',
-        '+ Nieuwe Categorie': '+ New Category', '+ Toevoegen': '+ Add',
-        'Jouw naam': 'Your name', 'Vul je naam in om te stemmen...': 'Enter your name to vote...',
-        'Pair Ranking': 'Pair Ranking', 'Bracket': 'Bracket', 'Tierlist': 'Tierlist', 'Blind Ranking': 'Blind Ranking',
-        'Iedereen vs iedereen.': 'Everyone vs everyone.', 'Tournament eliminatie.': 'Tournament elimination.',
-        'S, A, B, C, D, F tiers.': 'S, A, B, C, D, F tiers.', 'Sorteer op gevoel.': 'Sort by feeling.',
-        'Groepsleden': 'Group Members', 'Docenten': 'Teachers',
-        'De Rankings': 'The Rankings', 'Live resultaten van alle stemmers — powered by Firebase': 'Live results from all voters — powered by Firebase',
-        'De Leden': 'The Members', '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.': '11 people. 11 opinions. 0 consensus. Meet the chaos behind the rankings.',
-        'De Lore 📜': 'The Lore 📜',
-        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.': 'Every legendary moment, every iconic quote, every time it went completely off the rails. This is our story.',
-        '📖 De Verhalen': '📖 The Stories', '+ Verhaal Toevoegen': '+ Add Story',
-        'Words of Wisdom 💣': 'Words of Wisdom 💣',
-        'Alle uitspraken, inside jokes en legendarische quotes uit de gc': 'All quotes, inside jokes and legendary quotes from the gc',
-        'Nieuwe meme toevoegen ✏️': 'Add new meme ✏️', 'Typ een meme of uitspraak...': 'Type a meme or quote...',
-        'Chat Stats 📊': 'Chat Stats 📊', 'Upload je WhatsApp chat export en ontdek wie het meest praat': 'Upload your WhatsApp chat export and discover who talks the most',
-        'WhatsApp Chat Uploaden': 'Upload WhatsApp Chat',
-        'Stickers 🎨': 'Stickers 🎨', 'Alle officiële stickerpacks van Wat in de Ranking': 'All official sticker packs from Wat in de Ranking',
-        'WhatsApp Sticker Kanaal': 'WhatsApp Sticker Channel',
-        'Volg ons WhatsApp kanaal voor alle officiële stickerpacks. Nieuwe packs worden daar gedeeld!': 'Follow our WhatsApp channel for all official sticker packs. New packs are shared there!',
-        'Open WhatsApp Kanaal': 'Open WhatsApp Channel',
-        'Over Ons': 'About Us',
-        'Het Begon Met Een Discussie': 'It Started With a Discussion',
-        'Het Team': 'The Team', '11 Rankers. Oneindig Chaos.': '11 Rankers. Infinite Chaos.',
-        'Bekijk Alle Leden': 'View All Members',
-        'Contact': 'Contact', 'Stuur Ons een Bericht': 'Send Us a Message',
-        'Naam': 'Name', 'Bericht': 'Message', 'Onderwerp': 'Subject', 'Verstuur Bericht': 'Send Message',
-        'Welke vind je beter?': 'Which do you prefer?', 'Klik om te kiezen': 'Click to choose',
-        'Opnieuw Beginnen': 'Start Over', 'Ranking Opslaan': 'Save Ranking', 'Tierlist Opslaan': 'Save Tierlist',
-        'Laden...': 'Loading...', 'Nog geen rankings': 'No rankings yet',
-        'Ronde': 'Round', 'Score': 'Score', 'Winnaar': 'Winner', 'Finale': 'Final'
+        'App Groep 2026':'App Group 2026','Start met Ranken':'Start Ranking','Leden':'Members','Chaos':'Chaos',
+        'Waarom Wij':'Why Us','Alles Verdient een Ranking':'Everything Deserves a Ranking','Rank Alles':'Rank Everything',
+        'Live Rankings':'Live Rankings','Community':'Community','Alle rechten voorbehouden.':'All rights reserved.',
+        'Wat wil je ranken?':'What do you want to rank?','+ Toevoegen':'+ Add','+ Nieuwe Categorie':'+ New Category',
+        'Jouw naam':'Your name','Groepsleden':'Group Members','Docenten':'Teachers',
+        'De Rankings':'The Rankings','De Leden':'The Members','Over Ons':'About Us','Contact':'Contact',
+        'Stuur Ons een Bericht':'Send Us a Message','Naam':'Name','Bericht':'Message','Verstuur Bericht':'Send Message',
+        'Welke vind je beter?':'Which do you prefer?','Klik om te kiezen':'Click to choose',
+        'Opnieuw Beginnen':'Start Over','Laden...':'Loading...','Ronde':'Round','Winnaar':'Winner','Finale':'Final'
       },
       pirate: {
-        'App Groep 2026': 'Crew o\' 2026',
-        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.': 'The ultimate pirate crew where everythin\' gets ranked. From the finest rum to the worst excuses — we rank \'em all, savvy?',
-        'Start met Ranken': 'Set Sail fer Rankin\'',
-        'Leden': 'Crew', 'Rankings': 'Plunder Board', 'Chaos': 'Mayhem',
-        'Waarom Wij': 'Why Us Scallywags', 'Alles Verdient een Ranking': 'Everythin\' Deserves a Rankin\'',
-        'Rank Alles': 'Rank Everythin\'',
-        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.': 'From yer favorite grub to the finest islands. If it exists, we rank it, ye scurvy dog.',
-        'Live Rankings': 'Live Plunder',
-        'Community': 'The Crew',
-        'Alle rechten voorbehouden.': 'All treasures reserved.',
-        'Wat wil je ranken?': 'What ye wanna rank, matey?',
-        '+ Toevoegen': '+ Add to Cargo', '+ Nieuwe Categorie': '+ New Treasure',
-        'Jouw naam': 'Yer pirate name', 'Vul je naam in om te stemmen...': 'Enter yer name to vote, landlubber...',
-        'Groepsleden': 'The Crew', 'Docenten': 'Captains',
-        'De Rankings': 'The Plunder Board',
-        'De Leden': 'The Crew', '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.': '11 pirates. 11 opinions. 0 consensus. Meet the chaos behind the plunder.',
-        'De Lore 📜': 'The Tales 📜',
-        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.': 'Every legendary tale, every iconic battle cry, every time the ship nearly sank. This be our story.',
-        '📖 De Verhalen': '📖 The Tales', 'Words of Wisdom 💣': 'Words o\' Wisdom 💣',
-        'Chat Stats 📊': 'Ship\'s Log 📊',
-        'Stickers 🎨': 'Jolly Rogers 🎨',
-        'Over Ons': 'About the Crew', 'Het Team': 'The Crew',
-        'Contact': 'Send a Bottle',
-        'Stuur Ons een Bericht': 'Send a Message in a Bottle',
-        'Naam': 'Yer Name', 'Bericht': 'Message', 'Verstuur Bericht': 'Send Bottle',
-        'Welke vind je beter?': 'Which be better, matey?', 'Klik om te kiezen': 'Click to choose, arr',
-        'Opnieuw Beginnen': 'Start Again, Arr', 'Laden...': 'Sailin\'...',
-        'Ronde': 'Battle', 'Winnaar': 'Captain', 'Finale': 'Final Battle'
+        'App Groep 2026':'Crew o\' 2026','Start met Ranken':'Set Sail fer Rankin\'','Leden':'Crew','Chaos':'Mayhem',
+        'Waarom Wij':'Why Us Scallywags','Alles Verdient een Ranking':'Everythin\' Deserves a Rankin\'',
+        'Rank Alles':'Rank Everythin\'','Live Rankings':'Live Plunder','Community':'The Crew',
+        'Alle rechten voorbehouden.':'All treasures reserved.','Wat wil je ranken?':'What ye wanna rank, matey?',
+        '+ Toevoegen':'+ Add to Cargo','Groepsleden':'The Crew','Docenten':'Captains',
+        'De Rankings':'The Plunder Board','De Leden':'The Crew','Over Ons':'About the Crew',
+        'Contact':'Send a Bottle','Stuur Ons een Bericht':'Send a Message in a Bottle',
+        'Naam':'Yer Name','Bericht':'Message','Verstuur Bericht':'Send Bottle',
+        'Welke vind je beter?':'Which be better, matey?','Klik om te kiezen':'Click to choose, arr',
+        'Opnieuw Beginnen':'Start Again, Arr','Laden...':'Sailin\'...','Ronde':'Battle','Winnaar':'Captain','Finale':'Final Battle'
       },
       genz: {
-        'App Groep 2026': 'the squad 2026',
-        'De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.': 'the squad where everything gets ranked fr fr. from the best movies to the most mid excuses — we rank it all no cap.',
-        'Start met Ranken': 'start rankin\' bestie',
-        'Leden': 'the gang', 'Rankings': 'rankings', 'Chaos': 'chaos',
-        'Waarom Wij': 'why tho', 'Alles Verdient een Ranking': 'everything deserves a ranking fr',
-        'Rank Alles': 'rank everything',
-        'Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.': 'from ur fav snacks to the best vacay spots. if it exists, we rank it. periodt.',
-        'Live Rankings': 'live rankings',
-        'Community': 'the community',
-        'Alle rechten voorbehouden.': 'all rights reserved bestie.',
-        'Wat wil je ranken?': 'what u wanna rank?',
-        '+ Toevoegen': '+ add', '+ Nieuwe Categorie': '+ new category',
-        'Jouw naam': 'ur name', 'Vul je naam in om te stemmen...': 'drop ur name to vote...',
-        'Groepsleden': 'the squad', 'Docenten': 'teachers',
-        'De Rankings': 'the rankings',
-        'De Leden': 'the gang', '11 mensen. 11 meningen. 0 consensus. Maak kennis met de chaos achter de rankings.': '11 ppl. 11 opinions. 0 consensus. meet the unhinged energy behind the rankings.',
-        'De Lore 📜': 'the lore 📜',
-        'Elk legendarisch moment, elke iconische uitspraak, elke keer dat het compleet uit de hand liep. Dit is ons verhaal.': 'every iconic moment, every legendary quote, every time it was giving chaos. this is our story.',
-        '📖 De Verhalen': '📖 the stories', 'Words of Wisdom 💣': 'words of wisdom 💣',
-        'Chat Stats 📊': 'chat stats 📊',
-        'Stickers 🎨': 'stickers 🎨',
-        'Over Ons': 'about us', 'Het Team': 'the team', '11 Rankers. Oneindig Chaos.': '11 rankers. infinite chaos. slay.',
-        'Contact': 'hit us up',
-        'Stuur Ons een Bericht': 'slide into our dms',
-        'Naam': 'name', 'Bericht': 'message', 'Verstuur Bericht': 'send it bestie',
-        'Welke vind je beter?': 'which one hits different?', 'Klik om te kiezen': 'tap to choose',
-        'Opnieuw Beginnen': 'reset', 'Laden...': 'loading...',
-        'Ronde': 'round', 'Winnaar': 'winner', 'Finale': 'final'
+        'App Groep 2026':'the squad 2026','Start met Ranken':'start rankin\' bestie','Leden':'the gang','Chaos':'chaos',
+        'Waarom Wij':'why tho','Alles Verdient een Ranking':'everything deserves a ranking fr',
+        'Rank Alles':'rank everything','Live Rankings':'live rankings','Community':'the community',
+        'Alle rechten voorbehouden.':'all rights reserved bestie.','Wat wil je ranken?':'what u wanna rank?',
+        '+ Toevoegen':'+ add','Groepsleden':'the squad','Docenten':'teachers',
+        'De Rankings':'the rankings','De Leden':'the gang','Over Ons':'about us',
+        'Contact':'hit us up','Stuur Ons een Bericht':'slide into our dms',
+        'Naam':'name','Bericht':'message','Verstuur Bericht':'send it bestie',
+        'Welke vind je beter?':'which one hits different?','Klik om te kiezen':'tap to choose',
+        'Opnieuw Beginnen':'reset','Laden...':'loading...','Ronde':'round','Winnaar':'winner','Finale':'final'
       }
     };
 
-    var originalTexts = {};
+    function getTranslationDict(lang) {
+      var dict = {};
+      var builtin = builtinTranslations[lang] || {};
+      Object.keys(builtin).forEach(function(k) { dict[k] = builtin[k]; });
+      var fb = firebaseTranslations[lang] || {};
+      Object.keys(fb).forEach(function(k) { dict[k] = fb[k]; });
+      return dict;
+    }
 
     function toggleLangDropdown() {
       document.getElementById('langDropdown').classList.toggle('open');
@@ -5272,48 +5258,163 @@
     function setLang(lang) {
       currentLang = lang;
       var flags = { nl:'🇳🇱 NL', en:'🇬🇧 EN', pirate:'🏴‍☠️ ARR', genz:'💀 GEN Z' };
-      document.getElementById('langBtn').textContent = flags[lang] || flags.nl;
+      document.getElementById('langBtn').textContent = flags[lang] || lang.toUpperCase();
       document.querySelectorAll('.lang-option').forEach(function(o) { o.classList.remove('active'); });
       document.querySelectorAll('.lang-option').forEach(function(o) {
-        if (o.textContent.toLowerCase().indexOf(lang === 'genz' ? 'gen z' : lang) !== -1) o.classList.add('active');
+        if (o.getAttribute('data-lang') === lang) o.classList.add('active');
       });
       document.getElementById('langDropdown').classList.remove('open');
       applyTranslations(lang);
+      updateTranslateBar();
+    }
+
+    function markTranslatableElements() {
+      var els = document.querySelectorAll('h1,h2,h3,p,.card-title,.card-desc,.section-tag,.section-title,.hero-badge,.stat-label,.mode-card-name,.mode-card-desc,.voter-name-label,.battle-question,.battle-card-hint,.results-header p,.results-header h2,.meme-wall-header h2,.meme-wall-header p,.lore-stories-header h2,.stats-hero h1,.stats-hero p,.stats-upload h2,.stats-upload-sub,.ranking-tab,.preset-btn,.ranker-setup h2,.ranker-setup-sub,.ranker-start-btn,.form-submit,.contact-hero h1,.contact-hero p,.about-hero h1,.about-hero p,.members-hero h1,.members-hero p,.lore-hero h1,.lore-hero p,.rankings-hero h1,.rankings-hero p,.apps-hero h1,.apps-hero p');
+      els.forEach(function(el) {
+        if (el.closest('script') || el.closest('style') || el.closest('.modal') || el.closest('.lang-switcher')) return;
+        var text = el.textContent.trim();
+        if (text && text.length > 1 && text.length < 300) {
+          if (!el.getAttribute('data-translatable')) {
+            el.setAttribute('data-translatable', text);
+          }
+        }
+      });
     }
 
     function applyTranslations(lang) {
-      var dict = translations[lang] || {};
-      var nlDict = translations.nl;
-      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-      var textNodes = [];
-      while (walker.nextNode()) textNodes.push(walker.currentNode);
-
-      textNodes.forEach(function(node) {
-        var text = node.textContent.trim();
-        if (!text || text.length < 2) return;
-        if (node.parentElement && (node.parentElement.tagName === 'SCRIPT' || node.parentElement.tagName === 'STYLE')) return;
-
-        // Store original text
-        if (!node._origText) node._origText = text;
-        var orig = node._origText;
-
+      markTranslatableElements();
+      var dict = getTranslationDict(lang);
+      document.querySelectorAll('[data-translatable]').forEach(function(el) {
+        var orig = el.getAttribute('data-translatable');
         if (lang === 'nl') {
-          node.textContent = node.textContent.replace(text, orig);
+          el.textContent = orig;
         } else if (dict[orig]) {
-          node.textContent = node.textContent.replace(text, dict[orig]);
-        }
-      });
-
-      // Translate placeholders
-      document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(el) {
-        if (!el._origPlaceholder) el._origPlaceholder = el.placeholder;
-        if (lang === 'nl') {
-          el.placeholder = el._origPlaceholder;
-        } else if (dict[el._origPlaceholder]) {
-          el.placeholder = dict[el._origPlaceholder];
+          el.textContent = dict[orig];
         }
       });
     }
+
+    function updateTranslateBar() {
+      var bar = document.getElementById('translateBar');
+      if (!bar) return;
+      if (isAdmin && hasPermission('lore') && currentLang !== 'nl') {
+        bar.classList.add('active');
+        document.getElementById('translateBarLang').textContent = currentLang.toUpperCase();
+      } else {
+        bar.classList.remove('active');
+        if (translateMode) toggleTranslateMode();
+      }
+    }
+
+    function toggleTranslateMode() {
+      translateMode = !translateMode;
+      document.body.classList.toggle('translate-mode', translateMode);
+      document.getElementById('translateToggleBtn').textContent = translateMode ? 'Stop Vertalen' : 'Start Vertalen';
+
+      if (translateMode) {
+        markTranslatableElements();
+        document.querySelectorAll('[data-translatable]').forEach(function(el) {
+          el.addEventListener('click', handleTranslateClick);
+        });
+      } else {
+        document.querySelectorAll('[data-translatable]').forEach(function(el) {
+          el.removeEventListener('click', handleTranslateClick);
+        });
+      }
+    }
+
+    function handleTranslateClick(e) {
+      if (!translateMode) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var el = e.currentTarget;
+      var orig = el.getAttribute('data-translatable');
+      var current = el.textContent;
+      var newText = prompt('Vertaling voor "' + orig + '":\n\nHuidige: ' + current, current === orig ? '' : current);
+      if (newText === null) return;
+      if (newText.trim() === '') {
+        delete (firebaseTranslations[currentLang] || {})[orig];
+      } else {
+        if (!firebaseTranslations[currentLang]) firebaseTranslations[currentLang] = {};
+        firebaseTranslations[currentLang][orig] = newText;
+        el.textContent = newText;
+      }
+      saveTranslationsToFirebase(currentLang);
+    }
+
+    function saveTranslationsToFirebase(lang) {
+      var data = firebaseTranslations[lang] || {};
+      try {
+        db.collection('translations').doc(lang).set(data).catch(function() {});
+      } catch(e) {}
+    }
+
+    function loadTranslationsFromFirebase() {
+      try {
+        db.collection('translations').get().then(function(snapshot) {
+          snapshot.forEach(function(doc) {
+            firebaseTranslations[doc.id] = doc.data();
+          });
+          // Also load custom languages
+          loadCustomLanguages();
+        }).catch(function() {});
+      } catch(e) {}
+    }
+
+    function loadCustomLanguages() {
+      try {
+        db.collection('config').doc('languages').get().then(function(doc) {
+          if (doc.exists && doc.data().custom) {
+            var customs = doc.data().custom;
+            var dropdown = document.getElementById('langDropdown');
+            var addBtn = document.getElementById('addLangBtn');
+            customs.forEach(function(lang) {
+              if (document.querySelector('.lang-option[data-lang="' + lang.id + '"]')) return;
+              var btn = document.createElement('button');
+              btn.className = 'lang-option';
+              btn.setAttribute('data-lang', lang.id);
+              btn.textContent = lang.emoji + ' ' + lang.name;
+              btn.onclick = function() { setLang(lang.id); };
+              dropdown.insertBefore(btn, addBtn);
+            });
+          }
+        }).catch(function() {});
+      } catch(e) {}
+    }
+
+    function addCustomLanguage() {
+      var name = prompt('Naam van de taal (bijv. Yoda, Shakespeare):');
+      if (!name) return;
+      var emoji = prompt('Emoji voor de taal (bijv. 🟢, 🎭):') || '🌐';
+      var id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      try {
+        db.collection('config').doc('languages').get().then(function(doc) {
+          var customs = (doc.exists && doc.data().custom) || [];
+          customs.push({ id: id, name: name, emoji: emoji });
+          return db.collection('config').doc('languages').set({ custom: customs });
+        }).then(function() {
+          var dropdown = document.getElementById('langDropdown');
+          var addBtn = document.getElementById('addLangBtn');
+          var btn = document.createElement('button');
+          btn.className = 'lang-option';
+          btn.setAttribute('data-lang', id);
+          btn.textContent = emoji + ' ' + name;
+          btn.onclick = function() { setLang(id); };
+          dropdown.insertBefore(btn, addBtn);
+          setLang(id);
+        }).catch(function() {});
+      } catch(e) {}
+    }
+
+    loadTranslationsFromFirebase();
   </script>
+
+  <!-- TRANSLATE BAR -->
+  <div class="translate-bar" id="translateBar">
+    <span>🌐 Vertaalmodus (<span id="translateBarLang">EN</span>)</span>
+    <button class="translate-bar-close" id="translateToggleBtn" onclick="toggleTranslateMode()">Start Vertalen</button>
+    <button class="translate-bar-close" onclick="document.getElementById('translateBar').classList.remove('active')">✕</button>
+  </div>
 </body>
 </html>
