@@ -3112,15 +3112,20 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script>
     // ===== FIREBASE =====
-    firebase.initializeApp({
-      apiKey: "AIzaSyBIQwVxZhUnb_bH5DiTIEADSxGzTc6Iljg",
-      authDomain: "wat-in-de-ranking-rankings.firebaseapp.com",
-      projectId: "wat-in-de-ranking-rankings",
-      storageBucket: "wat-in-de-ranking-rankings.firebasestorage.app",
-      messagingSenderId: "138866882601",
-      appId: "1:138866882601:web:eee27036c5d95bdbc2c438"
-    });
-    var db = firebase.firestore();
+    var db = null;
+    try {
+      firebase.initializeApp({
+        apiKey: "AIzaSyBIQwVxZhUnb_bH5DiTIEADSxGzTc6Iljg",
+        authDomain: "wat-in-de-ranking-rankings.firebaseapp.com",
+        projectId: "wat-in-de-ranking-rankings",
+        storageBucket: "wat-in-de-ranking-rankings.firebasestorage.app",
+        messagingSenderId: "138866882601",
+        appId: "1:138866882601:web:eee27036c5d95bdbc2c438"
+      });
+      db = firebase.firestore();
+    } catch(e) {
+      db = { collection: function() { return { get: function() { return Promise.reject(); }, doc: function() { return { get: function() { return Promise.reject(); }, set: function() { return Promise.reject(); }, update: function() { return Promise.reject(); }, delete: function() { return Promise.reject(); } }; }, add: function() { return Promise.reject(); }, where: function() { return { get: function() { return Promise.reject(); } }; }, orderBy: function() { return { get: function() { return Promise.reject(); } }; } }; } };
+    }
     var currentCategory = 'leden';
 
     // ===== NAVIGATION =====
@@ -3661,30 +3666,67 @@
     // ===== MEMES (FIREBASE) =====
     var baseMemes = ['Can I have one drug please','1885','voor de 90s konden ze niet praten','mass beste revival','viking raggen','dronderdag','mijn vader was een kanarie','lekker spelen','brr brr deniz','namast-ei','0,26 mol','flat sacs','ik wil niet naar erasmus','mentor toets','geef me nu die pruim','i have a dih','ja leuk heb je je rekenmachine bij je','timothy a yap','kaasvet',"you're half the bloody story short",'bizarre bee','ts so gyte','ik ben chopped en ik ben er trots op','debado debado','kogelvis','omdat er geen melk in sorbetijs zit','solitair op poki',"i also don't wanna give you a foot massage",'sogpreet raj','josh tasman','robinus autistinius','marloes van veenhuizen','slechste','evil adam','soortelijke weestand van kalium','throughmow','xyleem','similih','vroeger schreven we bio met een y','x-bow','mackey','nummer 7 van spanje','sir of the lake','heb je die addon','first time anal sex','wie staat er in het slagveld','in range of my cane','brainrot stack','7.7 goed gedaan','Methaan Ethaan Propaan Buthaan','sichen ping','top 10 4V respect moments','goblin machine','gekke berekeningen','gibraltarse apen','ik kan alleen in vanilla bouwen','je hebt je dagelijkse crashout gebruikt','afkraken zonder genade','ayo baka','Renas Binas','tring tring tring pling','reshman freshman','what about the dih','schrijf een brief verander een leven','wiskunde tia','23 24 25 26','220 stukjes','joh','niet moby dick','jan jacob vogelaar','grip op je dih','ook oak wood','pools klinks mongolisch','cake is cake','ou est le bebe','mijn moeder lijkt op mijn oom','muna maatje','petra pieneman','je bent niet jake artes','zuid afrika in leiden','ay caramba','NO3-','history van propanol','sybau','4K 60fps',"You're a student i'm a teacher",'vacuum','giftig gas','je gedraagt je als 1 deeltje','aquamarijnsteen','27 bookshelf','familie bron','wowsers','felle vlam','als er blokken zijn kan je bouwen','ik doe geen tweetalig he','familie reym','ik dacht dat je rookworst kon eten','casper met zijn lul in een rasper','grand stockholm metropolitan area','ik dacht wat is daar gebeurd','niet elke held is aardig','na het eten','ik heb een agenda','onderzoek heeft bewezen makker','dark undertones of lord of the flies','skibidi pb','chopp chopp','no bro','ik ben tenminste geen nerd','niks is beloofd in het leven','puntjes op de i','0.008 levens','Tennis en Tobin','Oelatoemboesoem','ush ush ush',"riep don't miss",'sichen li show','stilte voor de storm','bitch i look like i said','Kennedy Booth at the Union Oyster House','aankomende 2 weekenden en aankomende 3 weekenden','ik ben je opperbaas','ik ben je medewerker','gedunkt allah allah van glas',"adam's smeerkaasproducent",'morale levensles','WAT is lvl','yassin we dit','huize ibrahim','boe-tabel','genius at work','detention come and get me','cornham style','de betekenis van 10','mini pie','goning','poen poen poen','road to registration','weegfactor 1 weegfactor geen','romantische ballen','sticker dance party','ik zei dih','capiche','4 potjes pindakaas'];
 
+    var firebaseMemeIds = {};
+
     function renderMemes(memes) {
       var wall = document.getElementById('memeWall');
       var count = document.getElementById('memeCount');
       wall.innerHTML = memes.map(function(m) {
         var safe = m.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return '<span class="meme-chip">' + safe + '</span>';
+        var safeAttr = m.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        var delBtn = '';
+        if (hasPermission('lore')) {
+          if (firebaseMemeIds[m]) {
+            delBtn = '<button class="tier-chip-remove" onclick="event.stopPropagation();deleteMeme(\'' + safeAttr + '\',\'' + firebaseMemeIds[m] + '\')" style="margin-left:6px;">x</button>';
+          } else {
+            delBtn = '<button class="tier-chip-remove" onclick="event.stopPropagation();deleteBaseMeme(\'' + safeAttr + '\')" style="margin-left:6px;">x</button>';
+          }
+        }
+        return '<span class="meme-chip">' + safe + delBtn + '</span>';
       }).join('');
       count.textContent = memes.length + ' words of wisdom';
     }
 
+    var allMemes = [];
+
     function loadMemes() {
-      renderMemes(baseMemes);
-      db.collection('memes').orderBy('timestamp', 'asc').get().then(function(snapshot) {
-        var extraMemes = [];
+      allMemes = baseMemes.slice();
+      renderMemes(allMemes);
+      db.collection('deletedMemes').get().then(function(snapshot) {
+        snapshot.forEach(function(doc) {
+          var text = doc.data().text;
+          baseMemes = baseMemes.filter(function(m) { return m !== text; });
+          allMemes = allMemes.filter(function(m) { return m !== text; });
+        });
+        renderMemes(allMemes);
+        return db.collection('memes').orderBy('timestamp', 'asc').get();
+      }).then(function(snapshot) {
         snapshot.forEach(function(doc) {
           var text = doc.data().text;
           if (text && baseMemes.indexOf(text) === -1) {
-            extraMemes.push(text);
+            allMemes.push(text);
+            firebaseMemeIds[text] = doc.id;
           }
         });
-        if (extraMemes.length > 0) {
-          renderMemes(baseMemes.concat(extraMemes));
-        }
+        renderMemes(allMemes);
       }).catch(function() {});
+    }
+
+    function deleteMeme(text, docId) {
+      if (!confirm('Meme verwijderen: "' + text + '"?')) return;
+      db.collection('memes').doc(docId).delete().then(function() {
+        delete firebaseMemeIds[text];
+        allMemes = allMemes.filter(function(m) { return m !== text; });
+        renderMemes(allMemes);
+      }).catch(function() {});
+    }
+
+    function deleteBaseMeme(text) {
+      if (!confirm('Meme verwijderen: "' + text + '"?')) return;
+      baseMemes = baseMemes.filter(function(m) { return m !== text; });
+      allMemes = allMemes.filter(function(m) { return m !== text; });
+      db.collection('deletedMemes').doc(text.substring(0,40)).set({ text: text }).catch(function() {});
+      renderMemes(allMemes);
     }
 
     function addMeme() {
@@ -3699,9 +3741,10 @@
       db.collection('memes').add({
         text: text,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function() {
-        baseMemes.push(text);
-        renderMemes(baseMemes);
+      }).then(function(docRef) {
+        allMemes.push(text);
+        firebaseMemeIds[text] = docRef.id;
+        renderMemes(allMemes);
         input.value = '';
         btn.textContent = '✓ Toegevoegd!';
         setTimeout(function() {
@@ -3709,8 +3752,8 @@
           btn.disabled = false;
         }, 1500);
       }).catch(function() {
-        baseMemes.push(text);
-        renderMemes(baseMemes);
+        allMemes.push(text);
+        renderMemes(allMemes);
         input.value = '';
         btn.textContent = '+ Toevoegen';
         btn.disabled = false;
@@ -4188,17 +4231,20 @@
 
     function loadMembers() {
       membersData = defaultMembers.slice();
-      db.collection('members').get().then(function(snapshot) {
-        if (!snapshot.empty) {
-          membersData = [];
-          snapshot.forEach(function(doc) {
-            var d = doc.data();
-            d.id = doc.id;
-            membersData.push(d);
-          });
-        }
-        renderMembers();
-      }).catch(function() { renderMembers(); });
+      renderMembers();
+      try {
+        db.collection('members').get().then(function(snapshot) {
+          if (!snapshot.empty) {
+            membersData = [];
+            snapshot.forEach(function(doc) {
+              var d = doc.data();
+              d.id = doc.id;
+              membersData.push(d);
+            });
+            renderMembers();
+          }
+        }).catch(function() {});
+      } catch(e) {}
     }
 
     function renderMembers() {
