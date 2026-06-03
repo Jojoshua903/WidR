@@ -2679,6 +2679,7 @@
     }
 
     body.perm-leden .admin-controls { display: flex; }
+    body.perm-soundboard .soundboard-admin { display: block; }
     body.perm-ranking .preset-btn-delete { display: inline; }
 
     .admin-logout {
@@ -2952,7 +2953,8 @@
     body.dark-mode .meme-add-form,
     body.dark-mode .lore-cta,
     body.dark-mode .vote-entry,
-    body.dark-mode .msg-entry {
+    body.dark-mode .msg-entry,
+    body.dark-mode .sound-btn {
       background: #1a1a2e;
       color: #FAF3E0;
     }
@@ -3100,6 +3102,7 @@
           <a href="#members" onclick="navigate('members');closeNavDrops()">👥 Leden</a>
           <a href="#lore" onclick="navigate('lore');closeNavDrops()">📜 Lore</a>
           <a href="#stickers" onclick="navigate('stickers');closeNavDrops()">🎨 Stickers</a>
+          <a href="#soundboard" onclick="navigate('soundboard');closeNavDrops()">🔊 Soundboard</a>
           <a href="#stats" onclick="navigate('stats');closeNavDrops()">📊 Chat Stats</a>
         </div>
       </div>
@@ -3466,6 +3469,59 @@
     </footer>
   </div>
 
+  <!-- SOUNDBOARD PAGE -->
+  <div class="page" id="page-soundboard">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #FF6B6B 0%, var(--primary) 100%);">
+      <h1>Soundboard 🔊</h1>
+      <p>Alle iconische geluiden en uitspraken van de groep</p>
+    </div>
+    <div style="max-width:900px;margin:0 auto;padding:48px 40px 100px;">
+
+      <div class="soundboard-admin" style="text-align:center;margin-bottom:24px;display:none;">
+        <button class="preset-btn-add" onclick="openSoundModal()" style="font-size:0.8rem;padding:10px 24px;">🎤 Geluid Toevoegen</button>
+      </div>
+
+      <div id="soundboardGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;"></div>
+      <div id="soundboardEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">🔇</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen geluiden</div>
+        <div style="font-size:0.85rem;">Log in als admin om geluiden toe te voegen!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
+  <!-- SOUND MODAL -->
+  <div class="modal-overlay" id="soundModal">
+    <div class="modal">
+      <h2 id="soundModalTitle">🎤 Geluid Toevoegen</h2>
+      <div class="modal-sub">Voeg een geluid toe met een URL naar een audiobestand (mp3, wav, ogg)</div>
+
+      <label class="modal-label">Naam</label>
+      <input type="text" class="modal-input" id="sndName" placeholder="bijv. Lors Ragebait">
+
+      <label class="modal-label">Emoji</label>
+      <input type="text" class="modal-input" id="sndEmoji" placeholder="bijv. 🃏 😤 💀" style="max-width:160px;">
+
+      <label class="modal-label">Kleur (optioneel)</label>
+      <input type="text" class="modal-input" id="sndColor" placeholder="bijv. #E94560 of var(--gold)" style="max-width:200px;">
+
+      <label class="modal-label">Audio URL</label>
+      <input type="text" class="modal-input" id="sndUrl" placeholder="https://... .mp3 / .wav / .ogg">
+
+      <label class="modal-label">Categorie (optioneel)</label>
+      <input type="text" class="modal-input" id="sndCategory" placeholder="bijv. Uitspraken, Effecten, Memes...">
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeSoundModal()">Annuleren</button>
+        <button class="modal-save" id="sndSaveBtn" onclick="saveSound()">Opslaan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ABOUT PAGE -->
   <div class="page" id="page-about">
     <div class="about-hero">
@@ -3622,7 +3678,7 @@
     function hasPermission(perm) {
       if (!isAdmin || !adminRole) return false;
       if (adminRole === 'master') return true;
-      var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'] };
+      var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'], soundboard:['soundboard'] };
       var r = adminRoles[adminRole];
       return r && r.indexOf(perm) !== -1;
     }
@@ -3661,6 +3717,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (page === 'rankings') loadRankings(currentCategory);
+      if (page === 'soundboard') loadSounds();
     }
 
     function toggleMenu() {
@@ -5245,6 +5302,154 @@
       renderMembers();
     }
 
+    // ===== SOUNDBOARD =====
+    var soundsData = [];
+    var editingSoundId = null;
+    var currentlyPlaying = null;
+
+    function loadSounds() {
+      db.collection('sounds').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        soundsData = [];
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          d.id = doc.id;
+          soundsData.push(d);
+        });
+        renderSoundboard();
+      }).catch(function() {
+        renderSoundboard();
+      });
+    }
+
+    function renderSoundboard() {
+      var grid = document.getElementById('soundboardGrid');
+      var empty = document.getElementById('soundboardEmpty');
+      if (!grid) return;
+
+      if (soundsData.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      var categories = {};
+      soundsData.forEach(function(s) {
+        var cat = s.category || 'Overig';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(s);
+      });
+
+      var html = '';
+      Object.keys(categories).forEach(function(cat) {
+        html += '<div style="grid-column:1/-1;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-top:12px;margin-bottom:-4px;">' + cat + '</div>';
+        categories[cat].forEach(function(s) {
+          var color = s.color || 'var(--accent)';
+          html += '<div class="sound-btn" onclick="playSound(\'' + s.id + '\')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:3px solid transparent;position:relative;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.borderColor=\'' + color + '\'" onmouseout="this.style.transform=\'\';this.style.borderColor=\'transparent\'">' +
+            '<div style="font-size:2rem;margin-bottom:8px;">' + (s.emoji || '🔊') + '</div>' +
+            '<div style="font-size:0.8rem;font-weight:700;">' + (s.name || 'Geluid') + '</div>';
+          if (hasPermission('soundboard')) {
+            html += '<div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">' +
+              '<button onclick="event.stopPropagation();editSound(\'' + s.id + '\')" style="padding:3px 8px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:4px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--blue);">✏️</button>' +
+              '<button onclick="event.stopPropagation();deleteSound(\'' + s.id + '\')" style="padding:3px 8px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:4px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--accent);">🗑</button>' +
+            '</div>';
+          }
+          html += '</div>';
+        });
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function playSound(id) {
+      var s = soundsData.find(function(x) { return x.id === id; });
+      if (!s || !s.url) return;
+      if (currentlyPlaying) {
+        currentlyPlaying.pause();
+        currentlyPlaying = null;
+      }
+      var audio = new Audio(s.url);
+      currentlyPlaying = audio;
+      audio.play().catch(function() {});
+      audio.onended = function() { currentlyPlaying = null; };
+    }
+
+    function openSoundModal(editId) {
+      editingSoundId = editId || null;
+      if (editId) {
+        var s = soundsData.find(function(x) { return x.id === editId; });
+        if (s) {
+          document.getElementById('sndName').value = s.name || '';
+          document.getElementById('sndEmoji').value = s.emoji || '';
+          document.getElementById('sndColor').value = s.color || '';
+          document.getElementById('sndUrl').value = s.url || '';
+          document.getElementById('sndCategory').value = s.category || '';
+          document.getElementById('soundModalTitle').textContent = '✏️ Geluid Bewerken';
+        }
+      } else {
+        document.getElementById('sndName').value = '';
+        document.getElementById('sndEmoji').value = '';
+        document.getElementById('sndColor').value = '';
+        document.getElementById('sndUrl').value = '';
+        document.getElementById('sndCategory').value = '';
+        document.getElementById('soundModalTitle').textContent = '🎤 Geluid Toevoegen';
+      }
+      document.getElementById('soundModal').classList.add('active');
+    }
+
+    function closeSoundModal() {
+      document.getElementById('soundModal').classList.remove('active');
+      editingSoundId = null;
+    }
+
+    function saveSound() {
+      var name = document.getElementById('sndName').value.trim();
+      var url = document.getElementById('sndUrl').value.trim();
+      if (!name || !url) { alert('Vul een naam en audio URL in'); return; }
+
+      var btn = document.getElementById('sndSaveBtn');
+      btn.textContent = 'Opslaan...';
+      btn.disabled = true;
+
+      var data = {
+        name: name,
+        emoji: document.getElementById('sndEmoji').value.trim() || '🔊',
+        color: document.getElementById('sndColor').value.trim() || '',
+        url: url,
+        category: document.getElementById('sndCategory').value.trim() || 'Overig',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      var p = editingSoundId
+        ? db.collection('sounds').doc(editingSoundId).update(data)
+        : db.collection('sounds').add(data);
+
+      p.then(function() {
+        loadSounds();
+        closeSoundModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      }).catch(function() {
+        closeSoundModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      });
+    }
+
+    function editSound(id) {
+      openSoundModal(id);
+    }
+
+    function deleteSound(id) {
+      var s = soundsData.find(function(x) { return x.id === id; });
+      if (!confirm('Geluid "' + (s ? s.name : id) + '" verwijderen?')) return;
+      db.collection('sounds').doc(id).delete().then(function() {
+        loadSounds();
+      }).catch(function() {});
+    }
+
+    loadSounds();
+
     loadMembers();
     loadSections();
   </script>
@@ -5413,7 +5618,8 @@
       lore: { label: '📜 Lore Admin', desc: 'Verhalen & memes beheren', perms: ['lore'] },
       leden: { label: '👥 Leden Admin', desc: 'Leden toevoegen/bewerken', perms: ['leden'] },
       ranking: { label: '🏆 Ranking Admin', desc: 'Categorieën & stemmen', perms: ['ranking'] },
-      berichten: { label: '📬 Berichten Admin', desc: 'Berichten bekijken', perms: ['berichten'] }
+      berichten: { label: '📬 Berichten Admin', desc: 'Berichten bekijken', perms: ['berichten'] },
+      soundboard: { label: '🔊 Soundboard Admin', desc: 'Geluiden toevoegen/bewerken', perms: ['soundboard'] }
     };
 
     function simpleHash(str) {
@@ -5531,7 +5737,7 @@
     function activateAdmin() {
       document.body.classList.add('admin-mode');
       if (adminRole === 'master') {
-        ['lore','leden','ranking','berichten'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+        ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.add('perm-' + p); });
       } else {
         var r = adminRoles[adminRole];
         if (r) r.perms.forEach(function(p) { document.body.classList.add('perm-' + p); });
@@ -5543,6 +5749,7 @@
       if (hasPermission('ranking')) loadRankings(currentCategory);
       if (hasPermission('berichten')) loadAdminMessages();
       if (hasPermission('lore')) renderMemes(allMemes);
+      if (hasPermission('soundboard')) renderSoundboard();
       renderMembers();
       if (typeof updateTranslateBar === 'function') updateTranslateBar();
     }
@@ -5551,7 +5758,7 @@
       isAdmin = false;
       adminRole = null;
       document.body.classList.remove('admin-mode');
-      ['lore','leden','ranking','berichten'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
+      ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
       document.getElementById('adminBadge').classList.remove('active');
       renderPresetButtons();
       renderMembers();
@@ -5575,7 +5782,7 @@
 
     function renderRoleManager(currentRoles) {
       var list = document.getElementById('roleList');
-      var subRoles = ['lore','leden','ranking','berichten'];
+      var subRoles = ['lore','leden','ranking','berichten','soundboard'];
       list.innerHTML = subRoles.map(function(role) {
         var info = adminRoles[role];
         var hasPass = currentRoles[role] ? true : false;
@@ -5717,7 +5924,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Stats','Stickers':'Stickers',
         'Home':'Home','Leden':'Members','Over Ons':'About Us','Contact':'Contact',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Community ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','📊 Chat Stats':'📊 Chat Stats',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Stats',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Tank','📖 Over Ons':'📖 About Us','✉️ Contact':'✉️ Contact',
         'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Add items, pick your favorite from two options, and discover your final ranking',
         'items toegevoegd':'items added',
@@ -5787,7 +5994,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Statistiken','Stickers':'Sticker',
         'Home':'Startseite','Leden':'Mitglieder','Over Ons':'Über Uns','Contact':'Kontakt',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Gemeinschaft ▾','🎮 Games ▾':'🎮 Spiele ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','📊 Chat Stats':'📊 Chat Statistiken',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Statistiken',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Panzer','📖 Over Ons':'📖 Über Uns','✉️ Contact':'✉️ Kontakt',
         'Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.':'Wie alle guten Dinge begann es mit einer hitzigen Diskussion über etwas Unwichtiges. Wer ist am meisten chopped? Wir kamen nicht raus — also bauten wir eine App, in der jeder abstimmen kann.',
         'Opent in WhatsApp':'Öffnet in WhatsApp',
@@ -5842,7 +6049,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Tales','Stats':'Ship Log','Stickers':'Flags',
         'Home':'Port','Leden':'Crew','Over Ons':'About the Crew','Contact':'Send a Bottle',
         '🏆 Ranking ▾':'🏆 Plunder ▾','👥 Community ▾':'👥 Crew ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','📊 Chat Stats':'📊 Ship Log',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','🔊 Soundboard':'🔊 Cannon Sounds','📊 Chat Stats':'📊 Ship Log',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Cannon','📖 Over Ons':'📖 About the Crew','✉️ Contact':'✉️ Send a Bottle',
         'Kies een tier':'Choose yer tier, matey'
       },
@@ -5884,7 +6091,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'lore','Stats':'stats','Stickers':'stickers',
         'Home':'home','Leden':'the gang','Over Ons':'about us','Contact':'hit us up',
         '🏆 Ranking ▾':'🏆 ranking ▾','👥 Community ▾':'👥 the squad ▾','🎮 Games ▾':'🎮 games ▾','ℹ️ Info ▾':'ℹ️ info ▾',
-        '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','📊 Chat Stats':'📊 chat stats',
+        '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','🔊 Soundboard':'🔊 soundboard','📊 Chat Stats':'📊 chat stats',
         '🏎️ Kart':'🏎️ kart','⚔️ RPG':'⚔️ rpg','🔫 Tank':'🔫 tank','📖 Over Ons':'📖 about us','✉️ Contact':'✉️ hit us up',
         'Kies een tier':'pick a tier'
       }
