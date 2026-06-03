@@ -2678,7 +2678,7 @@
       border-top: 1px dashed rgba(26,26,46,0.1);
     }
 
-    body.perm-leden .admin-controls { display: block; }
+    body.perm-leden .admin-controls { display: flex; }
     body.perm-ranking .preset-btn-delete { display: inline; }
 
     .admin-logout {
@@ -3358,7 +3358,7 @@
     </div>
     <div class="members-content">
       <div id="membersContainer"></div>
-      <div class="admin-controls" style="text-align:center;margin-top:24px;border-top:none;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <div class="admin-controls" style="text-align:center;margin-top:24px;border-top:none;gap:10px;justify-content:center;flex-wrap:wrap;">
         <button class="preset-btn-add" onclick="openMemberModal()" style="font-size:0.8rem;padding:10px 24px;">+ Lid Toevoegen</button>
         <button class="preset-btn-add" onclick="openSectionModal()" style="font-size:0.8rem;padding:10px 24px;">📂 Secties Beheren</button>
       </div>
@@ -3871,6 +3871,11 @@
       docenten: ['Burgmans', 'Doremalen', 'Gelder', 'De Groot', 'Ploeg', 'Prins', 'Riep', 'De Roode', 'Sahin', 'De Vos', 'Wijnants', 'Zilfhout', 'Keeren', 'Hugens', 'De Jong', 'Goff', 'Otten', 'Blokland', 'Salemink', 'Profoost', 'Peters', 'Verlee', 'Steltman', 'Roshdi', 'Rijnenberg', 'Koobs', 'Abdullah', 'Van der Meer', 'Groenland', 'Seghedi', 'De Boer', 'Duiven']
     };
 
+    var builtinMeta = {
+      leden: { name: 'Groepsleden', emoji: '👑' },
+      docenten: { name: 'Docenten', emoji: '🎓' }
+    };
+
     var activePresetCategory = null;
 
     function loadPreset(name) {
@@ -4358,10 +4363,10 @@
       editingCategoryId = editId || null;
       catItems = [];
 
-      if (editId && customCategories[editId]) {
-        var cat = customCategories[editId];
-        document.getElementById('catName').value = cat.name;
-        document.getElementById('catEmoji').value = cat.emoji || '';
+      if (editId && (customCategories[editId] || builtinMeta[editId])) {
+        var meta = getPresetMeta(editId);
+        document.getElementById('catName').value = meta.name;
+        document.getElementById('catEmoji').value = meta.emoji || '';
         catItems = presets[editId] ? presets[editId].slice() : [];
         document.getElementById('catSaveBtn').textContent = 'Wijzigingen Opslaan';
       } else {
@@ -4424,6 +4429,7 @@
       }).then(function() {
         presets[catId] = catItems.slice();
         customCategories[catId] = { name: name, emoji: emoji };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -4433,6 +4439,7 @@
       }).catch(function() {
         presets[catId] = catItems.slice();
         customCategories[catId] = { name: name, emoji: emoji };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -4443,27 +4450,42 @@
     }
 
     function deleteCategory(catId) {
-      if (!confirm('Weet je zeker dat je "' + customCategories[catId].name + '" wilt verwijderen?')) return;
+      var meta = getPresetMeta(catId);
+      if (!confirm('Weet je zeker dat je "' + meta.name + '" wilt verwijderen?')) return;
       db.collection('categories').doc(catId).delete().catch(function() {});
-      delete presets[catId];
-      delete customCategories[catId];
+      if (builtinMeta[catId]) {
+        delete customCategories[catId];
+        presets[catId] = catId === 'leden' ? ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'Daniël', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping'] : ['Burgmans', 'Doremalen', 'Gelder', 'De Groot', 'Ploeg', 'Prins', 'Riep', 'De Roode', 'Sahin', 'De Vos', 'Wijnants', 'Zilfhout', 'Keeren', 'Hugens', 'De Jong', 'Goff', 'Otten', 'Blokland', 'Salemink', 'Profoost', 'Peters', 'Verlee', 'Steltman', 'Roshdi', 'Rijnenberg', 'Koobs', 'Abdullah', 'Van der Meer', 'Groenland', 'Seghedi', 'De Boer', 'Duiven'];
+        builtinMeta[catId] = catId === 'leden' ? { name: 'Groepsleden', emoji: '👑' } : { name: 'Docenten', emoji: '🎓' };
+      } else {
+        delete presets[catId];
+        delete customCategories[catId];
+      }
       renderPresetButtons();
+    }
+
+    function getPresetMeta(id) {
+      if (customCategories[id]) return customCategories[id];
+      if (builtinMeta[id]) return builtinMeta[id];
+      return { name: id, emoji: '🏷️' };
     }
 
     function renderPresetButtons() {
       var row = document.getElementById('presetRow');
-      var html = '<button class="preset-btn" onclick="loadPreset(\'leden\')">👑 Groepsleden</button>';
-       html += '<button class="preset-btn" onclick="loadPreset(\'docenten\')">🎓 Docenten</button>';
-
+      var html = '';
+      var allIds = ['leden','docenten'];
       Object.keys(customCategories).forEach(function(id) {
-        var cat = customCategories[id];
-         html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' +
-          cat.emoji + ' ' + cat.name;
+        if (allIds.indexOf(id) === -1) allIds.push(id);
+      });
+
+      allIds.forEach(function(id) {
+        var meta = getPresetMeta(id);
+        html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' + meta.emoji + ' ' + meta.name;
         if (hasPermission('ranking')) {
-           html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
-           html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
+          html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
+          html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
         }
-         html += '</button>';
+        html += '</button>';
       });
 
        html += '<button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>';
@@ -4475,12 +4497,15 @@
     function renderRankingTabs() {
       var tabs = document.getElementById('rankingTabs');
       if (!tabs) return;
-      var html = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">👑 Groepsleden</button>';
-       html += '<button class="ranking-tab' + (currentCategory === 'docenten' ? ' active' : '') + '" onclick="switchTab(this, \'docenten\')">🎓 Docenten</button>';
-
+      var allIds = ['leden','docenten'];
       Object.keys(customCategories).forEach(function(id) {
-        var cat = customCategories[id];
-         html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + cat.emoji + ' ' + cat.name + '</button>';
+        if (allIds.indexOf(id) === -1) allIds.push(id);
+      });
+
+      var html = '';
+      allIds.forEach(function(id) {
+        var meta = getPresetMeta(id);
+        html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + meta.emoji + ' ' + meta.name + '</button>';
       });
 
       tabs.innerHTML = html;
