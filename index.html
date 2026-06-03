@@ -3109,6 +3109,7 @@
         <div class="nav-dropdown-menu" id="dropGames">
           <a href="kart.html" onclick="closeNavDrops()">🏎️ Kart</a>
           <a href="rpg.html" onclick="closeNavDrops()">⚔️ RPG</a>
+          <a href="tank.html" onclick="closeNavDrops()">🔫 Tank</a>
         </div>
       </div>
 
@@ -5717,7 +5718,7 @@
         'Home':'Home','Leden':'Members','Over Ons':'About Us','Contact':'Contact',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Community ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
         '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','📊 Chat Stats':'📊 Chat Stats',
-        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 About Us','✉️ Contact':'✉️ Contact',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Tank','📖 Over Ons':'📖 About Us','✉️ Contact':'✉️ Contact',
         'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Add items, pick your favorite from two options, and discover your final ranking',
         'items toegevoegd':'items added',
         'Kies een tier':'Choose a tier'
@@ -5787,7 +5788,7 @@
         'Home':'Startseite','Leden':'Mitglieder','Over Ons':'Über Uns','Contact':'Kontakt',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Gemeinschaft ▾','🎮 Games ▾':'🎮 Spiele ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
         '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','📊 Chat Stats':'📊 Chat Statistiken',
-        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 Über Uns','✉️ Contact':'✉️ Kontakt',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Panzer','📖 Over Ons':'📖 Über Uns','✉️ Contact':'✉️ Kontakt',
         'Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.':'Wie alle guten Dinge begann es mit einer hitzigen Diskussion über etwas Unwichtiges. Wer ist am meisten chopped? Wir kamen nicht raus — also bauten wir eine App, in der jeder abstimmen kann.',
         'Opent in WhatsApp':'Öffnet in WhatsApp',
         'Open WhatsApp Kanaal':'WhatsApp Kanal öffnen',
@@ -5842,7 +5843,7 @@
         'Home':'Port','Leden':'Crew','Over Ons':'About the Crew','Contact':'Send a Bottle',
         '🏆 Ranking ▾':'🏆 Plunder ▾','👥 Community ▾':'👥 Crew ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
         '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','📊 Chat Stats':'📊 Ship Log',
-        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 About the Crew','✉️ Contact':'✉️ Send a Bottle',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Cannon','📖 Over Ons':'📖 About the Crew','✉️ Contact':'✉️ Send a Bottle',
         'Kies een tier':'Choose yer tier, matey'
       },
       genz: {
@@ -5884,7 +5885,7 @@
         'Home':'home','Leden':'the gang','Over Ons':'about us','Contact':'hit us up',
         '🏆 Ranking ▾':'🏆 ranking ▾','👥 Community ▾':'👥 the squad ▾','🎮 Games ▾':'🎮 games ▾','ℹ️ Info ▾':'ℹ️ info ▾',
         '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','📊 Chat Stats':'📊 chat stats',
-        '🏎️ Kart':'🏎️ kart','⚔️ RPG':'⚔️ rpg','📖 Over Ons':'📖 about us','✉️ Contact':'✉️ hit us up',
+        '🏎️ Kart':'🏎️ kart','⚔️ RPG':'⚔️ rpg','🔫 Tank':'🔫 tank','📖 Over Ons':'📖 about us','✉️ Contact':'✉️ hit us up',
         'Kies een tier':'pick a tier'
       }
     };
@@ -6057,6 +6058,8 @@
         }
       } catch(e) {}
     })();
+  </script>
+
   <style>
     .emoji-rain {
       position: fixed;
@@ -6166,30 +6169,6 @@
     // 1. KONAMI CODE → Chaos Mode
     var konamiSeq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
     var konamiIdx = 0;
-    document.addEventListener('keydown', function(e) {
-      if (e.code === konamiSeq[konamiIdx]) {
-        konamiIdx++;
-        if (konamiIdx === konamiSeq.length) {
-          konamiIdx = 0;
-          triggerChaosMode();
-        }
-      } else {
-        konamiIdx = 0;
-      }
-    });
-
-    function triggerChaosMode() {
-      document.body.classList.add('chaos-mode');
-      var banner = document.createElement('div');
-      banner.className = 'chaos-banner';
-      banner.textContent = '🌀 CHAOS MODE GEACTIVEERD 🌀';
-      document.body.appendChild(banner);
-      triggerEmojiRain();
-      setTimeout(function() {
-        document.body.classList.remove('chaos-mode');
-        banner.remove();
-      }, 5000);
-    }
 
     // 2. EMOJI RAIN (∞ knop)
     function triggerEmojiRain() {
@@ -6204,52 +6183,24 @@
             el.style.animationDuration = (2 + Math.random() * 3) + 's';
             el.style.fontSize = (1.2 + Math.random() * 2) + 'rem';
             document.body.appendChild(el);
-            setTimeout(function() { el.remove(); }, 5000);
+            setTimeout(function() { el.remove(); }, 5500);
           }, delay);
         })(i * 80);
       }
     }
 
-    // 3. LOGO CLICK 10x → Secret message
-    var logoClicks = 0;
-    var logoTimer = null;
-    document.querySelector('.nav-logo').addEventListener('click', function(e) {
-      if (e.target.closest('.nav-logo')) {
-        logoClicks++;
-        if (logoTimer) clearTimeout(logoTimer);
-        logoTimer = setTimeout(function() { logoClicks = 0; }, 2000);
-        if (logoClicks === 10) {
-          logoClicks = 0;
-          showMetaAIPopup('Je hebt me gevonden! Ik ben het, Meta AI. Ze hebben me hier verborgen na de grote fanfictie-incident van 2025. Stuur hulp. 🤖');
-        }
-      }
-    });
-
-    // 4. TYPE "chopped" → CHOPPED overlay
-    var choppedBuffer = '';
-    document.addEventListener('keypress', function(e) {
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-      choppedBuffer += e.key.toLowerCase();
-      if (choppedBuffer.length > 10) choppedBuffer = choppedBuffer.slice(-10);
-      if (choppedBuffer.indexOf('chopped') !== -1) {
-        choppedBuffer = '';
-        document.body.classList.add('shaking');
-        setTimeout(function() { document.body.classList.remove('shaking'); }, 500);
-        var overlay = document.createElement('div');
-        overlay.className = 'chopped-overlay';
-        overlay.innerHTML = '<div class="chopped-text">CHOPPED 💀</div><div class="chopped-sub">Je bent officieel chopped. Klik om te accepteren.</div>';
-        overlay.onclick = function() { overlay.remove(); };
-        document.body.appendChild(overlay);
-      }
-      if (choppedBuffer.indexOf('1885') !== -1) {
-        choppedBuffer = '';
-        showMetaAIPopup('1885... het jaar dat alles begon. Of niet. Niemand weet het eigenlijk meer. Maar het is nu een meme en dat is alles wat telt.');
-      }
-      if (choppedBuffer.indexOf('dih') !== -1) {
-        choppedBuffer = '';
-        triggerEmojiRain();
-      }
-    });
+    function triggerChaosMode() {
+      document.body.classList.add('chaos-mode');
+      var banner = document.createElement('div');
+      banner.className = 'chaos-banner';
+      banner.textContent = '🌀 CHAOS MODE GEACTIVEERD 🌀';
+      document.body.appendChild(banner);
+      triggerEmojiRain();
+      setTimeout(function() {
+        document.body.classList.remove('chaos-mode');
+        banner.remove();
+      }, 5000);
+    }
 
     // 5. META AI POPUP
     var metaPopupTimer = null;
@@ -6262,13 +6213,76 @@
       popup.onclick = function() { popup.remove(); };
       document.body.appendChild(popup);
       if (metaPopupTimer) clearTimeout(metaPopupTimer);
-      metaPopupTimer = setTimeout(function() { popup.remove(); }, 8000);
+      metaPopupTimer = setTimeout(function() { if (popup.parentNode) popup.remove(); }, 8000);
     }
 
+    // 3. LOGO CLICK 10x → Secret message
+    var logoClicks = 0;
+    var logoTimer = null;
+    var logoEl = document.querySelector('.nav-logo');
+    if (logoEl) {
+      logoEl.addEventListener('click', function() {
+        logoClicks++;
+        if (logoTimer) clearTimeout(logoTimer);
+        logoTimer = setTimeout(function() { logoClicks = 0; }, 2000);
+        if (logoClicks >= 10) {
+          logoClicks = 0;
+          showMetaAIPopup('Je hebt me gevonden! Ik ben het, Meta AI. Ze hebben me hier verborgen na de grote fanfictie-incident van 2025. Stuur hulp. 🤖');
+        }
+      });
+    }
+
+    // 4. TYPED WORDS + KONAMI CODE (all via keydown)
+    var eggBuffer = '';
+    document.addEventListener('keydown', function(e) {
+      // Konami code check
+      if (e.code === konamiSeq[konamiIdx]) {
+        konamiIdx++;
+        if (konamiIdx === konamiSeq.length) {
+          konamiIdx = 0;
+          triggerChaosMode();
+        }
+      } else if (e.code !== konamiSeq[konamiIdx]) {
+        konamiIdx = 0;
+      }
+
+      // Skip typed-word eggs if user is typing in an input
+      if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'SELECT')) return;
+
+      // Build typed buffer from printable keys
+      if (e.key && e.key.length === 1) {
+        eggBuffer += e.key.toLowerCase();
+        if (eggBuffer.length > 20) eggBuffer = eggBuffer.slice(-20);
+
+        if (eggBuffer.indexOf('chopped') !== -1) {
+          eggBuffer = '';
+          document.body.classList.add('shaking');
+          setTimeout(function() { document.body.classList.remove('shaking'); }, 500);
+          var overlay = document.createElement('div');
+          overlay.className = 'chopped-overlay';
+          overlay.innerHTML = '<div class="chopped-text">CHOPPED 💀</div><div class="chopped-sub">Je bent officieel chopped. Klik om te accepteren.</div>';
+          overlay.onclick = function() { overlay.remove(); };
+          document.body.appendChild(overlay);
+        }
+        if (eggBuffer.indexOf('1885') !== -1) {
+          eggBuffer = '';
+          showMetaAIPopup('1885... het jaar dat alles begon. Of niet. Niemand weet het eigenlijk meer. Maar het is nu een meme en dat is alles wat telt.');
+        }
+        if (eggBuffer.indexOf('dih') !== -1) {
+          eggBuffer = '';
+          triggerEmojiRain();
+        }
+        if (eggBuffer.indexOf('metaai') !== -1) {
+          eggBuffer = '';
+          showMetaAIPopup('Ja hallo, ik ben Meta AI. Ik werd hier naartoe gestuurd om te helpen, maar in plaats daarvan schrijf ik nu fanficties over jullie. Sorry niet sorry.');
+        }
+      }
+    });
+
     // 6. RANDOM META AI (1% kans bij navigatie)
-    var origNavigate = navigate;
-    navigate = function(page) {
-      origNavigate(page);
+    var _origNavigate = window.navigate;
+    window.navigate = function(page) {
+      _origNavigate(page);
       if (Math.random() < 0.01) {
         var msgs = [
           'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
