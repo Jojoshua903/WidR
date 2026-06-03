@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tank Arena</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='30' y='12' width='12' height='28' rx='2' fill='%23999'/><circle cx='32' cy='36' r='18' fill='%2300b2e1' stroke='%23008fae' stroke-width='3'/></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; background: #cdcdcd; font-family: 'Segoe UI', Ubuntu, sans-serif; }
+canvas { display: block; }
+
+#menu {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: #fff;
+}
+#menu h1 { font-size: 64px; margin-bottom: 8px; text-shadow: 3px 3px 0 rgba(0,0,0,.3); letter-spacing: 2px; }
+#menu .sub { font-size: 18px; opacity: .7; margin-bottom: 32px; }
+#nameInput {
+  width: 280px; padding: 12px 16px; font-size: 18px; border: none; border-radius: 8px;
+  text-align: center; margin-bottom: 24px; outline: none;
+}
+#playBtn {
+  padding: 14px 48px; font-size: 22px; font-weight: 700; border: none; border-radius: 8px;
+  background: #e74c3c; color: #fff; cursor: pointer; transition: transform .1s;
+}
+#playBtn:hover { transform: scale(1.05); }
+#playBtn:active { transform: scale(.97); }
+
+#upgradePanel {
+  position: fixed; bottom: 60px; left: 12px; z-index: 50;
+  display: none; flex-direction: column; gap: 4px;
+}
+.stat-row {
+  display: flex; align-items: center; gap: 6px; font-size: 13px; color: #333;
+}
+.stat-row .label { width: 100px; text-align: right; font-weight: 600; }
+.stat-bar { display: flex; gap: 2px; }
+.stat-pip { width: 14px; height: 14px; border-radius: 3px; background: #888; opacity: .3; }
+.stat-pip.filled { background: #f1c40f; opacity: 1; }
+.stat-btn {
+  width: 22px; height: 22px; border: none; border-radius: 4px;
+  background: #27ae60; color: #fff; font-weight: 700; font-size: 14px;
+  cursor: pointer; line-height: 22px; text-align: center;
+}
+.stat-btn:hover { background: #2ecc71; }
+.stat-btn.disabled { background: #999; cursor: default; }
+
+#classPanel {
+  position: fixed; bottom: 60px; right: 12px; z-index: 50;
+  display: none; flex-direction: column; gap: 4px; align-items: flex-end;
+}
+.class-btn {
+  padding: 6px 14px; font-size: 13px; font-weight: 600; border: none;
+  border-radius: 6px; cursor: pointer; background: #3498db; color: #fff;
+  transition: transform .1s;
+}
+.class-btn:hover { transform: scale(1.05); background: #2980b9; }
+
+#hud {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  display: none; padding: 10px 16px; pointer-events: none;
+}
+#hud .name-tag { font-size: 16px; font-weight: 700; color: #333; }
+#hud .level-tag { font-size: 14px; color: #555; margin-left: 8px; }
+.xp-bar-outer {
+  margin-top: 6px; width: 320px; height: 16px; background: rgba(0,0,0,.15);
+  border-radius: 8px; overflow: hidden;
+}
+.xp-bar-inner { height: 100%; background: #f1c40f; transition: width .2s; width: 0%; }
+#scoreDisplay { position: fixed; top: 10px; right: 16px; z-index: 40; font-size: 18px; font-weight: 700; color: #333; display: none; }
+#classLabel { position: fixed; top: 34px; right: 16px; z-index: 40; font-size: 14px; color: #555; display: none; }
+#minimap {
+  position: fixed; bottom: 60px; right: 12px; z-index: 45;
+  width: 140px; height: 140px; background: transparent; border-radius: 50%;
+  border: 2px solid rgba(0,0,0,.2); display: none;
+}
+
+#deathScreen {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.65); color: #fff;
+}
+#deathScreen h2 { font-size: 48px; margin-bottom: 8px; }
+#finalScore { font-size: 24px; margin-bottom: 24px; opacity: .8; }
+#respawnBtn {
+  padding: 12px 40px; font-size: 20px; font-weight: 700; border: none;
+  border-radius: 8px; background: #e74c3c; color: #fff; cursor: pointer;
+}
+
+@media print {
+  body { background: #fff; }
+  #menu, #hud, #upgradePanel, #classPanel, #minimap, #deathScreen, #scoreDisplay, #classLabel { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <h1>TANK ARENA</h1>
+  <div class="sub">Destroy. Upgrade. Evolve.</div>
+  <input id="nameInput" placeholder="Enter your name" maxlength="16" autofocus>
+  <button id="playBtn">PLAY</button>
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <span class="name-tag" id="hudName"></span>
+  <span class="level-tag" id="hudLevel">Lv 1</span>
+  <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBar"></div></div>
+</div>
+<div id="scoreDisplay"></div>
+<div id="classLabel"></div>
+
+<div id="upgradePanel"></div>
+<div id="classPanel"></div>
+<canvas id="minimap"></canvas>
+
+<div id="deathScreen">
+  <h2>You were destroyed</h2>
+  <div id="finalScore"></div>
+  <button id="respawnBtn">RESPAWN</button>
+</div>
+
+<script>
+// ==================== CONSTANTS ====================
+const WORLD_R = 12000;
+const WORLD_CX = 0, WORLD_CY = 0;
+const GRID_SIZE = 40;
+function randInCircle(margin) {
+  const a = Math.random() * Math.PI * 2;
+  const r = Math.sqrt(Math.random()) * (WORLD_R - (margin||0));
+  return { x: WORLD_CX + Math.cos(a)*r, y: WORLD_CY + Math.sin(a)*r };
+}
+function clampToCircle(obj, margin) {
+  const dx = obj.x - WORLD_CX, dy = obj.y - WORLD_CY;
+  const d = Math.sqrt(dx*dx + dy*dy);
+  const maxR = WORLD_R - (margin||0);
+  if(d > maxR) { obj.x = WORLD_CX + dx/d*maxR; obj.y = WORLD_CY + dy/d*maxR; }
+}
+const MAX_LEVEL = 1000;
+const UPGRADE_LEVELS = [15, 30, 45];
+const STAT_NAMES = ['Health Regen','Max Health','Body Damage','Bullet Speed','Bullet Penetration','Bullet Damage','Reload','Movement Speed'];
+const MAX_STAT = 125;
+const COLORS = {
+  player: '#00b2e1',
+  enemy: '#f14e54',
+  neutral: '#ffe869',
+  food1: '#ffe869',  // square
+  food2: '#fc7677',  // triangle
+  food3: '#768dfc',  // pentagon
+  food4: '#00e16e',  // hexagon (big)
+  food5: '#ff44cc',  // star (level up)
+  food6: '#ff8c00',  // diamond
+  food7: '#00cec9',  // heptagon
+  food8: '#6c5ce7',  // cross
+  food9: '#d63031',  // nonagon
+  barrel: '#999',
+  grid: '#c4c4c4',
+  bg: '#cdcdcd',
+};
+
+// ==================== TANK CLASS DEFINITIONS ====================
+const TANK_CLASSES = {
+  basic: {
+    name: 'Basic', tier: 0, barrels: [{angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5}],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    upgrades: ['twin','sniper','machine_gun','flank_guard','trapper','smasher'],
+  },
+  twin: {
+    name: 'Twin', tier: 1, barrels: [
+      {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:-8},
+      {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:8},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    upgrades: ['triple_shot','quad_tank','twin_flank'],
+  },
+  sniper: {
+    name: 'Sniper', tier: 1, barrels: [{angle:0, width:12, length:38, reload:28, spread:0.02, speed:11, damage:12, pen:7}],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02,
+    upgrades: ['assassin','overseer','hunter','rifle'],
+  },
+  machine_gun: {
+    name: 'Machine Gun', tier: 1, barrels: [{angle:0, width:12, length:26, reload:10, spread:0.15, speed:6, damage:5, pen:4, sizeF:0.7}],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    upgrades: ['destroyer','sprayer','gunner'],
+  },
+  flank_guard: {
+    name: 'Flank Guard', tier: 1, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI, width:14, length:24, reload:18, spread:0.06, speed:7, damage:6, pen:4},
+    ],
+    bodySize: 22, speed: 1.05, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    upgrades: ['tri_angle','quad_tank','twin_flank'],
+  },
+  trapper: {
+    name: 'Trapper', tier: 1, barrels: [{angle:0, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true}],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02,
+    upgrades: ['mega_trapper','tri_trapper','overtrapper'],
+  },
+  smasher: {
+    name: 'Smasher', tier: 1, barrels: [],
+    bodySize: 26, speed: 1.15, bodyDamage: 5.5, maxHp: 80, hpRegen: 0.04, smasher: true,
+    upgrades: ['landmine','spike','auto_smasher'],
+  },
+  // Tier 2
+  triple_shot: {
+    name: 'Triple Shot', tier: 2, barrels: [
+      {angle:-0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
+      {angle:0, width:12, length:30, reload:16, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
+    ],
+    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['penta_shot','spread_shot'],
+  },
+  quad_tank: {
+    name: 'Quad Tank', tier: 2, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI/2, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:-Math.PI/2, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: ['octo_tank'],
+  },
+  twin_flank: {
+    name: 'Twin Flank', tier: 2, barrels: [
+      {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:-8},
+      {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:8},
+      {angle:Math.PI, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:-8},
+      {angle:Math.PI, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:8},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['octo_tank','battleship'],
+  },
+  assassin: {
+    name: 'Assassin', tier: 2, barrels: [{angle:0, width:12, length:46, reload:34, spread:0.01, speed:13, damage:16, pen:9}],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: ['ranger','stalker'],
+  },
+  overseer: {
+    name: 'Overseer', tier: 2, barrels: [
+      {angle:Math.PI/2, width:16, length:18, reload:60, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+      {angle:-Math.PI/2, width:16, length:18, reload:60, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+    ],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['overlord','necromancer'],
+  },
+  hunter: {
+    name: 'Hunter', tier: 2, barrels: [
+      {angle:0, width:14, length:36, reload:28, spread:0.02, speed:10, damage:10, pen:6},
+      {angle:0, width:10, length:42, reload:28, spread:0.02, speed:11, damage:8, pen:5, delayTicks:5},
+    ],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: ['predator'],
+  },
+  rifle: {
+    name: 'Rifle', tier: 2, barrels: [{angle:0, width:8, length:42, reload:12, spread:0.03, speed:12, damage:6, pen:4}],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: [],
+  },
+  destroyer: {
+    name: 'Destroyer', tier: 2, barrels: [{angle:0, width:22, length:28, reload:50, spread:0.03, speed:5, damage:30, pen:14, sizeF:2}],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: ['annihilator','hybrid','rocketeer'],
+  },
+  sprayer: {
+    name: 'Sprayer', tier: 2, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:0, width:8, length:32, reload:8, spread:0.18, speed:6, damage:4, pen:3, sizeF:0.5},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  gunner: {
+    name: 'Gunner', tier: 2, barrels: [
+      {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:-7},
+      {angle:0, width:7, length:30, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:0},
+      {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:7},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: ['streamliner','auto_gunner'],
+  },
+  tri_angle: {
+    name: 'Tri-Angle', tier: 2, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI - 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
+      {angle:Math.PI + 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
+    ],
+    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: ['booster','fighter'],
+  },
+  mega_trapper: {
+    name: 'Mega Trapper', tier: 2, barrels: [{angle:0, width:20, length:26, reload:40, spread:0, speed:3.5, damage:12, pen:25, trap:true, sizeF:1.6}],
+    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 60, hpRegen: 0.02, upgrades: [],
+  },
+  tri_trapper: {
+    name: 'Tri-Trapper', tier: 2, barrels: [
+      {angle:0, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
+      {angle:2*Math.PI/3, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
+      {angle:4*Math.PI/3, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
+    ],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 60, hpRegen: 0.02, upgrades: [],
+  },
+  overtrapper: {
+    name: 'Overtrapper', tier: 2, barrels: [
+      {angle:0, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
+      {angle:Math.PI/2, width:14, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
+      {angle:-Math.PI/2, width:14, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
+    ],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: [],
+  },
+  landmine: {
+    name: 'Landmine', tier: 2, barrels: [],
+    bodySize: 28, speed: 1.1, bodyDamage: 6, maxHp: 90, hpRegen: 0.05, smasher: true, upgrades: [],
+  },
+  spike: {
+    name: 'Spike', tier: 2, barrels: [],
+    bodySize: 28, speed: 1.05, bodyDamage: 4, maxHp: 100, hpRegen: 0.04, smasher: true, spike: true, upgrades: [],
+  },
+  auto_smasher: {
+    name: 'Auto Smasher', tier: 2, barrels: [
+      {angle:0, width:10, length:24, reload:14, spread:0.08, speed:7, damage:5, pen:4, auto:true},
+    ],
+    bodySize: 26, speed: 1.1, bodyDamage: 5.5, maxHp: 80, hpRegen: 0.04, smasher: true, upgrades: [],
+  },
+  // Tier 3
+  penta_shot: {
+    name: 'Penta Shot', tier: 3, barrels: [
+      {angle:-0.7, width:12, length:26, reload:16, spread:0.08, speed:6.5, damage:5, pen:3.5},
+      {angle:-0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
+      {angle:0, width:12, length:30, reload:16, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
+      {angle:0.7, width:12, length:26, reload:16, spread:0.08, speed:6.5, damage:5, pen:3.5},
+    ],
+    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  spread_shot: {
+    name: 'Spread Shot', tier: 3,
+    barrels: (()=>{
+      const b=[];
+      for(let i=-5;i<=5;i++){
+        const a=i*0.18;
+        b.push({angle:a, width:i===0?12:8, length:i===0?30:22, reload:i===0?16:12, spread:0.05, speed:6.5, damage:i===0?6:3, pen:i===0?4:2});
+      }
+      return b;
+    })(),
+    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  octo_tank: {
+    name: 'Octo Tank', tier: 3, barrels: (()=>{
+      const b=[];
+      for(let i=0;i<8;i++) b.push({angle:i*Math.PI/4, width:12, length:26, reload:18, spread:0.06, speed:7, damage:6, pen:4});
+      return b;
+    })(),
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: [],
+  },
+  ranger: {
+    name: 'Ranger', tier: 3, barrels: [{angle:0, width:10, length:54, reload:36, spread:0.005, speed:15, damage:18, pen:10}],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, fov: 1.3, upgrades: [],
+  },
+  stalker: {
+    name: 'Stalker', tier: 3, barrels: [{angle:0, width:12, length:48, reload:38, spread:0.01, speed:14, damage:17, pen:9}],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: [],
+  },
+  overlord: {
+    name: 'Overlord', tier: 3, barrels: [
+      {angle:0, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+      {angle:Math.PI/2, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+      {angle:Math.PI, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+      {angle:-Math.PI/2, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
+    ],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  necromancer: {
+    name: 'Necromancer', tier: 3, barrels: [
+      {angle:Math.PI/2, width:22, length:16, reload:100, spread:0, speed:2.5, damage:6, pen:5, drone:true, maxDrones:10, necro:true},
+      {angle:-Math.PI/2, width:22, length:16, reload:100, spread:0, speed:2.5, damage:6, pen:5, drone:true, maxDrones:10, necro:true},
+    ],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  predator: {
+    name: 'Predator', tier: 3, barrels: [
+      {angle:0, width:16, length:34, reload:28, spread:0.02, speed:9, damage:12, pen:7},
+      {angle:0, width:12, length:40, reload:28, spread:0.02, speed:10, damage:9, pen:5, delayTicks:5},
+      {angle:0, width:8, length:46, reload:28, spread:0.01, speed:11, damage:7, pen:4, delayTicks:10},
+    ],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, fov: 1.2, upgrades: [],
+  },
+  annihilator: {
+    name: 'Annihilator', tier: 3, barrels: [{angle:0, width:26, length:30, reload:60, spread:0.02, speed:4.5, damage:45, pen:18, sizeF:2.5}],
+    bodySize: 24, speed: 0.85, bodyDamage: 4.2, maxHp: 60, hpRegen: 0.02, upgrades: [],
+  },
+  hybrid: {
+    name: 'Hybrid', tier: 3, barrels: [
+      {angle:0, width:22, length:28, reload:50, spread:0.03, speed:5, damage:30, pen:14, sizeF:2},
+      {angle:Math.PI, width:16, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
+    ],
+    bodySize: 24, speed: 0.9, bodyDamage: 4.1, maxHp: 55, hpRegen: 0.02, upgrades: [],
+  },
+  rocketeer: {
+    name: 'Rocketeer', tier: 3, barrels: [{angle:0, width:20, length:32, reload:45, spread:0.02, speed:4, damage:25, pen:16, sizeF:1.8}],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+  booster: {
+    name: 'Booster', tier: 3, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI - 0.4, width:12, length:22, reload:12, spread:0.12, speed:6, damage:4, pen:2},
+      {angle:Math.PI + 0.4, width:12, length:22, reload:12, spread:0.12, speed:6, damage:4, pen:2},
+      {angle:Math.PI, width:10, length:20, reload:12, spread:0.12, speed:6, damage:4, pen:2},
+    ],
+    bodySize: 22, speed: 1.35, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: [],
+  },
+  fighter: {
+    name: 'Fighter', tier: 3, barrels: [
+      {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
+      {angle:Math.PI - 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
+      {angle:Math.PI + 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
+      {angle:Math.PI/2, width:12, length:22, reload:18, spread:0.08, speed:6.5, damage:5, pen:3},
+      {angle:-Math.PI/2, width:12, length:22, reload:18, spread:0.08, speed:6.5, damage:5, pen:3},
+    ],
+    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: [],
+  },
+  streamliner: {
+    name: 'Streamliner', tier: 3, barrels: (()=>{
+      const b=[];
+      for(let i=0;i<5;i++) b.push({angle:0, width:7, length:24+i*4, reload:6, spread:0.04, speed:8, damage:3, pen:2.5, delayTicks:i*3});
+      return b;
+    })(),
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: [],
+  },
+  auto_gunner: {
+    name: 'Auto Gunner', tier: 3, barrels: [
+      {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:-7},
+      {angle:0, width:7, length:30, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:0},
+      {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:7},
+      {angle:0, width:8, length:22, reload:10, spread:0.08, speed:7, damage:4, pen:3, auto:true},
+    ],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: [],
+  },
+  battleship: {
+    name: 'Battleship', tier: 3, barrels: [
+      {angle:Math.PI/2, width:10, length:16, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6},
+      {angle:-Math.PI/2, width:10, length:16, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6},
+      {angle:Math.PI/2, width:10, length:12, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6, offset:8},
+      {angle:-Math.PI/2, width:10, length:12, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6, offset:-8},
+    ],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+  },
+};
+
+// ==================== GAME STATE ====================
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const mmCanvas = document.getElementById('minimap');
+const mmCtx = mmCanvas.getContext('2d');
+
+let W, H;
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; mmCanvas.width = 140; mmCanvas.height = 140; }
+resize();
+addEventListener('resize', resize);
+
+let playing = false;
+let player, bullets, foods, enemies, particles, score, statPoints, stats, camera;
+let keys = {}, mouse = {x: W/2, y: H/2, down: false};
+let tick = 0;
+
+// ==================== INPUT ====================
+addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if(e.key.toLowerCase() === 'o' && playing) {
+    while(player.level < MAX_LEVEL) { player.level++; statPoints++; player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2); }
+    player.xp = 0;
+    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMultHp();
+    player.hp = player.maxHp;
+    buildClassUI(); updateStatUI();
+  }
+  if(playing) {
+    const ki = parseInt(e.key);
+    if(ki >= 1 && ki <= 8) {
+      const idx = ki - 1;
+      if(e.shiftKey) {
+        const add = Math.min(statPoints, MAX_STAT - stats[idx]);
+        stats[idx] += add; statPoints -= add; updateStatUI();
+      } else {
+        if(statPoints > 0 && stats[idx] < MAX_STAT) { stats[idx]++; statPoints--; updateStatUI(); }
+      }
+    }
+  }
+});
+addEventListener('keyup', e => {
+  keys[e.key.toLowerCase()] = false;
+});
+addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+addEventListener('mousedown', e => { if(e.button === 0) mouse.down = true; });
+addEventListener('mouseup', e => { if(e.button === 0) mouse.down = false; });
+addEventListener('contextmenu', e => e.preventDefault());
+
+// ==================== MENU ====================
+document.getElementById('playBtn').onclick = startGame;
+document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
+document.getElementById('respawnBtn').onclick = () => { document.getElementById('deathScreen').style.display = 'none'; startGame(); };
+
+function startGame() {
+  const name = document.getElementById('nameInput').value.trim() || 'Tank';
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('hud').style.display = 'block';
+  document.getElementById('upgradePanel').style.display = 'flex';
+  document.getElementById('scoreDisplay').style.display = 'block';
+  document.getElementById('classLabel').style.display = 'block';
+  document.getElementById('minimap').style.display = 'block';
+  document.getElementById('hudName').textContent = name;
+
+  player = {
+    x: WORLD_CX + (Math.random()-0.5)*400,
+    y: WORLD_CY + (Math.random()-0.5)*400,
+    vx: 0, vy: 0,
+    angle: 0, name, level: 1, xp: 0, xpNeeded: 15,
+    classId: 'basic', hp: 50, maxHp: 50,
+    reloadTimers: [],
+    invuln: 60,
+    drones: [],
+  };
+  score = 0; statPoints = 0;
+  stats = [0,0,0,0,0,0,0,0];
+  bullets = []; foods = []; enemies = []; particles = [];
+  player.touchingFoods = new Set();
+  camera = { x: player.x, y: player.y, zoom: 1 };
+
+  spawnInitialFood();
+  spawnInitialEnemies();
+
+  const cls = TANK_CLASSES[player.classId];
+  player.reloadTimers = cls.barrels.map(() => 0);
+  player.hp = cls.maxHp;
+  player.maxHp = cls.maxHp;
+
+  buildUpgradeUI();
+  buildClassUI();
+  playing = true;
+}
+
+// ==================== FOOD ====================
+function spawnInitialFood() {
+  for(let i = 0; i < 10000; i++) spawnFood();
+}
+function spawnFood() {
+  const r = Math.random();
+  let type, hp, xp, size, levelUp;
+  if(r < 0.50) { type = 'square'; hp = 10; xp = 10; size = 12; }
+  else if(r < 0.75) { type = 'triangle'; hp = 25; xp = 25; size = 14; }
+  else if(r < 0.87) { type = 'pentagon'; hp = 100; xp = 130; size = 22; }
+  else if(r < 0.92) { type = 'hexagon'; hp = 250; xp = 400; size = 30; }
+  else if(r < 0.96) { type = 'diamond'; hp = 500; xp = 800; size = 40; }
+  else if(r < 0.975) { type = 'star'; hp = 2500; xp = 0; size = 130; levelUp = true; }
+  else if(r < 0.988) { type = 'heptagon'; hp = 1200; xp = 2000; size = 80; }
+  else if(r < 0.996) { type = 'cross'; hp = 3000; xp = 6000; size = 160; }
+  else { type = 'nonagon'; hp = 8000; xp = 20000; size = 320; }
+  const sp = randInCircle(40);
+  foods.push({
+    x: sp.x, y: sp.y,
+    vx: 0, vy: 0, type, hp, maxHp: hp, xp, size, levelUp: levelUp || false,
+    angle: Math.random() * Math.PI * 2, spin: (Math.random()-0.5)*0.01,
+  });
+}
+
+// ==================== ENEMIES (AI) ====================
+function spawnInitialEnemies() {
+  for(let i = 0; i < 25; i++) spawnEnemy();
+}
+function spawnEnemy() {
+  const tierKeys = Object.keys(TANK_CLASSES);
+  const classId = tierKeys[Math.floor(Math.random() * tierKeys.length)];
+  const cls = TANK_CLASSES[classId];
+
+  const count1000 = enemies.filter(e => e.level === 1000).length;
+  const countHigh = enemies.filter(e => e.level >= 700 && e.level <= 900).length;
+
+  let level;
+  if(count1000 < 3 && Math.random() < 0.12) {
+    level = 1000;
+  } else if(countHigh < 5 && Math.random() < 0.2) {
+    level = 700 + Math.floor(Math.random() * 201);
+  } else {
+    level = Math.max(1, Math.floor(Math.random() * 699) + 1);
+  }
+
+  const hpMult = 1 + level * 0.08;
+  const sp = randInCircle(50);
+  const e = {
+    x: sp.x, y: sp.y,
+    vx: 0, vy: 0, angle: Math.random() * Math.PI * 2,
+    classId, level, hp: cls.maxHp * hpMult, maxHp: cls.maxHp * hpMult,
+    name: randomName(), reloadTimers: cls.barrels.map(() => 0),
+    target: null, aiTimer: 0, wanderAngle: Math.random() * Math.PI * 2,
+    drones: [], invuln: 0,
+    statMults: { speed: 1 + Math.random()*0.3, damage: 1 + Math.random()*0.3, reload: 1 - Math.random()*0.2 },
+  };
+  enemies.push(e);
+}
+const AI_NAMES = ['Alpha','Bravo','Charlie','Delta','Echo','Foxtrot','Ghost','Hunter','Icarus','Jinx','Karma','Luna','Maverick','Nova','Omega','Phoenix','Quake','Raptor','Shadow','Titan','Ultra','Viper','Wraith','Xeno','Yeti','Zenith'];
+function randomName() { return AI_NAMES[Math.floor(Math.random()*AI_NAMES.length)]; }
+
+// ==================== UI BUILDERS ====================
+function buildUpgradeUI() {
+  const panel = document.getElementById('upgradePanel');
+  panel.innerHTML = '';
+  STAT_NAMES.forEach((name, i) => {
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `<span class="label">${name}</span><div class="stat-bar" id="bar${i}"></div><button class="stat-btn" id="sbtn${i}">+</button>`;
+    panel.appendChild(row);
+    document.getElementById(`sbtn${i}`).onclick = () => {
+      if(statPoints > 0 && stats[i] < MAX_STAT) { stats[i]++; statPoints--; updateStatUI(); }
+    };
+  });
+  updateStatUI();
+}
+function updateStatUI() {
+  STAT_NAMES.forEach((_, i) => {
+    const bar = document.getElementById(`bar${i}`);
+    const pct = Math.min(100, (stats[i] / MAX_STAT) * 100);
+    bar.innerHTML = `<div style="width:80px;height:14px;background:#555;border-radius:3px;overflow:hidden;position:relative"><div style="width:${pct}%;height:100%;background:#f1c40f"></div><span style="position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;color:#fff;font-weight:700">${stats[i]}/${MAX_STAT}</span></div>`;
+    const btn = document.getElementById(`sbtn${i}`);
+    btn.className = 'stat-btn' + (statPoints <= 0 || stats[i] >= MAX_STAT ? ' disabled' : '');
+  });
+  document.getElementById('hudLevel').textContent = `Lv ${player.level} | ${statPoints} pts`;
+}
+function buildClassUI() {
+  const panel = document.getElementById('classPanel');
+  panel.innerHTML = '';
+  panel.style.display = 'none';
+  const cls = TANK_CLASSES[player.classId];
+  if(!cls.upgrades || cls.upgrades.length === 0) return;
+  const tier = cls.tier;
+  const neededLevel = UPGRADE_LEVELS[tier] || 999;
+  if(player.level < neededLevel) return;
+  panel.style.display = 'flex';
+  cls.upgrades.forEach(uid => {
+    const ucls = TANK_CLASSES[uid];
+    if(!ucls) return;
+    const btn = document.createElement('button');
+    btn.className = 'class-btn';
+    btn.textContent = ucls.name;
+    btn.onclick = () => upgradeClass(uid);
+    panel.appendChild(btn);
+  });
+}
+function upgradeClass(id) {
+  player.classId = id;
+  const cls = TANK_CLASSES[id];
+  player.reloadTimers = cls.barrels.map(() => 0);
+  player.maxHp = (cls.maxHp + stats[1]*2.88) * lvlMultHp();
+  player.hp = player.maxHp;
+  player.drones = [];
+  buildClassUI();
+  document.getElementById('classLabel').textContent = cls.name;
+}
+
+// ==================== STAT HELPERS ====================
+function lvlMult(entity) { return 1 + (((entity || player).level || 1) - 1) * 0.025; }
+function lvlMultHp(entity) { return 1 + (((entity || player).level || 1) - 1) * 0.05; }
+function lvlMultFov() { return 1 + (player.level - 1) * 0.01; }
+
+function collisionSelfDmg(targetSize, tankMaxHp, level) {
+  if(level >= 700) return 0;
+  const t = Math.min(1, targetSize / 320);
+  const pct = 0.01 + t * 0.24;
+  let dmg = tankMaxHp * pct;
+  if(level > 200) dmg *= 1 - (level - 200) / 500;
+  return dmg;
+}
+
+function getStatMult(statIdx, val) {
+  if(val === undefined) val = stats[statIdx];
+  const m = [
+    0.00288, // hp regen
+    2.88,    // max hp per point
+    0.0288,  // body damage
+    0.144,   // bullet speed
+    0.288,   // bullet pen
+    0.24,    // bullet damage
+    -0.0144, // reload (negative = faster)
+    0.0096,  // move speed
+  ];
+  return val * m[statIdx];
+}
+
+// ==================== PARTICLES ====================
+function addParticle(x, y, color) {
+  for(let i=0;i<4;i++) {
+    particles.push({
+      x, y, vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4,
+      life: 20 + Math.random()*15, maxLife: 35, size: 3+Math.random()*4, color
+    });
+  }
+}
+
+// ==================== MAIN LOOP ====================
+function gameLoop() {
+  requestAnimationFrame(gameLoop);
+  if(!playing) return;
+  tick++;
+  updatePlayer();
+  updateEnemies();
+  updateBullets();
+  bulletVsBulletCollisions();
+  updateFoods();
+  updateParticles();
+  checkCollisions();
+  resolveBodyCollisions();
+  maintainPopulation();
+  updateCamera();
+  draw();
+  drawMinimap();
+  updateHUD();
+}
+
+// ==================== PLAYER UPDATE ====================
+function updatePlayer() {
+  if(player.invuln > 0) player.invuln--;
+  const cls = TANK_CLASSES[player.classId];
+  const spd = (cls.speed + getStatMult(7)) * 2.2 * lvlMult();
+
+  let mx = 0, my = 0;
+  if(keys['w'] || keys['arrowup']) my -= 1;
+  if(keys['s'] || keys['arrowdown']) my += 1;
+  if(keys['a'] || keys['arrowleft']) mx -= 1;
+  if(keys['d'] || keys['arrowright']) mx += 1;
+  const len = Math.sqrt(mx*mx+my*my);
+  if(len > 0) { mx /= len; my /= len; }
+  player.vx += mx * spd * 0.15;
+  player.vy += my * spd * 0.15;
+  player.vx *= 0.88;
+  player.vy *= 0.88;
+  player.x += player.vx;
+  player.y += player.vy;
+  clampToCircle(player, cls.bodySize * lvlMult());
+
+  // Aim at mouse
+  const wx = camera.x + (mouse.x - W/2) / camera.zoom;
+  const wy = camera.y + (mouse.y - H/2) / camera.zoom;
+  player.angle = Math.atan2(wy - player.y, wx - player.x);
+
+  // HP regen
+  const regen = cls.hpRegen + getStatMult(0);
+  player.hp = Math.min(player.maxHp, player.hp + regen);
+
+  // Fire
+  if(mouse.down || keys[' ']) {
+    fireTank(player, cls, stats, null);
+  }
+  cls.barrels.forEach((b, i) => { if(player.reloadTimers[i] > 0) player.reloadTimers[i]--; });
+
+  // Drone control
+  const targetX = wx, targetY = wy;
+  player.drones.forEach(d => {
+    const da = Math.atan2(targetY - d.y, targetX - d.x);
+    d.vx += Math.cos(da) * 0.6;
+    d.vy += Math.sin(da) * 0.6;
+    const sp = Math.sqrt(d.vx*d.vx+d.vy*d.vy);
+    if(sp > 4) { d.vx *= 4/sp; d.vy *= 4/sp; }
+    d.x += d.vx; d.y += d.vy;
+  });
+}
+
+function fireTank(entity, cls, entityStats, statMults) {
+  cls.barrels.forEach((b, i) => {
+    if(entity.reloadTimers[i] > 0) return;
+    if(b.delayTicks && (tick % ((b.delayTicks+1)*2)) < b.delayTicks) return;
+
+    let reload = b.reload;
+    if(entityStats) reload = Math.max(3, reload + reload * getStatMult(6, entityStats[6]));
+    if(statMults) reload *= statMults.reload;
+    entity.reloadTimers[i] = Math.round(reload);
+
+    const ang = entity.angle + b.angle + (Math.random()-0.5)*b.spread;
+    const offX = b.offset ? Math.cos(entity.angle + Math.PI/2) * b.offset : 0;
+    const offY = b.offset ? Math.sin(entity.angle + Math.PI/2) * b.offset : 0;
+
+    let spd = b.speed;
+    if(entityStats) spd += getStatMult(3, entityStats[3]);
+    if(statMults) spd *= statMults.speed || 1;
+    spd *= lvlMult(entity);
+    if(!b.drone) spd = Math.max(10, Math.min(300, spd));
+
+    let dmg = b.damage;
+    if(entityStats) dmg += getStatMult(5, entityStats[5]);
+    if(statMults) dmg *= statMults.damage;
+    dmg *= lvlMult(entity);
+
+    let pen = b.pen;
+    if(entityStats) pen += getStatMult(4, entityStats[4]);
+
+    const lm = lvlMult(entity);
+
+    if(b.drone) {
+      const maxD = b.maxDrones || 4;
+      if(entity.drones.length >= maxD) return;
+      const drone = {
+        x: entity.x + offX + Math.cos(entity.angle + b.angle) * cls.bodySize,
+        y: entity.y + offY + Math.sin(entity.angle + b.angle) * cls.bodySize,
+        vx: Math.cos(ang) * 2, vy: Math.sin(ang) * 2,
+        size: 12 * lm, hp: pen * 3, damage: dmg, owner: entity,
+        isPlayerBullet: entity === player, isDrone: true,
+      };
+      entity.drones.push(drone);
+      bullets.push(drone);
+      return;
+    }
+
+    const sz = (b.sizeF || 1) * 6 * lm;
+    const bul = {
+      x: entity.x + offX + Math.cos(entity.angle + b.angle) * (cls.bodySize + b.length * 0.6),
+      y: entity.y + offY + Math.sin(entity.angle + b.angle) * (cls.bodySize + b.length * 0.6),
+      vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+      size: sz, hp: b.trap ? pen * 2.5 : pen, damage: dmg, owner: entity,
+      isPlayerBullet: entity === player, life: b.trap ? 300 : 80,
+      trap: b.trap || false,
+    };
+    bullets.push(bul);
+
+    // Recoil
+    const recoil = (b.sizeF || 1) * 0.3;
+    entity.vx -= Math.cos(ang) * recoil;
+    entity.vy -= Math.sin(ang) * recoil;
+  });
+}
+
+// ==================== ENEMY AI ====================
+function updateEnemies() {
+  enemies.forEach(e => {
+    if(e.invuln > 0) e.invuln--;
+    const cls = TANK_CLASSES[e.classId];
+    if(!cls) return;
+    e.aiTimer--;
+    if(e.aiTimer <= 0) {
+      e.aiTimer = 60 + Math.floor(Math.random()*60);
+      const fovRange = Math.max(W, H) / (2 * camera.zoom);
+      const dx = player.x - e.x, dy = player.y - e.y;
+      const dp = Math.sqrt(dx*dx+dy*dy);
+      let canSee = dp < fovRange;
+      if(canSee) {
+        for(let fi = 0; fi < foods.length; fi++) {
+          const f = foods[fi];
+          if(f.size < 30) continue;
+          const fx = f.x - e.x, fy = f.y - e.y;
+          const proj = (fx*dx + fy*dy) / (dp*dp);
+          if(proj < 0 || proj > 1) continue;
+          const cx = e.x + dx*proj - f.x, cy = e.y + dy*proj - f.y;
+          if(Math.sqrt(cx*cx+cy*cy) < f.size + 10) { canSee = false; break; }
+        }
+      }
+      e.target = canSee ? player : null;
+      if(!e.target) e.wanderAngle += (Math.random()-0.5)*1.5;
+    }
+
+    const spd = cls.speed * (e.statMults?.speed || 1) * 1.6 * lvlMult(e);
+    if(e.target) {
+      const dx = e.target.x - e.x, dy = e.target.y - e.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      e.angle = Math.atan2(dy, dx);
+      if(d > 100) {
+        e.vx += (dx/d) * spd * 0.12;
+        e.vy += (dy/d) * spd * 0.12;
+      }
+      fireTank(e, cls, null, e.statMults);
+    } else {
+      e.vx += Math.cos(e.wanderAngle) * spd * 0.05;
+      e.vy += Math.sin(e.wanderAngle) * spd * 0.05;
+      // Shoot food nearby
+      let nearFood = null, nfd = 250;
+      foods.forEach(f => {
+        const d = Math.sqrt((f.x-e.x)**2 + (f.y-e.y)**2);
+        if(d < nfd) { nfd = d; nearFood = f; }
+      });
+      if(nearFood) {
+        e.angle = Math.atan2(nearFood.y - e.y, nearFood.x - e.x);
+        fireTank(e, cls, null, e.statMults);
+      }
+    }
+
+    e.vx *= 0.9; e.vy *= 0.9;
+    e.x += e.vx; e.y += e.vy;
+    clampToCircle(e, cls.bodySize * lvlMult(e));
+
+    cls.barrels.forEach((b, i) => { if(e.reloadTimers[i] > 0) e.reloadTimers[i]--; });
+
+    // HP regen
+    e.hp = Math.min(e.maxHp, e.hp + cls.hpRegen * 1.5);
+
+    // Drone control for AI
+    if(e.drones.length > 0) {
+      const tx = e.target ? e.target.x : e.x + Math.cos(e.angle)*200;
+      const ty = e.target ? e.target.y : e.y + Math.sin(e.angle)*200;
+      e.drones.forEach(d => {
+        const da = Math.atan2(ty - d.y, tx - d.x);
+        d.vx += Math.cos(da) * 0.5;
+        d.vy += Math.sin(da) * 0.5;
+        const sp = Math.sqrt(d.vx*d.vx+d.vy*d.vy);
+        if(sp > 3.5) { d.vx *= 3.5/sp; d.vy *= 3.5/sp; }
+        d.x += d.vx; d.y += d.vy;
+      });
+    }
+  });
+}
+
+// ==================== BULLETS ====================
+function updateBullets() {
+  for(let i = bullets.length-1; i >= 0; i--) {
+    const b = bullets[i];
+    if(b.isDrone) {
+      if(b.hp <= 0) { bullets.splice(i,1); b.owner.drones = b.owner.drones.filter(d=>d!==b); continue; }
+      continue;
+    }
+    if(b.trap) {
+      b.vx *= 0.92; b.vy *= 0.92;
+    }
+    b.x += b.vx; b.y += b.vy;
+    b.life--;
+    const bd = Math.sqrt((b.x-WORLD_CX)**2 + (b.y-WORLD_CY)**2);
+    if(b.life <= 0 || b.hp <= 0 || bd > WORLD_R + 100) {
+      if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+      bullets.splice(i, 1);
+    }
+  }
+}
+
+function bulletVsBulletCollisions() {
+  for(let i = bullets.length - 1; i >= 0; i--) {
+    const a = bullets[i];
+    for(let j = i - 1; j >= 0; j--) {
+      const b = bullets[j];
+      if(a.owner === b.owner) continue;
+      if(a.isPlayerBullet === b.isPlayerBullet) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const minD = a.size + b.size;
+      if(Math.abs(dx) > minD || Math.abs(dy) > minD) continue;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if(d < minD) {
+        const aHpBefore = a.hp;
+        a.hp -= b.hp;
+        b.hp -= aHpBefore;
+        addParticle((a.x+b.x)/2, (a.y+b.y)/2, a.isPlayerBullet ? COLORS.player : COLORS.enemy);
+        if(b.hp <= 0) {
+          if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+          bullets.splice(j, 1);
+          i--;
+        }
+        if(a.hp <= 0) {
+          if(a.isDrone && a.owner) a.owner.drones = a.owner.drones.filter(d=>d!==a);
+          const ai = bullets.indexOf(a);
+          if(ai >= 0) bullets.splice(ai, 1);
+          break;
+        }
+      }
+    }
+  }
+}
+
+// ==================== FOOD ====================
+function updateFoods() {
+  foods.forEach(f => {
+    f.vx *= 0.95; f.vy *= 0.95;
+    f.x += f.vx; f.y += f.vy;
+    f.angle += f.spin;
+    clampToCircle(f, f.size);
+  });
+}
+
+function updateParticles() {
+  for(let i = particles.length-1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.95; p.vy *= 0.95;
+    p.life--;
+    if(p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+// ==================== COLLISIONS ====================
+function checkCollisions() {
+  const cls = TANK_CLASSES[player.classId];
+  const pSize = cls.bodySize * lvlMult();
+
+  // Bullets vs food
+  for(let i = bullets.length-1; i >= 0; i--) {
+    const b = bullets[i];
+    for(let j = foods.length-1; j >= 0; j--) {
+      const f = foods[j];
+      const d = Math.sqrt((b.x-f.x)**2 + (b.y-f.y)**2);
+      if(d < b.size + f.size) {
+        f.hp -= b.damage;
+        b.hp -= 1;
+        const kb = 0.03 / Math.pow(1.5, Math.log2(Math.max(1, f.size / 12)));
+        f.vx += b.vx * kb; f.vy += b.vy * kb;
+        addParticle(f.x, f.y, getColor(f.type));
+        if(f.hp <= 0) {
+          if(b.isPlayerBullet) {
+            if(f.levelUp) addLevel();
+            else addXP(f.xp);
+          }
+          addParticle(f.x, f.y, getColor(f.type));
+          foods.splice(j, 1);
+          spawnFood();
+        }
+        if(b.hp <= 0) {
+          if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+          bullets.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  // Bullets vs player
+  for(let i = bullets.length-1; i >= 0; i--) {
+    const b = bullets[i];
+    if(b.isPlayerBullet) continue;
+    const d = Math.sqrt((b.x-player.x)**2 + (b.y-player.y)**2);
+    if(d < b.size + pSize && player.invuln <= 0) {
+      player.hp -= b.damage;
+      b.hp -= 1;
+      addParticle(player.x, player.y, COLORS.player);
+      if(b.hp <= 0) {
+        if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+        bullets.splice(i, 1);
+      }
+      if(player.hp <= 0) { die(); return; }
+    }
+  }
+
+  // Bullets vs enemies
+  for(let i = bullets.length-1; i >= 0; i--) {
+    const b = bullets[i];
+    if(!b.isPlayerBullet) continue;
+    for(let j = enemies.length-1; j >= 0; j--) {
+      const e = enemies[j];
+      const ecls = TANK_CLASSES[e.classId];
+      if(!ecls) continue;
+      const d = Math.sqrt((b.x-e.x)**2 + (b.y-e.y)**2);
+      if(d < b.size + ecls.bodySize * lvlMult(e) && e.invuln <= 0) {
+        e.hp -= b.damage;
+        b.hp -= 1;
+        addParticle(e.x, e.y, COLORS.enemy);
+        if(e.hp <= 0) {
+          addXP(e.level * 18 + 50);
+          addParticle(e.x, e.y, COLORS.enemy);
+          // Remove drones
+          e.drones.forEach(dr => { const idx = bullets.indexOf(dr); if(idx>=0) bullets.splice(idx,1); });
+          enemies.splice(j, 1);
+          spawnEnemy();
+        }
+        if(b.hp <= 0) {
+          if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+          bullets.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  // Player body vs enemies
+  enemies.forEach(e => {
+    const ecls = TANK_CLASSES[e.classId];
+    if(!ecls) return;
+    const d = Math.sqrt((player.x-e.x)**2 + (player.y-e.y)**2);
+    if(d < pSize + ecls.bodySize * lvlMult(e)) {
+      const bd = cls.bodyDamage + getStatMult(2);
+      const ebd = ecls.bodyDamage * (e.statMults?.damage || 1);
+      const eSize = ecls.bodySize * lvlMult(e);
+      if(player.invuln <= 0) player.hp -= collisionSelfDmg(eSize, player.maxHp, player.level);
+      e.hp -= collisionSelfDmg(pSize, e.maxHp, e.level);
+      // Push apart
+      const ang = Math.atan2(player.y - e.y, player.x - e.x);
+      player.vx += Math.cos(ang) * 3;
+      player.vy += Math.sin(ang) * 3;
+      e.vx -= Math.cos(ang) * 3;
+      e.vy -= Math.sin(ang) * 3;
+      if(e.hp <= 0) {
+        addXP(e.level * 18 + 50);
+        e.drones.forEach(dr => { const idx = bullets.indexOf(dr); if(idx>=0) bullets.splice(idx,1); });
+        enemies.splice(enemies.indexOf(e), 1);
+        spawnEnemy();
+      }
+      if(player.hp <= 0) die();
+    }
+  });
+
+  // Player body vs food
+  const currentTouching = new Set();
+  for(let j = foods.length-1; j >= 0; j--) {
+    const f = foods[j];
+    const d = Math.sqrt((player.x-f.x)**2 + (player.y-f.y)**2);
+    if(d < pSize + f.size) {
+      f.hp -= (cls.bodyDamage + getStatMult(2)) * 0.5;
+      if(!player.touchingFoods.has(f)) {
+        player.hp -= collisionSelfDmg(f.size, player.maxHp, player.level);
+      }
+      currentTouching.add(f);
+      const kb2 = 0.04 / Math.pow(1.5, Math.log2(Math.max(1, f.size / 12)));
+      f.vx += (f.x-player.x)*kb2; f.vy += (f.y-player.y)*kb2;
+      if(f.hp <= 0) {
+        if(f.levelUp) addLevel();
+        else addXP(f.xp);
+        foods.splice(j, 1);
+        spawnFood();
+      }
+      if(player.hp <= 0) { die(); return; }
+    }
+  }
+  player.touchingFoods = currentTouching;
+}
+
+function getColor(type) {
+  switch(type) {
+    case 'square': return COLORS.food1;
+    case 'triangle': return COLORS.food2;
+    case 'pentagon': return COLORS.food3;
+    case 'hexagon': return COLORS.food4;
+    case 'star': return COLORS.food5;
+    case 'diamond': return COLORS.food6;
+    case 'heptagon': return COLORS.food7;
+    case 'cross': return COLORS.food8;
+    case 'nonagon': return COLORS.food9;
+    default: return COLORS.food4;
+  }
+}
+
+function addXP(amount) {
+  player.xp += amount;
+  score += amount;
+  while(player.xp >= player.xpNeeded && player.level < MAX_LEVEL) {
+    player.xp -= player.xpNeeded;
+    player.level++;
+    statPoints++;
+    player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2);
+    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMultHp();
+    player.hp = player.maxHp;
+    buildClassUI();
+    updateStatUI();
+  }
+}
+
+function addLevel() {
+  if(player.level >= MAX_LEVEL) { addXP(500); return; }
+  player.level++;
+  statPoints++;
+  player.xp = 0;
+  player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2);
+  player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMult();
+  player.hp = player.maxHp;
+  score += player.level * 20;
+  buildClassUI();
+  updateStatUI();
+}
+
+function die() {
+  playing = false;
+  document.getElementById('hud').style.display = 'none';
+  document.getElementById('upgradePanel').style.display = 'none';
+  document.getElementById('classPanel').style.display = 'none';
+  document.getElementById('scoreDisplay').style.display = 'none';
+  document.getElementById('classLabel').style.display = 'none';
+  document.getElementById('minimap').style.display = 'none';
+  document.getElementById('deathScreen').style.display = 'flex';
+  document.getElementById('finalScore').textContent = `Score: ${score.toLocaleString()}`;
+  // Clean up drones
+  player.drones.forEach(dr => { const idx = bullets.indexOf(dr); if(idx>=0) bullets.splice(idx,1); });
+}
+
+function maintainPopulation() {
+  while(foods.length < 9000) spawnFood();
+  while(enemies.length < 25) spawnEnemy();
+}
+
+function pushApart(a, b, aR, bR) {
+  const dx = a.x - b.x, dy = a.y - b.y;
+  const d = Math.sqrt(dx*dx + dy*dy);
+  const minD = aR + bR;
+  if(d > 0 && d < minD) {
+    const overlap = (minD - d) * 0.5;
+    const nx = dx/d, ny = dy/d;
+    a.x += nx * overlap; a.y += ny * overlap;
+    b.x -= nx * overlap; b.y -= ny * overlap;
+    a.vx += nx * 0.3; a.vy += ny * 0.3;
+    b.vx -= nx * 0.3; b.vy -= ny * 0.3;
+  }
+}
+
+function resolveBodyCollisions() {
+  // Enemy vs enemy
+  for(let i = 0; i < enemies.length; i++) {
+    const a = enemies[i];
+    const ac = TANK_CLASSES[a.classId];
+    if(!ac) continue;
+    const aR = ac.bodySize * lvlMult(a);
+    for(let j = i+1; j < enemies.length; j++) {
+      const b = enemies[j];
+      const bc = TANK_CLASSES[b.classId];
+      if(!bc) continue;
+      const bR = bc.bodySize * lvlMult(b);
+      const dx = a.x - b.x, dy = a.y - b.y;
+      if(Math.abs(dx) > aR+bR || Math.abs(dy) > aR+bR) continue;
+      pushApart(a, b, aR, bR);
+    }
+  }
+
+  // Enemy vs food
+  for(let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    const ec = TANK_CLASSES[e.classId];
+    if(!ec) continue;
+    const eR = ec.bodySize * lvlMult(e);
+    for(let j = 0; j < foods.length; j++) {
+      const f = foods[j];
+      const dx = e.x - f.x, dy = e.y - f.y;
+      if(Math.abs(dx) > eR+f.size || Math.abs(dy) > eR+f.size) continue;
+      pushApart(e, f, eR, f.size);
+    }
+  }
+
+  // Food vs food (only check nearby - skip tiny pairs for performance)
+  for(let i = 0; i < foods.length; i++) {
+    const a = foods[i];
+    if(a.size < 30) continue;
+    for(let j = i+1; j < foods.length; j++) {
+      const b = foods[j];
+      if(b.size < 30) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      if(Math.abs(dx) > a.size+b.size || Math.abs(dy) > a.size+b.size) continue;
+      pushApart(a, b, a.size, b.size);
+    }
+  }
+}
+
+function updateCamera() {
+  const cls = TANK_CLASSES[player.classId];
+  const fov = (cls.fov || 1) * lvlMultFov();
+  const targetZoom = 0.85 / fov;
+  camera.x += (player.x - camera.x) * 0.08;
+  camera.y += (player.y - camera.y) * 0.08;
+  camera.zoom += (targetZoom - camera.zoom) * 0.05;
+}
+
+// ==================== DRAWING ====================
+function draw() {
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.translate(W/2, H/2);
+  ctx.scale(camera.zoom, camera.zoom);
+  ctx.translate(-camera.x, -camera.y);
+
+  drawGrid();
+  drawFoods();
+  drawBullets();
+  drawEnemies();
+  drawPlayer();
+  drawParticles();
+
+  ctx.restore();
+}
+
+function drawGrid() {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(WORLD_CX, WORLD_CY, WORLD_R, 0, Math.PI*2);
+  ctx.clip();
+
+  ctx.strokeStyle = COLORS.grid;
+  ctx.lineWidth = 1;
+  const l = camera.x - W/2/camera.zoom, r = camera.x + W/2/camera.zoom;
+  const t = camera.y - H/2/camera.zoom, b = camera.y + H/2/camera.zoom;
+  const sx = Math.floor(l/GRID_SIZE)*GRID_SIZE;
+  const sy = Math.floor(t/GRID_SIZE)*GRID_SIZE;
+  ctx.beginPath();
+  for(let x=sx; x<=r; x+=GRID_SIZE) { ctx.moveTo(x, t); ctx.lineTo(x, b); }
+  for(let y=sy; y<=b; y+=GRID_SIZE) { ctx.moveTo(l, y); ctx.lineTo(r, y); }
+  ctx.stroke();
+  ctx.restore();
+
+  // World border circle
+  ctx.strokeStyle = 'rgba(0,0,0,.2)';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.arc(WORLD_CX, WORLD_CY, WORLD_R, 0, Math.PI*2);
+  ctx.stroke();
+}
+
+function drawFoods() {
+  foods.forEach(f => {
+    if(!onScreen(f.x, f.y, f.size + 50)) return;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.rotate(f.angle);
+    ctx.fillStyle = getColor(f.type);
+    ctx.strokeStyle = darken(getColor(f.type));
+    ctx.lineWidth = 2.5;
+
+    if(f.type === 'square') drawPoly(4, f.size, Math.PI/4);
+    else if(f.type === 'triangle') drawPoly(3, f.size, -Math.PI/2);
+    else if(f.type === 'pentagon') drawPoly(5, f.size, -Math.PI/2);
+    else if(f.type === 'star') { drawStar(8, f.size, f.size * 0.55); ctx.shadowColor = '#ff44cc'; ctx.shadowBlur = 16; }
+    else if(f.type === 'diamond') drawPoly(4, f.size, 0);
+    else if(f.type === 'heptagon') drawPoly(7, f.size, -Math.PI/2);
+    else if(f.type === 'cross') { drawCross(f.size); ctx.shadowColor = '#6c5ce7'; ctx.shadowBlur = 14; }
+    else if(f.type === 'nonagon') { drawPoly(9, f.size, -Math.PI/2); ctx.shadowColor = '#d63031'; ctx.shadowBlur = 20; }
+    else drawPoly(6, f.size, 0);
+
+    ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.rotate(-f.angle);
+    if(f.hp < f.maxHp) drawHpBar(0, f.size + 8, f.size * 1.4, f.hp, f.maxHp);
+
+    ctx.restore();
+  });
+}
+
+function drawPoly(sides, radius, startAngle) {
+  ctx.beginPath();
+  for(let i=0; i<sides; i++) {
+    const a = startAngle + (i/sides)*Math.PI*2;
+    ctx.lineTo(Math.cos(a)*radius, Math.sin(a)*radius);
+  }
+  ctx.closePath();
+}
+
+function drawStar(points, outerR, innerR) {
+  ctx.beginPath();
+  for(let i = 0; i < points * 2; i++) {
+    const a = -Math.PI/2 + (i / (points*2)) * Math.PI * 2;
+    const r = i % 2 === 0 ? outerR : innerR;
+    ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+  }
+  ctx.closePath();
+}
+
+function drawCross(size) {
+  const t = size * 0.35;
+  ctx.beginPath();
+  ctx.moveTo(-t, -size); ctx.lineTo(t, -size);
+  ctx.lineTo(t, -t); ctx.lineTo(size, -t);
+  ctx.lineTo(size, t); ctx.lineTo(t, t);
+  ctx.lineTo(t, size); ctx.lineTo(-t, size);
+  ctx.lineTo(-t, t); ctx.lineTo(-size, t);
+  ctx.lineTo(-size, -t); ctx.lineTo(-t, -t);
+  ctx.closePath();
+}
+
+function drawTank(x, y, angle, classId, color, size, alpha, scaleFactor) {
+  const cls = TANK_CLASSES[classId];
+  if(!cls) return;
+  const sf = scaleFactor || 1;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.globalAlpha = alpha || 1;
+
+  // Barrels
+  cls.barrels.forEach(b => {
+    ctx.save();
+    ctx.rotate(angle + b.angle);
+    const ox = b.offset || 0;
+    ctx.fillStyle = COLORS.barrel;
+    ctx.strokeStyle = '#777';
+    ctx.lineWidth = 2;
+    const bw = b.width * sf, bl = b.length * sf;
+    ctx.fillRect(0, -bw/2, bl, bw);
+    ctx.strokeRect(0, -bw/2, bl, bw);
+    ctx.restore();
+  });
+
+  // Handle offset barrels properly
+  cls.barrels.forEach(b => {
+    if(!b.offset) return;
+    ctx.save();
+    ctx.rotate(angle + b.angle);
+    ctx.fillStyle = COLORS.barrel;
+    ctx.strokeStyle = '#777';
+    ctx.lineWidth = 2;
+    const bw = b.width * sf, bl = b.length * sf;
+    ctx.fillRect(0, b.offset * sf - bw/2, bl, bw);
+    ctx.strokeRect(0, b.offset * sf - bw/2, bl, bw);
+    ctx.restore();
+  });
+
+  // Body
+  const bs = size || cls.bodySize;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = darken(color);
+  ctx.lineWidth = 3;
+
+  if(cls.smasher) {
+    // Smasher ring
+    ctx.save();
+    ctx.rotate(angle + tick * 0.02);
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 4;
+    drawPoly(6, bs + 6, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
+  if(cls.spike) {
+    ctx.save();
+    ctx.rotate(angle + tick * 0.02);
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 3;
+    for(let i = 0; i < 12; i++) {
+      const a = (i/12)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*bs*0.8, Math.sin(a)*bs*0.8);
+      ctx.lineTo(Math.cos(a)*(bs+10), Math.sin(a)*(bs+10));
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  ctx.beginPath();
+  ctx.arc(0, 0, bs, 0, Math.PI*2);
+  ctx.fill(); ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawPlayer() {
+  const cls = TANK_CLASSES[player.classId];
+  const alpha = player.invuln > 0 ? 0.5 + Math.sin(tick*0.3)*0.3 : 1;
+  const pDrawSize = cls.bodySize * lvlMult();
+  drawTank(player.x, player.y, player.angle, player.classId, COLORS.player, pDrawSize, alpha, lvlMult());
+
+  // Name
+  ctx.fillStyle = '#333';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(player.name, player.x, player.y - pDrawSize - 18);
+  ctx.fillStyle = '#666';
+  ctx.font = '11px sans-serif';
+  ctx.fillText(`Lv ${player.level} ${TANK_CLASSES[player.classId].name}`, player.x, player.y - pDrawSize - 6);
+
+  // HP bar
+  if(player.hp < player.maxHp) drawHpBar(player.x, player.y + pDrawSize + 10, pDrawSize * 1.5, player.hp, player.maxHp);
+}
+
+function drawEnemies() {
+  enemies.forEach(e => {
+    if(!onScreen(e.x, e.y, 80)) return;
+    const ecls = TANK_CLASSES[e.classId];
+    if(!ecls) return;
+    const eDrawSize = ecls.bodySize * lvlMult(e);
+    drawTank(e.x, e.y, e.angle, e.classId, COLORS.enemy, eDrawSize, 1, lvlMult(e));
+
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(e.name, e.x, e.y - eDrawSize - 16);
+    ctx.fillStyle = '#777';
+    ctx.font = '10px sans-serif';
+    ctx.fillText(`Lv ${e.level} ${ecls.name}`, e.x, e.y - eDrawSize - 5);
+
+    if(e.hp < e.maxHp) drawHpBar(e.x, e.y + eDrawSize + 10, eDrawSize * 1.5, e.hp, e.maxHp);
+  });
+}
+
+function drawBullets() {
+  bullets.forEach(b => {
+    if(!onScreen(b.x, b.y, 30)) return;
+    const color = b.isPlayerBullet ? COLORS.player : COLORS.enemy;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = darken(color);
+    ctx.lineWidth = 2;
+    if(b.trap) {
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      drawPoly(3, b.size * 1.3, -Math.PI/2);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+    } else if(b.isDrone) {
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(Math.atan2(b.vy, b.vx));
+      drawPoly(3, b.size, 0);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+      ctx.fill(); ctx.stroke();
+    }
+  });
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * (p.life/p.maxLife), 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawHpBar(x, y, w, hp, maxHp) {
+  ctx.fillStyle = 'rgba(0,0,0,.25)';
+  ctx.fillRect(x - w, y, w * 2, 5);
+  ctx.fillStyle = '#4caf50';
+  ctx.fillRect(x - w, y, w * 2 * Math.max(0, hp/maxHp), 5);
+}
+
+function onScreen(x, y, margin) {
+  const sx = (x - camera.x) * camera.zoom + W/2;
+  const sy = (y - camera.y) * camera.zoom + H/2;
+  return sx > -margin && sx < W + margin && sy > -margin && sy < H + margin;
+}
+
+function darken(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.floor(r*0.7)},${Math.floor(g*0.7)},${Math.floor(b*0.7)})`;
+}
+
+// ==================== MINIMAP ====================
+function drawMinimap() {
+  const mmSize = 140, mmR = mmSize/2;
+  const s = mmSize / (WORLD_R * 2);
+  mmCtx.clearRect(0, 0, mmSize, mmSize);
+
+  mmCtx.save();
+  mmCtx.beginPath();
+  mmCtx.arc(mmR, mmR, mmR, 0, Math.PI*2);
+  mmCtx.clip();
+
+  mmCtx.fillStyle = 'rgba(200,200,200,.6)';
+  mmCtx.fill();
+
+  // Food dots
+  mmCtx.fillStyle = 'rgba(180,180,180,.5)';
+  foods.forEach(f => {
+    mmCtx.fillRect((f.x - WORLD_CX + WORLD_R)*s, (f.y - WORLD_CY + WORLD_R)*s, 1.5, 1.5);
+  });
+
+  // Enemies
+  enemies.forEach(e => {
+    mmCtx.fillStyle = e.level === 1000 ? '#000' : COLORS.enemy;
+    mmCtx.beginPath();
+    mmCtx.arc((e.x - WORLD_CX + WORLD_R)*s, (e.y - WORLD_CY + WORLD_R)*s, e.level === 1000 ? 4 : 2.5, 0, Math.PI*2);
+    mmCtx.fill();
+  });
+
+  // Player
+  mmCtx.fillStyle = COLORS.player;
+  mmCtx.beginPath();
+  mmCtx.arc((player.x - WORLD_CX + WORLD_R)*s, (player.y - WORLD_CY + WORLD_R)*s, 3.5, 0, Math.PI*2);
+  mmCtx.fill();
+
+  mmCtx.restore();
+
+  // Border
+  mmCtx.strokeStyle = 'rgba(0,0,0,.3)';
+  mmCtx.lineWidth = 1.5;
+  mmCtx.beginPath();
+  mmCtx.arc(mmR, mmR, mmR - 1, 0, Math.PI*2);
+  mmCtx.stroke();
+}
+
+// ==================== HUD ====================
+function updateHUD() {
+  const pct = player.level >= MAX_LEVEL ? 100 : (player.xp / player.xpNeeded * 100);
+  document.getElementById('xpBar').style.width = pct + '%';
+  document.getElementById('scoreDisplay').textContent = `Score: ${score.toLocaleString()}`;
+  document.getElementById('classLabel').textContent = TANK_CLASSES[player.classId].name;
+  document.getElementById('hudLevel').textContent = `Lv ${player.level} | ${statPoints} pts`;
+}
+
+// ==================== BARREL OFFSET FIX ====================
+// Redraw barrels that have offsets properly - already handled above
+
+// ==================== START ====================
+gameLoop();
+</script>
+</body>
+</html>
