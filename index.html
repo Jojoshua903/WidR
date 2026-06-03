@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -2922,6 +2921,141 @@
       .stats-bar-name { min-width: 80px; font-size: 0.75rem; }
     }
 
+    /* DARK MODE */
+    body.dark-mode {
+      --bg: #121220;
+      --primary: #FAF3E0;
+      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode nav {
+      background: #0a0a18;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    body.dark-mode .featured-card,
+    body.dark-mode .ranker-setup,
+    body.dark-mode .battle-progress,
+    body.dark-mode .battle-card,
+    body.dark-mode .result-item,
+    body.dark-mode .ranking-item,
+    body.dark-mode .member-card,
+    body.dark-mode .lore-entry,
+    body.dark-mode .story-card,
+    body.dark-mode .meme-chip,
+    body.dark-mode .contact-form,
+    body.dark-mode .stats-upload,
+    body.dark-mode .modal,
+    body.dark-mode .about-visual,
+    body.dark-mode .team-card,
+    body.dark-mode .tier-pool,
+    body.dark-mode .meme-add-form,
+    body.dark-mode .lore-cta,
+    body.dark-mode .vote-entry,
+    body.dark-mode .msg-entry {
+      background: #1a1a2e;
+      color: #FAF3E0;
+    }
+
+    body.dark-mode .stats-bar,
+    body.dark-mode .contact-card {
+      background: #1a1a2e;
+      color: #FAF3E0;
+    }
+
+    body.dark-mode .stat-number { color: var(--accent); }
+    body.dark-mode .stat-label { color: rgba(250,243,224,0.5); }
+
+    body.dark-mode .ranker-input,
+    body.dark-mode .modal-input,
+    body.dark-mode .modal-add-input,
+    body.dark-mode .meme-add-input,
+    body.dark-mode .voter-name-input,
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group textarea,
+    body.dark-mode .form-group select {
+      background: #0f0f1e;
+      color: #FAF3E0;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .ranker-chip,
+    body.dark-mode .modal-item-chip,
+    body.dark-mode .tier-pool-chip,
+    body.dark-mode .emoji-cell {
+      background: #0f0f1e;
+      color: #FAF3E0;
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode .preset-btn,
+    body.dark-mode .ranking-tab {
+      color: #FAF3E0;
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    body.dark-mode .card-desc,
+    body.dark-mode .ranker-setup-sub,
+    body.dark-mode .modal-sub,
+    body.dark-mode .about-block-text p,
+    body.dark-mode .team-bio,
+    body.dark-mode .member-card-desc,
+    body.dark-mode .lore-entry p,
+    body.dark-mode .story-card p,
+    body.dark-mode .contact-card p,
+    body.dark-mode .msg-entry-text {
+      color: rgba(250,243,224,0.55);
+    }
+
+    body.dark-mode .section-title,
+    body.dark-mode .card-title,
+    body.dark-mode .about-block-text h2,
+    body.dark-mode .results-header h2,
+    body.dark-mode .lore-stories-header h2,
+    body.dark-mode .meme-wall-header h2,
+    body.dark-mode .meme-add-form h3,
+    body.dark-mode .contact-form h2 {
+      color: #FAF3E0;
+    }
+
+    body.dark-mode .ranker-reset-btn {
+      background: #1a1a2e;
+      color: #FAF3E0;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .mode-card {
+      background: #0f0f1e;
+      color: #FAF3E0;
+    }
+
+    body.dark-mode .tier-items {
+      background: rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode .tier-chip {
+      background: #1a1a2e;
+      color: #FAF3E0;
+    }
+
+    body.dark-mode footer {
+      background: #0a0a18;
+    }
+
+    .theme-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 1rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-right: 6px;
+    }
+
+    .theme-btn:hover { background: rgba(245,197,24,0.15); color: var(--gold); }
+
     @media print {
       nav, .hamburger, .scroll-indicator { display: none; }
       .page { display: block !important; padding-top: 0; page-break-after: always; }
@@ -2935,6 +3069,7 @@
   <!-- NAV -->
   <nav>
     <div class="nav-logo" onclick="navigate('home')">Wat in de <span>Ranking</span></div>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">🌙</button>
     <div class="lang-switcher">
       <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">🇳🇱 NL</button>
       <div class="lang-dropdown" id="langDropdown">
@@ -2969,8 +3104,13 @@
         </div>
       </div>
 
-      <a href="kart.html">🏎️ Kart</a>
-      <a href="rpg.html">⚔️ RPG</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn" onclick="toggleNavDrop('dropGames')">🎮 Games ▾</button>
+        <div class="nav-dropdown-menu" id="dropGames">
+          <a href="kart.html" onclick="closeNavDrops()">🏎️ Kart</a>
+          <a href="rpg.html" onclick="closeNavDrops()">⚔️ RPG</a>
+        </div>
+      </div>
 
       <div class="nav-dropdown">
         <button class="nav-dropdown-btn" onclick="toggleNavDrop('dropInfo')">ℹ️ Info ▾</button>
@@ -3218,8 +3358,9 @@
     </div>
     <div class="members-content">
       <div id="membersContainer"></div>
-      <div class="admin-controls" style="text-align:center;margin-top:24px;border-top:none;">
+      <div class="admin-controls" style="text-align:center;margin-top:24px;border-top:none;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
         <button class="preset-btn-add" onclick="openMemberModal()" style="font-size:0.8rem;padding:10px 24px;">+ Lid Toevoegen</button>
+        <button class="preset-btn-add" onclick="openSectionModal()" style="font-size:0.8rem;padding:10px 24px;">📂 Secties Beheren</button>
       </div>
     </div>
     <footer>
@@ -4770,6 +4911,125 @@
     }
     var groupLabels = { admin:'👑 Admin', kern:'🔥 Kernleden', ere:'🤖 Ere-lid', stil:'👻 De Stille Krachten' };
     var groupColors = { admin:'rgba(245,197,24,0.15)', kern:'rgba(233,69,96,0.12)', ere:'linear-gradient(135deg,rgba(22,199,154,0.15),rgba(132,94,194,0.15))', stil:'rgba(26,26,46,0.06)' };
+    var groupOrder = ['admin','kern','ere','stil'];
+    var customSections = {};
+    var editingSectionId = null;
+
+    function loadSections() {
+      try {
+        db.collection('sections').get().then(function(snapshot) {
+          snapshot.forEach(function(doc) {
+            var d = doc.data();
+            customSections[doc.id] = d;
+            groupLabels[doc.id] = d.label;
+            groupColors[doc.id] = d.color || 'rgba(26,26,46,0.06)';
+            if (groupOrder.indexOf(doc.id) === -1) groupOrder.push(doc.id);
+          });
+          renderMembers();
+          updateGroupDropdown();
+        }).catch(function() {});
+      } catch(e) {}
+    }
+
+    function updateGroupDropdown() {
+      var sel = document.getElementById('memGroup');
+      if (!sel) return;
+      sel.innerHTML = groupOrder.map(function(id) {
+        return '<option value="' + id + '">' + (groupLabels[id] || id) + '</option>';
+      }).join('');
+    }
+
+    function openSectionModal() {
+      cancelSectionEdit();
+      renderSectionList();
+      document.getElementById('sectionModal').classList.add('active');
+    }
+
+    function closeSectionModal() {
+      document.getElementById('sectionModal').classList.remove('active');
+      editingSectionId = null;
+    }
+
+    function renderSectionList() {
+      var list = document.getElementById('sectionList');
+      var html = '';
+      groupOrder.forEach(function(id) {
+        var label = groupLabels[id] || id;
+        var color = groupColors[id] || 'rgba(26,26,46,0.06)';
+        var isDefault = ['admin','kern','ere','stil'].indexOf(id) !== -1 && !customSections[id];
+        var memberCount = membersData.filter(function(m) { return m.group === id; }).length;
+        html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border-radius:12px;margin-bottom:8px;border-left:4px solid ' + (color.indexOf('gradient') !== -1 ? 'var(--mint)' : color.replace('0.12','1').replace('0.15','1').replace('0.06','0.4')) + ';">' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:700;font-size:0.9rem;">' + label + '</div>' +
+            '<div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">ID: ' + id + ' · ' + memberCount + ' leden</div>' +
+          '</div>' +
+          '<button onclick="editSection(\'' + id + '\')" style="padding:4px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.7rem;font-weight:700;color:var(--blue);">✏️</button>' +
+          (isDefault ? '' : '<button onclick="deleteSection(\'' + id + '\')" style="padding:4px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.7rem;font-weight:700;color:var(--accent);">🗑</button>') +
+        '</div>';
+      });
+      list.innerHTML = html || '<div style="text-align:center;color:rgba(26,26,46,0.3);padding:20px;">Geen secties</div>';
+    }
+
+    function editSection(id) {
+      editingSectionId = id;
+      document.getElementById('secId').value = id;
+      document.getElementById('secId').disabled = true;
+      document.getElementById('secLabel').value = groupLabels[id] || '';
+      document.getElementById('secColor').value = groupColors[id] || '';
+      document.getElementById('secSaveBtn').textContent = 'Opslaan';
+      document.getElementById('secCancelEditBtn').style.display = 'inline-block';
+      document.getElementById('sectionFormTitle').textContent = 'Sectie Bewerken';
+    }
+
+    function cancelSectionEdit() {
+      editingSectionId = null;
+      document.getElementById('secId').value = '';
+      document.getElementById('secId').disabled = false;
+      document.getElementById('secLabel').value = '';
+      document.getElementById('secColor').value = '';
+      document.getElementById('secSaveBtn').textContent = '+ Toevoegen';
+      document.getElementById('secCancelEditBtn').style.display = 'none';
+      document.getElementById('sectionFormTitle').textContent = 'Nieuwe Sectie';
+    }
+
+    function saveSection() {
+      var id = (editingSectionId || document.getElementById('secId').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_'));
+      var label = document.getElementById('secLabel').value.trim();
+      var color = document.getElementById('secColor').value.trim() || 'rgba(26,26,46,0.06)';
+      if (!id || !label) { alert('Vul een ID en label in'); return; }
+
+      groupLabels[id] = label;
+      groupColors[id] = color;
+      customSections[id] = { label: label, color: color };
+      if (groupOrder.indexOf(id) === -1) groupOrder.push(id);
+
+      db.collection('sections').doc(id).set({ label: label, color: color }).catch(function() {});
+
+      cancelSectionEdit();
+      renderSectionList();
+      renderMembers();
+      updateGroupDropdown();
+    }
+
+    function deleteSection(id) {
+      var memberCount = membersData.filter(function(m) { return m.group === id; }).length;
+      if (memberCount > 0) {
+        alert('Deze sectie heeft nog ' + memberCount + ' leden. Verplaats ze eerst naar een andere sectie.');
+        return;
+      }
+      if (!confirm('Sectie "' + (groupLabels[id] || id) + '" verwijderen?')) return;
+
+      delete groupLabels[id];
+      delete groupColors[id];
+      delete customSections[id];
+      groupOrder = groupOrder.filter(function(g) { return g !== id; });
+
+      db.collection('sections').doc(id).delete().catch(function() {});
+
+      renderSectionList();
+      renderMembers();
+      updateGroupDropdown();
+    }
 
     function loadMembers() {
       membersData = defaultMembers.slice();
@@ -4805,7 +5065,7 @@
     function renderMembers() {
       var container = document.getElementById('membersContainer');
       if (!container) return;
-      var groups = ['admin','kern','ere','stil'];
+      var groups = groupOrder.slice();
       var html = '';
       groups.forEach(function(g) {
         var items = membersData.filter(function(m) { return m.group === g; });
@@ -4927,6 +5187,7 @@
     }
 
     loadMembers();
+    loadSections();
   </script>
 
   <!-- TIER SELECT -->
@@ -5012,6 +5273,38 @@
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeMemberModal()">Annuleren</button>
         <button class="modal-save" id="memSaveBtn" onclick="saveMember()">Opslaan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION EDITOR MODAL -->
+  <div class="modal-overlay" id="sectionModal">
+    <div class="modal">
+      <h2>📂 Secties Beheren</h2>
+      <div class="modal-sub">Voeg secties toe, bewerk of verwijder ze. Leden worden per sectie gegroepeerd.</div>
+
+      <div id="sectionList" style="margin-bottom:20px;"></div>
+
+      <div style="padding:20px;background:var(--bg);border-radius:14px;border:2px dashed rgba(26,26,46,0.1);">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(26,26,46,0.45);margin-bottom:12px;" id="sectionFormTitle">Nieuwe Sectie</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <input type="text" class="modal-input" id="secId" placeholder="ID (bijv. kern)" style="margin-bottom:0;flex:0.5;">
+          <input type="text" class="modal-input" id="secEmoji" placeholder="Emoji" style="margin-bottom:0;flex:0.3;max-width:80px;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <input type="text" class="modal-input" id="secLabel" placeholder="Label (bijv. 🔥 Kernleden)" style="margin-bottom:0;flex:1;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <input type="text" class="modal-input" id="secColor" placeholder="Achtergrondkleur (bijv. rgba(233,69,96,0.12))" style="margin-bottom:0;flex:1;">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="modal-save" onclick="saveSection()" style="flex:1;padding:10px;" id="secSaveBtn">+ Toevoegen</button>
+          <button class="modal-cancel" onclick="cancelSectionEdit()" style="padding:10px;display:none;" id="secCancelEditBtn">Annuleren</button>
+        </div>
+      </div>
+
+      <div class="modal-buttons" style="margin-top:20px;">
+        <button class="modal-cancel" onclick="closeSectionModal()">Sluiten</button>
       </div>
     </div>
   </div>
@@ -5364,6 +5657,9 @@
         'Nog geen items gescoord':'No items scored yet',
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Stats','Stickers':'Stickers',
         'Home':'Home','Leden':'Members','Over Ons':'About Us','Contact':'Contact',
+        '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Community ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','📊 Chat Stats':'📊 Chat Stats',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 About Us','✉️ Contact':'✉️ Contact',
         'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Add items, pick your favorite from two options, and discover your final ranking',
         'items toegevoegd':'items added',
         'Kies een tier':'Choose a tier'
@@ -5431,6 +5727,9 @@
         'Kies een tier':'Wähle eine Stufe',
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Statistiken','Stickers':'Sticker',
         'Home':'Startseite','Leden':'Mitglieder','Over Ons':'Über Uns','Contact':'Kontakt',
+        '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Gemeinschaft ▾','🎮 Games ▾':'🎮 Spiele ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','📊 Chat Stats':'📊 Chat Statistiken',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 Über Uns','✉️ Contact':'✉️ Kontakt',
         'Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.':'Wie alle guten Dinge begann es mit einer hitzigen Diskussion über etwas Unwichtiges. Wer ist am meisten chopped? Wir kamen nicht raus — also bauten wir eine App, in der jeder abstimmen kann.',
         'Opent in WhatsApp':'Öffnet in WhatsApp',
         'Open WhatsApp Kanaal':'WhatsApp Kanal öffnen',
@@ -5483,6 +5782,9 @@
         'Ronde':'Battle','Winnaar':'Captain','Finale':'Final Battle',
         'Rank It 🔥':'Rank It 🔥','Lore':'Tales','Stats':'Ship Log','Stickers':'Flags',
         'Home':'Port','Leden':'Crew','Over Ons':'About the Crew','Contact':'Send a Bottle',
+        '🏆 Ranking ▾':'🏆 Plunder ▾','👥 Community ▾':'👥 Crew ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','📊 Chat Stats':'📊 Ship Log',
+        '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','📖 Over Ons':'📖 About the Crew','✉️ Contact':'✉️ Send a Bottle',
         'Kies een tier':'Choose yer tier, matey'
       },
       genz: {
@@ -5522,6 +5824,9 @@
         'Opnieuw Beginnen':'reset','Laden...':'loading...','Ronde':'round','Winnaar':'winner','Finale':'final',
         'Rank It 🔥':'Rank It 🔥','Lore':'lore','Stats':'stats','Stickers':'stickers',
         'Home':'home','Leden':'the gang','Over Ons':'about us','Contact':'hit us up',
+        '🏆 Ranking ▾':'🏆 ranking ▾','👥 Community ▾':'👥 the squad ▾','🎮 Games ▾':'🎮 games ▾','ℹ️ Info ▾':'ℹ️ info ▾',
+        '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','📊 Chat Stats':'📊 chat stats',
+        '🏎️ Kart':'🏎️ kart','⚔️ RPG':'⚔️ rpg','📖 Over Ons':'📖 about us','✉️ Contact':'✉️ hit us up',
         'Kies een tier':'pick a tier'
       }
     };
@@ -5594,6 +5899,13 @@
         if (!a._origNav) a._origNav = t;
         if (lang === 'nl') { a.textContent = a._origNav; }
         else if (navMap[a._origNav]) { a.textContent = navMap[a._origNav]; }
+      });
+      // Also translate dropdown buttons
+      document.querySelectorAll('.nav-dropdown-btn').forEach(function(btn) {
+        var t = btn.textContent.trim();
+        if (!btn._origNav) btn._origNav = t;
+        if (lang === 'nl') { btn.textContent = btn._origNav; }
+        else if (navMap[btn._origNav]) { btn.textContent = navMap[btn._origNav]; }
       });
     }
 
@@ -5672,5 +5984,21 @@
     <button class="translate-bar-close" id="translateToggleBtn" onclick="toggleTranslateMode()">Start Vertalen</button>
     <button class="translate-bar-close" onclick="document.getElementById('translateBar').classList.remove('active')">✕</button>
   </div>
+
+  <script>
+    function toggleTheme() {
+      var isDark = document.body.classList.toggle('dark-mode');
+      document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+      try { localStorage.setItem('widr_theme', isDark ? 'dark' : 'light'); } catch(e) {}
+    }
+    (function() {
+      try {
+        if (localStorage.getItem('widr_theme') === 'dark') {
+          document.body.classList.add('dark-mode');
+          document.getElementById('themeToggle').textContent = '☀️';
+        }
+      } catch(e) {}
+    })();
+  </script>
 </body>
 </html>
