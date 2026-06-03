@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -4483,8 +4484,8 @@
             '<div class="story-card-tag">' + safe(s.tag || 'Lore') + '</div>' +
             '<h3>' + safe(s.title) + '</h3>' +
             '<p>' + safe(s.text) + '</p>';
-          if (s.people)  html += '<div class="story-card-people">Betrokken: ' + safe(s.people) + '</div>';
-          if (s.author)  html += '<div style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">Toegevoegd door ' + safe(s.author) + '</div>';
+          if (s.people) html += '<div class="story-card-people">Betrokken: ' + safe(s.people) + '</div>';
+          if (s.author) html += '<div style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">Toegevoegd door ' + safe(s.author) + '</div>';
            html += '<div class="story-card-admin">' +
             '<button class="preset-btn-delete" style="display:inline;color:var(--blue);font-size:0.7rem;" onclick="openStoryModal(\'' + doc.id + '\')">bewerken</button>' +
             '<button class="preset-btn-delete" style="display:inline;font-size:0.7rem;" onclick="deleteStory(\'' + doc.id + '\')">verwijder</button>' +
@@ -4626,7 +4627,7 @@
       var scoredList = document.getElementById('blindScoredList');
       var scored = '';
       Object.keys(blindScores).forEach(function(name) {
-        scored html += '<div class="blind-scored-chip"><span class="blind-scored-name">' + name + '</span><span class="blind-scored-score">' + blindScores[name] + '/' + blindMaxScore + '</span></div>';
+        scored += '<div class="blind-scored-chip"><span class="blind-scored-name">' + name + '</span><span class="blind-scored-score">' + blindScores[name] + '/' + blindMaxScore + '</span></div>';
       });
       scoredList.innerHTML = scored || '<span style="color:rgba(26,26,46,0.2);font-size:0.8rem;">Nog geen items gescoord</span>';
     }
@@ -5280,7 +5281,7 @@
         snapshot.forEach(function(doc) {
           var d = doc.data();
           var time = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
-          msgList.innerHTML html += '<div class="msg-entry">' +
+          msgList.innerHTML += '<div class="msg-entry">' +
             '<div class="msg-entry-header">' +
               '<div class="msg-entry-name">' + (d.naam || 'Onbekend') + (d.email ? ' (' + d.email + ')' : '') + '</div>' +
               '<div class="msg-entry-subject">' + (d.onderwerp || '') + '</div>' +
@@ -5672,4 +5673,4 @@
     <button class="translate-bar-close" onclick="document.getElementById('translateBar').classList.remove('active')">✕</button>
   </div>
 </body>
-</>
+</html>
