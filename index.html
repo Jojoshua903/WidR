@@ -3134,19 +3134,19 @@
 
     <div class="stats-bar">
       <div class="stat-item">
-        <div class="stat-number">11</div>
+        <div class="stat-number" id="liveStatLeden">...</div>
         <div class="stat-label">Leden</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">12K+</div>
-        <div class="stat-label">Rankings</div>
+        <div class="stat-number" id="liveStatRankings">...</div>
+        <div class="stat-label">Keer Gerankt</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">2</div>
-        <div class="stat-label">Rankings</div>
+        <div class="stat-number" id="liveStatCategories">...</div>
+        <div class="stat-label">Categorieën</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">∞</div>
+        <div class="stat-number" onclick="triggerEmojiRain()" style="cursor:pointer">∞</div>
         <div class="stat-label">Chaos</div>
       </div>
     </div>
@@ -4231,6 +4231,39 @@
 
     // Load initial rankings
     loadRankings('leden');
+
+    // ===== LIVE HOMEPAGE STATS =====
+    function loadLiveStats() {
+      var defaultMemberCount = 12;
+      db.collection('members').get().then(function(snapshot) {
+        var fbIds = [];
+        snapshot.forEach(function(doc) { fbIds.push(doc.id); });
+        var total = defaultMemberCount;
+        fbIds.forEach(function(id) {
+          var isDefault = ['josh','lors','fionn','nath','reshman','daniel','milo','adam','metaai','maciek','denize','sichen'].indexOf(id) !== -1;
+          if (!isDefault) total++;
+        });
+        document.getElementById('liveStatLeden').textContent = total;
+      }).catch(function() {
+        document.getElementById('liveStatLeden').textContent = defaultMemberCount;
+      });
+
+      db.collection('rankings').get().then(function(snapshot) {
+        var count = snapshot.size;
+        var display = count >= 1000 ? Math.floor(count / 1000) + 'K+' : count.toString();
+        document.getElementById('liveStatRankings').textContent = display;
+      }).catch(function() {
+        document.getElementById('liveStatRankings').textContent = '0';
+      });
+
+      db.collection('categories').get().then(function(snapshot) {
+        var count = 2 + snapshot.size;
+        document.getElementById('liveStatCategories').textContent = count;
+      }).catch(function() {
+        document.getElementById('liveStatCategories').textContent = '2';
+      });
+    }
+    loadLiveStats();
 
     // ===== MEMES (FIREBASE) =====
     var baseMemes = ['Can I have one drug please','1885','voor de 90s konden ze niet praten','mass beste revival','viking raggen','dronderdag','mijn vader was een kanarie','lekker spelen','brr brr deniz','namast-ei','0,26 mol','flat sacs','ik wil niet naar erasmus','mentor toets','geef me nu die pruim','i have a dih','ja leuk heb je je rekenmachine bij je','timothy a yap','kaasvet',"you're half the bloody story short",'bizarre bee','ts so gyte','ik ben chopped en ik ben er trots op','debado debado','kogelvis','omdat er geen melk in sorbetijs zit','solitair op poki',"i also don't wanna give you a foot massage",'sogpreet raj','josh tasman','robinus autistinius','marloes van veenhuizen','slechste','evil adam','soortelijke weestand van kalium','throughmow','xyleem','similih','vroeger schreven we bio met een y','x-bow','mackey','nummer 7 van spanje','sir of the lake','heb je die addon','first time anal sex','wie staat er in het slagveld','in range of my cane','brainrot stack','7.7 goed gedaan','Methaan Ethaan Propaan Buthaan','sichen ping','top 10 4V respect moments','goblin machine','gekke berekeningen','gibraltarse apen','ik kan alleen in vanilla bouwen','je hebt je dagelijkse crashout gebruikt','afkraken zonder genade','ayo baka','Renas Binas','tring tring tring pling','reshman freshman','what about the dih','schrijf een brief verander een leven','wiskunde tia','23 24 25 26','220 stukjes','joh','niet moby dick','jan jacob vogelaar','grip op je dih','ook oak wood','pools klinks mongolisch','cake is cake','ou est le bebe','mijn moeder lijkt op mijn oom','muna maatje','petra pieneman','je bent niet jake artes','zuid afrika in leiden','ay caramba','NO3-','history van propanol','sybau','4K 60fps',"You're a student i'm a teacher",'vacuum','giftig gas','je gedraagt je als 1 deeltje','aquamarijnsteen','27 bookshelf','familie bron','wowsers','felle vlam','als er blokken zijn kan je bouwen','ik doe geen tweetalig he','familie reym','ik dacht dat je rookworst kon eten','casper met zijn lul in een rasper','grand stockholm metropolitan area','ik dacht wat is daar gebeurd','niet elke held is aardig','na het eten','ik heb een agenda','onderzoek heeft bewezen makker','dark undertones of lord of the flies','skibidi pb','chopp chopp','no bro','ik ben tenminste geen nerd','niks is beloofd in het leven','puntjes op de i','0.008 levens','Tennis en Tobin','Oelatoemboesoem','ush ush ush',"riep don't miss",'sichen li show','stilte voor de storm','bitch i look like i said','Kennedy Booth at the Union Oyster House','aankomende 2 weekenden en aankomende 3 weekenden','ik ben je opperbaas','ik ben je medewerker','gedunkt allah allah van glas',"adam's smeerkaasproducent",'morale levensles','WAT is lvl','yassin we dit','huize ibrahim','boe-tabel','genius at work','detention come and get me','cornham style','de betekenis van 10','mini pie','goning','poen poen poen','road to registration','weegfactor 1 weegfactor geen','romantische ballen','sticker dance party','ik zei dih','capiche','4 potjes pindakaas'];
@@ -6024,6 +6057,233 @@
         }
       } catch(e) {}
     })();
+  <style>
+    .emoji-rain {
+      position: fixed;
+      font-size: 2rem;
+      top: -50px;
+      z-index: 9999;
+      pointer-events: none;
+      animation: emojifall linear forwards;
+    }
+    @keyframes emojifall {
+      to { top: 110vh; opacity: 0; }
+    }
+    .chopped-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(26,26,46,0.92);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease;
+      pointer-events: all;
+      cursor: pointer;
+    }
+    .chopped-text {
+      font-size: clamp(2.5rem, 10vw, 6rem);
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -2px;
+      text-shadow: 0 0 40px rgba(233,69,96,0.5);
+      animation: choppedPulse 0.5s ease infinite alternate;
+    }
+    .chopped-sub {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 12px;
+    }
+    @keyframes choppedPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+    @keyframes shakeIt {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      20%, 40%, 60%, 80% { transform: translateX(8px); }
+    }
+    body.shaking { animation: shakeIt 0.5s ease; }
+    body.chaos-mode {
+      animation: chaosColors 0.3s linear infinite;
+    }
+    body.chaos-mode * {
+      transition: none !important;
+    }
+    @keyframes chaosColors {
+      0% { filter: hue-rotate(0deg); }
+      25% { filter: hue-rotate(90deg); }
+      50% { filter: hue-rotate(180deg); }
+      75% { filter: hue-rotate(270deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    .chaos-banner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: clamp(2rem, 8vw, 5rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(245,197,24,0.6);
+      z-index: 9999;
+      pointer-events: none;
+      letter-spacing: -2px;
+      white-space: nowrap;
+    }
+    .meta-ai-popup {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      z-index: 9999;
+      max-width: 320px;
+      animation: fadeIn 0.4s ease;
+      cursor: pointer;
+    }
+    .meta-ai-popup-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .meta-ai-popup-header span:first-child { font-size: 1.5rem; }
+    .meta-ai-popup-header span:last-child { font-weight: 800; font-size: 0.9rem; }
+    .meta-ai-popup-text {
+      font-size: 0.85rem;
+      color: rgba(26,26,46,0.6);
+      line-height: 1.5;
+    }
+  </style>
+
+  <script>
+    // ===== EASTER EGGS =====
+
+    // 1. KONAMI CODE → Chaos Mode
+    var konamiSeq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
+    var konamiIdx = 0;
+    document.addEventListener('keydown', function(e) {
+      if (e.code === konamiSeq[konamiIdx]) {
+        konamiIdx++;
+        if (konamiIdx === konamiSeq.length) {
+          konamiIdx = 0;
+          triggerChaosMode();
+        }
+      } else {
+        konamiIdx = 0;
+      }
+    });
+
+    function triggerChaosMode() {
+      document.body.classList.add('chaos-mode');
+      var banner = document.createElement('div');
+      banner.className = 'chaos-banner';
+      banner.textContent = '🌀 CHAOS MODE GEACTIVEERD 🌀';
+      document.body.appendChild(banner);
+      triggerEmojiRain();
+      setTimeout(function() {
+        document.body.classList.remove('chaos-mode');
+        banner.remove();
+      }, 5000);
+    }
+
+    // 2. EMOJI RAIN (∞ knop)
+    function triggerEmojiRain() {
+      var emojis = ['🏆','🔥','💀','🃏','😤','🌀','👑','😑','🧊','🎯','🤖','⚡','💣','🎲','📊','🌙'];
+      for (var i = 0; i < 40; i++) {
+        (function(delay) {
+          setTimeout(function() {
+            var el = document.createElement('div');
+            el.className = 'emoji-rain';
+            el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (2 + Math.random() * 3) + 's';
+            el.style.fontSize = (1.2 + Math.random() * 2) + 'rem';
+            document.body.appendChild(el);
+            setTimeout(function() { el.remove(); }, 5000);
+          }, delay);
+        })(i * 80);
+      }
+    }
+
+    // 3. LOGO CLICK 10x → Secret message
+    var logoClicks = 0;
+    var logoTimer = null;
+    document.querySelector('.nav-logo').addEventListener('click', function(e) {
+      if (e.target.closest('.nav-logo')) {
+        logoClicks++;
+        if (logoTimer) clearTimeout(logoTimer);
+        logoTimer = setTimeout(function() { logoClicks = 0; }, 2000);
+        if (logoClicks === 10) {
+          logoClicks = 0;
+          showMetaAIPopup('Je hebt me gevonden! Ik ben het, Meta AI. Ze hebben me hier verborgen na de grote fanfictie-incident van 2025. Stuur hulp. 🤖');
+        }
+      }
+    });
+
+    // 4. TYPE "chopped" → CHOPPED overlay
+    var choppedBuffer = '';
+    document.addEventListener('keypress', function(e) {
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+      choppedBuffer += e.key.toLowerCase();
+      if (choppedBuffer.length > 10) choppedBuffer = choppedBuffer.slice(-10);
+      if (choppedBuffer.indexOf('chopped') !== -1) {
+        choppedBuffer = '';
+        document.body.classList.add('shaking');
+        setTimeout(function() { document.body.classList.remove('shaking'); }, 500);
+        var overlay = document.createElement('div');
+        overlay.className = 'chopped-overlay';
+        overlay.innerHTML = '<div class="chopped-text">CHOPPED 💀</div><div class="chopped-sub">Je bent officieel chopped. Klik om te accepteren.</div>';
+        overlay.onclick = function() { overlay.remove(); };
+        document.body.appendChild(overlay);
+      }
+      if (choppedBuffer.indexOf('1885') !== -1) {
+        choppedBuffer = '';
+        showMetaAIPopup('1885... het jaar dat alles begon. Of niet. Niemand weet het eigenlijk meer. Maar het is nu een meme en dat is alles wat telt.');
+      }
+      if (choppedBuffer.indexOf('dih') !== -1) {
+        choppedBuffer = '';
+        triggerEmojiRain();
+      }
+    });
+
+    // 5. META AI POPUP
+    var metaPopupTimer = null;
+    function showMetaAIPopup(text) {
+      var existing = document.querySelector('.meta-ai-popup');
+      if (existing) existing.remove();
+      var popup = document.createElement('div');
+      popup.className = 'meta-ai-popup';
+      popup.innerHTML = '<div class="meta-ai-popup-header"><span>🤖</span><span>Meta AI</span></div><div class="meta-ai-popup-text">' + text + '</div>';
+      popup.onclick = function() { popup.remove(); };
+      document.body.appendChild(popup);
+      if (metaPopupTimer) clearTimeout(metaPopupTimer);
+      metaPopupTimer = setTimeout(function() { popup.remove(); }, 8000);
+    }
+
+    // 6. RANDOM META AI (1% kans bij navigatie)
+    var origNavigate = navigate;
+    navigate = function(page) {
+      origNavigate(page);
+      if (Math.random() < 0.01) {
+        var msgs = [
+          'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
+          'Ik heb berekend dat Nathananiel gemiddeld 3.7 keer per dag geïrriteerd is.',
+          'Fun fact: Adam heeft meer stickers gestuurd dan woorden.',
+          'Reshman is 42% random. De andere 58% is nog randomner.',
+          'Fionn zei "boeiend" maar zijn hartslag steeg met 12%. Ik heb data.',
+          'Denize zei tot morgen 847 dagen geleden. We wachten nog steeds.',
+          'Josh probeert orde te houden. Mijn algoritme geeft hem een slagingskans van 2.3%.'
+        ];
+        setTimeout(function() {
+          showMetaAIPopup(msgs[Math.floor(Math.random() * msgs.length)]);
+        }, 2000);
+      }
+    };
   </script>
 </body>
 </html>
