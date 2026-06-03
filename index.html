@@ -3553,8 +3553,8 @@
       var empty = document.getElementById('rankingEmpty');
       var voteCount = document.getElementById('voteCount');
       var adminList = document.getElementById('adminVotesList');
-      list.inner = '';
-      if (adminList) adminList.inner = '';
+      list.innerHTML = '';
+      if (adminList) adminList.innerHTML = '';
       status.style.display = 'block';
       status.textContent = 'Laden...';
       empty.style.display = 'none';
@@ -3588,7 +3588,7 @@
 
         var colors = ['#F5C518', '#A0A0A0', '#CD7F32'];
 
-        list.inner = sorted.map(function(name, i) {
+        list.innerHTML = sorted.map(function(name, i) {
           var score = totals[name];
           var pct = Math.round((score / maxScore) * 100);
           var posColor = i < 3 ? colors[i] : 'rgba(26,26,46,0.15)';
@@ -3613,7 +3613,7 @@
             var tb = b.timestamp ? b.timestamp.seconds : 0;
             return tb - ta;
           });
-          adminList.inner = individualVotes.map(function(v) {
+          adminList.innerHTML = individualVotes.map(function(v) {
             var itemsSorted = Object.keys(v.items).sort(function(a, b) { return v.items[b] - v.items[a]; });
             var time = v.timestamp ? new Date(v.timestamp.seconds * 1000).toLocaleString('nl-NL') : 'onbekend';
             return '<div class="vote-entry" onclick="this.classList.toggle(\'expanded\')">' +
@@ -3761,7 +3761,7 @@
       var btn = document.getElementById('rankerStartBtn');
       var voterName = (document.getElementById('voterName').value || '').trim();
 
-      list.inner = rankerItems.map(function(item, i) {
+      list.innerHTML = rankerItems.map(function(item, i) {
         return '<div class="ranker-chip">' + item +
           '<button class="ranker-chip-remove" onclick="removeRankerItem(' + i + ')">×</button></div>';
       }).join('');
@@ -3993,7 +3993,7 @@
       var roundKeys = Object.keys(rounds).sort(function(a,b) { return a - b; });
       var lastRound = roundKeys[roundKeys.length - 1];
 
-      var  = '<div class="bracket-winner" style="margin-bottom:32px;">' +
+      var html = '<div class="bracket-winner" style="margin-bottom:32px;">' +
         '<div class="bracket-winner-emoji">🏆</div>' +
         '<div class="bracket-winner-name">' + winner + '</div>' +
         '<div class="bracket-winner-sub">Winnaar van het bracket!</div>' +
@@ -4026,7 +4026,7 @@
         '</div></div>';
 
        += '</div></div>';
-      list.inner = ;
+      list.innerHTML = ;
 
       if (activePresetCategory) {
         saveRankingToFirebase(activePresetCategory, wins);
@@ -4041,7 +4041,7 @@
       var maxWins = wins[sorted[0]] || 1;
       var list = document.getElementById('resultsList');
 
-      list.inner = sorted.map(function(item, i) {
+      list.innerHTML = sorted.map(function(item, i) {
         var pct = Math.round((wins[item] / maxWins) * 100);
         return '<div class="result-item" style="animation-delay: ' + (i * 0.08) + 's;">' +
           '<div class="result-pos">' + (i + 1) + '</div>' +
@@ -4093,7 +4093,7 @@
     function renderMemes(memes) {
       var wall = document.getElementById('memeWall');
       var count = document.getElementById('memeCount');
-      wall.inner = memes.map(function(m, idx) {
+      wall.innerHTML = memes.map(function(m, idx) {
         var safe = m.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         var delBtn = '';
         if (hasPermission('lore')) {
@@ -4254,7 +4254,7 @@
     function renderCatItems() {
       var list = document.getElementById('catItemsList');
       var btn = document.getElementById('catSaveBtn');
-      list.inner = catItems.map(function(item, i) {
+      list.innerHTML = catItems.map(function(item, i) {
         return '<span class="modal-item-chip">' + item.replace(/</g, '&lt;') +
           '<button class="modal-item-remove" onclick="removeCatItem(' + i + ')">x</button></span>';
       }).join('');
@@ -4310,7 +4310,7 @@
 
     function renderPresetButtons() {
       var row = document.getElementById('presetRow');
-      var  = '<button class="preset-btn" onclick="loadPreset(\'leden\')">👑 Groepsleden</button>';
+      var html = '<button class="preset-btn" onclick="loadPreset(\'leden\')">👑 Groepsleden</button>';
        += '<button class="preset-btn" onclick="loadPreset(\'docenten\')">🎓 Docenten</button>';
 
       Object.keys(customCategories).forEach(function(id) {
@@ -4325,7 +4325,7 @@
       });
 
        += '<button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>';
-      row.inner = ;
+      row.innerHTML = ;
 
       renderRankingTabs();
     }
@@ -4333,7 +4333,7 @@
     function renderRankingTabs() {
       var tabs = document.getElementById('rankingTabs');
       if (!tabs) return;
-      var  = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">👑 Groepsleden</button>';
+      var html = '<button class="ranking-tab' + (currentCategory === 'leden' ? ' active' : '') + '" onclick="switchTab(this, \'leden\')">👑 Groepsleden</button>';
        += '<button class="ranking-tab' + (currentCategory === 'docenten' ? ' active' : '') + '" onclick="switchTab(this, \'docenten\')">🎓 Docenten</button>';
 
       Object.keys(customCategories).forEach(function(id) {
@@ -4341,7 +4341,7 @@
          += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + cat.emoji + ' ' + cat.name + '</button>';
       });
 
-      tabs.inner = ;
+      tabs.innerHTML = ;
     }
 
     function loadCustomCategories() {
@@ -4375,7 +4375,7 @@
       var pool = document.getElementById('tierlistPool');
       var tiers = ['S','A','B','C','D','F'];
 
-      board.inner = tiers.map(function(t) {
+      board.innerHTML = tiers.map(function(t) {
         return '<div class="tier-row">' +
           '<div class="tier-label tier-' + t.toLowerCase() + '">' + t + '</div>' +
           '<div class="tier-items" onclick="moveTierItem(event, \'' + t + '\')">' +
@@ -4387,14 +4387,14 @@
       }).join('');
 
       if (tierPool.length > 0) {
-        pool.inner = '<div class="tier-pool"><div class="tier-pool-label">Items om te plaatsen (' + tierPool.length + ' over)</div>' +
+        pool.innerHTML = '<div class="tier-pool"><div class="tier-pool-label">Items om te plaatsen (' + tierPool.length + ' over)</div>' +
           '<div class="tier-pool-items">' +
             tierPool.map(function(item) {
               return '<div class="tier-pool-chip" onclick="selectTierItem(\'' + item.replace(/'/g, "\\'") + '\')">' + item + '</div>';
             }).join('') +
           '</div></div>';
       } else {
-        pool.inner = '';
+        pool.innerHTML = '';
       }
 
       document.getElementById('tierlistSaveBtn').disabled = tierPool.length > 0;
@@ -4449,7 +4449,7 @@
 
       var tiers = ['S','A','B','C','D','F'];
       var list = document.getElementById('resultsList');
-      var  = '<div style="margin-bottom:24px;">';
+      var html = '<div style="margin-bottom:24px;">';
       tiers.forEach(function(t) {
         if (tierData[t].length === 0) return;
          += '<div class="tier-row" style="margin-bottom:6px;">' +
@@ -4461,7 +4461,7 @@
           '</div></div>';
       });
        += '</div>';
-      list.inner = ;
+      list.innerHTML = ;
     }
 
     // ===== LORE STORIES =====
@@ -4472,10 +4472,10 @@
       if (!container) return;
       db.collection('stories').orderBy('timestamp', 'desc').get().then(function(snapshot) {
         if (snapshot.empty) {
-          container.inner = '<div class="stories-empty">Nog geen verhalen. Voeg de eerste toe!</div>';
+          container.innerHTML = '<div class="stories-empty">Nog geen verhalen. Voeg de eerste toe!</div>';
           return;
         }
-        var  = '';
+        var html = '';
         snapshot.forEach(function(doc) {
           var s = doc.data();
           var safe = function(t) { return (t || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
@@ -4490,9 +4490,9 @@
             '<button class="preset-btn-delete" style="display:inline;font-size:0.7rem;" onclick="deleteStory(\'' + doc.id + '\')">verwijder</button>' +
           '</div></div>';
         });
-        container.inner = ;
+        container.innerHTML = ;
       }).catch(function() {
-        container.inner = '<div class="stories-empty">Kon verhalen niet laden</div>';
+        container.innerHTML = '<div class="stories-empty">Kon verhalen niet laden</div>';
       });
     }
 
@@ -4511,7 +4511,7 @@
           }
         });
       } else {
-        document.getElementById('storyModalTitle').inner = 'Verhaal Toevoegen 📖';
+        document.getElementById('storyModalTitle').innerHTML = 'Verhaal Toevoegen 📖';
         document.getElementById('storyTitle').value = '';
         document.getElementById('storyTag').value = '';
         document.getElementById('storyText').value = '';
@@ -4608,7 +4608,7 @@
       document.getElementById('blindHint').textContent = 'Item ' + (blindCurrent + 1) + ' van ' + blindOrder.length + ' — elke score kan maar 1x! Nog ' + remaining + ' items.';
 
       var btns = document.getElementById('blindScoreButtons');
-      var  = '';
+      var html = '';
       var scoreColors10 = ['#1A1A2E','#0F3460','#0F3460','#845EC2','#845EC2','#E94560','#FF9A3C','#F5C518','#F5C518','#16C79A'];
       var scoreColors5 = ['#1A1A2E','#E94560','#FF9A3C','#F5C518','#16C79A'];
 
@@ -4621,14 +4621,14 @@
            += '<button class="blind-score-btn" style="border-color:' + col + ';color:' + col + ';" onclick="blindScore(' + s + ')">' + s + '</button>';
         }
       }
-      btns.inner = ;
+      btns.innerHTML = ;
 
       var scoredList = document.getElementById('blindScoredList');
       var scored = '';
       Object.keys(blindScores).forEach(function(name) {
         scored += '<div class="blind-scored-chip"><span class="blind-scored-name">' + name + '</span><span class="blind-scored-score">' + blindScores[name] + '/' + blindMaxScore + '</span></div>';
       });
-      scoredList.inner = scored || '<span style="color:rgba(26,26,46,0.2);font-size:0.8rem;">Nog geen items gescoord</span>';
+      scoredList.innerHTML = scored || '<span style="color:rgba(26,26,46,0.2);font-size:0.8rem;">Nog geen items gescoord</span>';
     }
 
     function blindScore(score) {
@@ -4653,7 +4653,7 @@
 
       var sorted = Object.keys(blindScores).sort(function(a, b) { return blindScores[b] - blindScores[a]; });
       var list = document.getElementById('resultsList');
-      list.inner = sorted.map(function(item, i) {
+      list.innerHTML = sorted.map(function(item, i) {
         var pct = Math.round((blindScores[item] / blindMaxScore) * 100);
         return '<div class="result-item" style="animation-delay:' + (i * 0.06) + 's;">' +
           '<div class="result-pos">' + (i + 1) + '</div>' +
@@ -4699,7 +4699,7 @@
         var maxCount = counts[sorted[0]];
 
         document.getElementById('statsTotalNum').textContent = total.toLocaleString();
-        var  = '';
+        var html = '';
         sorted.forEach(function(name, i) {
           var pct = ((counts[name] / total) * 100).toFixed(1);
           var barPct = Math.round((counts[name] / maxCount) * 100);
@@ -4710,7 +4710,7 @@
             '<div class="stats-bar-count">' + counts[name].toLocaleString() + '</div>' +
           '</div>';
         });
-        document.getElementById('statsBarList').inner = ;
+        document.getElementById('statsBarList').innerHTML = ;
         document.getElementById('statsUpload').style.display = 'none';
         document.getElementById('statsResults').classList.add('active');
       };
@@ -4744,7 +4744,7 @@
     function renderMemberSocials() {
       var list = document.getElementById('memSocialsList');
       if (!list) return;
-      list.inner = memberSocials.map(function(s, i) {
+      list.innerHTML = memberSocials.map(function(s, i) {
         return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:0.85rem;">' +
           '<span style="font-weight:700;">' + s.service + '</span>' +
           '<span style="color:rgba(26,26,46,0.5);">' + s.username + '</span>' +
@@ -4805,7 +4805,7 @@
       var container = document.getElementById('membersContainer');
       if (!container) return;
       var groups = ['admin','kern','ere','stil'];
-      var  = '';
+      var html = '';
       groups.forEach(function(g) {
         var items = membersData.filter(function(m) { return m.group === g; });
         if (items.length === 0) return;
@@ -4844,7 +4844,7 @@
         });
          += '</div>';
       });
-      container.inner = ;
+      container.innerHTML = ;
     }
 
     function openMemberModal(editId) {
@@ -5092,19 +5092,19 @@
         if (doc.exists && doc.data().passwordHash) {
           document.getElementById('adminSetup').style.display = 'none';
           document.getElementById('adminLogin').style.display = 'block';
-          document.getElementById('adminTitle').inner = 'Admin Login 🔒';
+          document.getElementById('adminTitle').innerHTML = 'Admin Login 🔒';
           document.getElementById('adminSub').textContent = 'Voer je wachtwoord in';
         } else {
           document.getElementById('adminSetup').style.display = 'block';
           document.getElementById('adminLogin').style.display = 'none';
-          document.getElementById('adminTitle').inner = 'Admin Setup 🔑';
+          document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
           document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
         }
         document.getElementById('adminModal').classList.add('active');
       }).catch(function() {
         document.getElementById('adminSetup').style.display = 'block';
         document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('adminTitle').inner = 'Admin Setup 🔑';
+        document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
         document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
         document.getElementById('adminModal').classList.add('active');
       });
@@ -5208,7 +5208,7 @@
     function showRoleManager() {
       document.getElementById('adminSetup').style.display = 'none';
       document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminTitle').inner = '🔐 Rol Beheer';
+      document.getElementById('adminTitle').innerHTML = '🔐 Rol Beheer';
       document.getElementById('adminSub').textContent = 'Stel wachtwoorden in voor sub-admins';
       document.getElementById('roleManager').style.display = 'block';
 
@@ -5223,7 +5223,7 @@
     function renderRoleManager(currentRoles) {
       var list = document.getElementById('roleList');
       var subRoles = ['lore','leden','ranking','berichten'];
-      list.inner = subRoles.map(function(role) {
+      list.innerHTML = subRoles.map(function(role) {
         var info = adminRoles[role];
         var hasPass = currentRoles[role] ? true : false;
         return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:14px;background:var(--bg);border-radius:12px;">' +
@@ -5273,14 +5273,14 @@
       if (!msgList) return;
       db.collection('berichten').orderBy('timestamp', 'desc').get().then(function(snapshot) {
         if (snapshot.empty) {
-          msgList.inner = '<div style="text-align:center;padding:20px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Nog geen berichten ontvangen</div>';
+          msgList.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Nog geen berichten ontvangen</div>';
           return;
         }
-        msgList.inner = '';
+        msgList.innerHTML = '';
         snapshot.forEach(function(doc) {
           var d = doc.data();
           var time = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
-          msgList.inner += '<div class="msg-entry">' +
+          msgList.innerHTML += '<div class="msg-entry">' +
             '<div class="msg-entry-header">' +
               '<div class="msg-entry-name">' + (d.naam || 'Onbekend') + (d.email ? ' (' + d.email + ')' : '') + '</div>' +
               '<div class="msg-entry-subject">' + (d.onderwerp || '') + '</div>' +
