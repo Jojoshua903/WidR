@@ -6189,6 +6189,32 @@
       }
     }
 
+    function triggerDihRain() {
+      var texts = ['haha jij zei dih 🍆','DIH 🍆🍆','dih moment 🍆','🍆🍆🍆','JIJ ZEI DIH','what about the dih 🍆','i have a dih 🍆','grip op je dih 🍆'];
+      for (var i = 0; i < 50; i++) {
+        (function(delay) {
+          setTimeout(function() {
+            var el = document.createElement('div');
+            el.className = 'emoji-rain';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+            if (Math.random() < 0.5) {
+              el.textContent = '🍆';
+              el.style.fontSize = (1.5 + Math.random() * 2.5) + 'rem';
+            } else {
+              el.textContent = texts[Math.floor(Math.random() * texts.length)];
+              el.style.fontSize = (0.8 + Math.random() * 0.6) + 'rem';
+              el.style.fontWeight = '800';
+              el.style.color = '#' + ['E94560','F5C518','845EC2','16C79A','FF9A3C'][Math.floor(Math.random()*5)];
+              el.style.whiteSpace = 'nowrap';
+            }
+            document.body.appendChild(el);
+            setTimeout(function() { el.remove(); }, 6000);
+          }, delay);
+        })(i * 60);
+      }
+    }
+
     function triggerChaosMode() {
       document.body.classList.add('chaos-mode');
       var banner = document.createElement('div');
@@ -6270,7 +6296,7 @@
         }
         if (eggBuffer.indexOf('dih') !== -1) {
           eggBuffer = '';
-          triggerEmojiRain();
+          triggerDihRain();
         }
         if (eggBuffer.indexOf('metaai') !== -1) {
           eggBuffer = '';
