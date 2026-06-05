@@ -3950,7 +3950,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (page === 'rankings') loadRankings(currentCategory);
-      if (page === 'soundboard' && !soundsLoaded) { loadSounds(); soundsLoaded = true; }
+      if (page === 'soundboard') { loadSounds(); }
       if (page === 'lore' && !loreLoaded) { loadStories(); loadMemes(); loreLoaded = true; }
       if (page === 'members' && !membersLoaded) { loadMembers(); loadSections(); membersLoaded = true; }
       if (page === 'stats') {}
@@ -5582,7 +5582,10 @@
     function renderSoundboard() {
       var grid = document.getElementById('soundboardGrid');
       var empty = document.getElementById('soundboardEmpty');
+      var adminDiv = document.querySelector('.soundboard-admin');
       if (!grid) return;
+
+      if (adminDiv) adminDiv.style.display = hasPermission('soundboard') ? 'block' : 'none';
 
       if (soundsData.length === 0) {
         grid.innerHTML = '';
