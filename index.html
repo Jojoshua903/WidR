@@ -3957,12 +3957,21 @@
       document.getElementById('navLinks').classList.remove('open');
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
+      window.location.hash = page;
+
       if (page === 'rankings') loadRankings(currentCategory);
       if (page === 'soundboard') { loadSounds(); }
       if (page === 'lore' && !loreLoaded) { loadStories(); loadMemes(); loreLoaded = true; }
       if (page === 'members' && !membersLoaded) { loadMembers(); loadSections(); membersLoaded = true; }
       if (page === 'stats') {}
     }
+
+    (function() {
+      var hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById('page-' + hash)) {
+        navigate(hash);
+      }
+    })();
 
     function toggleMenu() {
       document.getElementById('navLinks').classList.toggle('open');
