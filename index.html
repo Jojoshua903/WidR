@@ -3885,9 +3885,17 @@
             name: user.displayName || user.email.split('@')[0],
             lastLogin: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true }).catch(function() {});
-          // Auto master for owner
+          // Auto master for owner + ban check
           var isSiteOwner = (user.email === 'joshibrahim903@gmail.com');
           db.collection('users').doc(user.uid).get().then(function(doc) {
+            if (doc.exists && doc.data().banned && !isSiteOwner) {
+              auth.signOut();
+              var el = document.getElementById('loginError');
+              el.style.color = 'var(--accent)';
+              el.textContent = 'Je account is gebanned. Neem contact op met een admin.';
+              el.style.display = 'block';
+              return;
+            }
             if (doc.exists && doc.data().roles) {
               userRoles = doc.data().roles;
             } else {
@@ -5823,8 +5831,11 @@
 
   <!-- ADMIN LOGIN MODAL -->
   <div class="modal-overlay" id="adminModal">
-    <div class="modal">
+    <div class="modal" style="position:relative;">
       <h2 id="adminTitle">Admin Login 🔒</h2>
+      <div style="position:absolute;top:16px;right:16px;">
+        <button onclick="closeAdminModal()" style="width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);transition:all 0.2s;" onmouseover="this.style.background='rgba(233,69,96,0.1)';this.style.color='var(--accent)'" onmouseout="this.style.background='rgba(26,26,46,0.06)';this.style.color='rgba(26,26,46,0.4)'">✕</button>
+      </div>
       <div class="modal-sub" id="adminSub">Voer je wachtwoord in</div>
 
       <div id="adminSetup" style="display:none;">
@@ -6131,10 +6142,16 @@
               '<span style="color:' + opt.color + ';">' + opt.label + '</span></label>';
           }).join(' ');
 
-          usersHtml += '<div style="padding:12px 14px;background:var(--bg);border-radius:12px;margin-bottom:8px;border:1px solid rgba(26,26,46,0.06);">' +
+          var isBanned = u.banned || false;
+          var isOwner = (u.email === 'joshibrahim903@gmail.com');
+
+          usersHtml += '<div style="padding:12px 14px;background:' + (isBanned ? 'rgba(233,69,96,0.06)' : 'var(--bg)') + ';border-radius:12px;margin-bottom:8px;border:1px solid ' + (isBanned ? 'rgba(233,69,96,0.2)' : 'rgba(26,26,46,0.06)') + ';">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-              '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
-              '<div style="font-size:0.6rem;color:rgba(26,26,46,0.3);">' + time + '</div>' +
+              '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + (isBanned ? ' <span style="background:var(--accent);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;margin-left:6px;">BANNED</span>' : '') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
+              '<div style="display:flex;align-items:center;gap:6px;">' +
+                '<div style="font-size:0.6rem;color:rgba(26,26,46,0.3);">' + time + '</div>' +
+                (isOwner ? '' : '<button onclick="toggleBan(\'' + uid + '\',' + !isBanned + ')" style="padding:4px 10px;background:' + (isBanned ? 'var(--mint)' : 'var(--accent)') + ';color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;">' + (isBanned ? 'Unban' : 'Ban') + '</button>') +
+              '</div>' +
             '</div>' +
             '<div style="margin-bottom:6px;">' + (roleBadges || '<span style="font-size:0.65rem;color:rgba(26,26,46,0.3);">Geen rollen</span>') + '</div>' +
             '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + roleCheckboxes + '</div>' +
@@ -6154,6 +6171,14 @@
         }
         return db.collection('users').doc(uid).update({ roles: roles });
       }).then(function() {
+        loadUsersList();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function toggleBan(uid, ban) {
+      var action = ban ? 'bannen' : 'unbannen';
+      if (!confirm('Weet je zeker dat je deze gebruiker wilt ' + action + '?')) return;
+      db.collection('users').doc(uid).update({ banned: ban }).then(function() {
         loadUsersList();
       }).catch(function(err) { console.error(err); });
     }
