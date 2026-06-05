@@ -3279,11 +3279,11 @@
         </div>
 
         <div class="voter-name-section">
-          <div class="voter-name-label">Jouw naam</div>
-          <input type="text" class="voter-name-input" id="voterName" placeholder="Vul je naam in om te stemmen..." oninput="checkStartReady()">
+          <div class="voter-name-label">Ingelogd als</div>
+          <input type="text" class="voter-name-input" id="voterName" readonly style="opacity:0.7;cursor:default;">
         </div>
 
-        <button class="ranker-start-btn" id="rankerStartBtn" onclick="startBattle()" disabled style="margin-top:16px;">Start Ranking (minimaal 3 items + naam)</button>
+        <button class="ranker-start-btn" id="rankerStartBtn" onclick="startBattle()" disabled style="margin-top:16px;">Start Ranking (minimaal 3 items)</button>
       </div>
 
       <!-- BATTLE -->
@@ -3713,7 +3713,9 @@
     var db = null;
     var isAdmin = false;
     var adminRole = null;
+    var userRoles = [];
     function hasPermission(perm) {
+      if (userRoles.indexOf(perm) !== -1 || userRoles.indexOf('master') !== -1) return true;
       if (!isAdmin || !adminRole) return false;
       if (adminRole === 'master') return true;
       var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'], soundboard:['soundboard'] };
@@ -3731,10 +3733,33 @@
         appId: "1:138866882601:web:eee27036c5d95bdbc2c438"
       });
       db = firebase.firestore();
+      db.enablePersistence({ synchronizeTabs: true }).catch(function(err) {});
     } catch(e) {
       db = { collection: function() { return { get: function() { return Promise.reject(); }, doc: function() { return { get: function() { return Promise.reject(); }, set: function() { return Promise.reject(); }, update: function() { return Promise.reject(); }, delete: function() { return Promise.reject(); } }; }, add: function() { return Promise.reject(); }, where: function() { return { get: function() { return Promise.reject(); } }; }, orderBy: function() { return { get: function() { return Promise.reject(); } }; } }; } };
     }
     var currentCategory = 'leden';
+    var loreLoaded = false;
+    var membersLoaded = false;
+    var soundsLoaded = false;
+    var statsLoaded = false;
+
+    function cachedGet(key, collectionRef, maxAgeMinutes) {
+      try {
+        var cached = localStorage.getItem('widr_cache_' + key);
+        if (cached) {
+          var parsed = JSON.parse(cached);
+          if (Date.now() - parsed.ts < maxAgeMinutes * 60000) {
+            return Promise.resolve(parsed.data);
+          }
+        }
+      } catch(e) {}
+      return collectionRef.get().then(function(snapshot) {
+        var data = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d._id = doc.id; data.push(d); });
+        try { localStorage.setItem('widr_cache_' + key, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
+        return data;
+      });
+    }
 
     // ===== FIREBASE AUTH =====
     var auth = null;
@@ -3860,6 +3885,31 @@
             name: user.displayName || user.email.split('@')[0],
             lastLogin: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true }).catch(function() {});
+          // Auto master for owner
+          var isSiteOwner = (user.email === 'joshibrahim903@gmail.com');
+          db.collection('users').doc(user.uid).get().then(function(doc) {
+            if (doc.exists && doc.data().roles) {
+              userRoles = doc.data().roles;
+            } else {
+              userRoles = [];
+            }
+            if (isSiteOwner && userRoles.indexOf('master') === -1) {
+              userRoles.push('master');
+              db.collection('users').doc(user.uid).update({ roles: userRoles }).catch(function() {});
+            }
+            if (userRoles.indexOf('master') !== -1) {
+              isAdmin = true;
+              adminRole = 'master';
+              ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+            } else if (userRoles.length > 0) {
+              userRoles.forEach(function(r) {
+                document.body.classList.add('perm-' + r);
+              });
+            }
+            renderMembers();
+            if (typeof renderSoundboard === 'function') renderSoundboard();
+            renderMemes(allMemes);
+          }).catch(function() { userRoles = []; });
         } else {
           currentUser = null;
           loggedInUser = null;
@@ -3892,7 +3942,10 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (page === 'rankings') loadRankings(currentCategory);
-      if (page === 'soundboard') loadSounds();
+      if (page === 'soundboard' && !soundsLoaded) { loadSounds(); soundsLoaded = true; }
+      if (page === 'lore' && !loreLoaded) { loadStories(); loadMemes(); loreLoaded = true; }
+      if (page === 'members' && !membersLoaded) { loadMembers(); loadSections(); membersLoaded = true; }
+      if (page === 'stats') {}
     }
 
     function toggleMenu() {
@@ -3935,7 +3988,7 @@
       empty.style.display = 'none';
       voteCount.textContent = '';
 
-      db.collection('rankings').where('category', '==', category).get().then(function(snapshot) {
+      db.collection('rankings').where('category', '==', category).limit(200).get().then(function(snapshot) {
         var totals = {};
         var totalVotes = 0;
         var individualVotes = [];
@@ -4144,7 +4197,14 @@
       var list = document.getElementById('rankerItemsList');
       var count = document.getElementById('rankerItemCount');
       var btn = document.getElementById('rankerStartBtn');
-      var voterName = (document.getElementById('voterName').value || '').trim();
+      var voterInput = document.getElementById('voterName');
+
+      if (currentUser) {
+        voterInput.value = currentUser.displayName || currentUser.email.split('@')[0];
+      } else {
+        voterInput.value = '';
+      }
+      var voterName = voterInput.value.trim();
 
       list.innerHTML = rankerItems.map(function(item, i) {
         return '<div class="ranker-chip">' + item +
@@ -4169,9 +4229,9 @@
       } else {
         btn.disabled = true;
         if (rankerItems.length < 3) {
-          btn.textContent = 'Start Ranking (minimaal 3 items + naam)';
+          btn.textContent = 'Start Ranking (minimaal 3 items)';
         } else {
-          btn.textContent = 'Vul je naam in om te starten';
+          btn.textContent = 'Log in om te starten';
         }
       }
     }
@@ -4472,34 +4532,45 @@
 
     // ===== LIVE HOMEPAGE STATS =====
     function loadLiveStats() {
-      var defaultMemberCount = 12;
-      db.collection('members').get().then(function(snapshot) {
-        var fbIds = [];
-        snapshot.forEach(function(doc) { fbIds.push(doc.id); });
-        var total = defaultMemberCount;
-        fbIds.forEach(function(id) {
-          var isDefault = ['josh','lors','fionn','nath','reshman','daniel','milo','adam','metaai','maciek','denize','sichen'].indexOf(id) !== -1;
+      try {
+        var cached = localStorage.getItem('widr_cache_stats');
+        if (cached) {
+          var parsed = JSON.parse(cached);
+          if (Date.now() - parsed.ts < 600000) {
+            document.getElementById('liveStatLeden').textContent = parsed.leden;
+            document.getElementById('liveStatRankings').textContent = parsed.rankings;
+            document.getElementById('liveStatCategories').textContent = parsed.categories;
+            return;
+          }
+        }
+      } catch(e) {}
+
+      var statsData = { leden: 12, rankings: '0', categories: 2, ts: Date.now() };
+
+      cachedGet('members_count', db.collection('members'), 10).then(function(data) {
+        var total = 12;
+        data.forEach(function(d) {
+          var isDefault = ['josh','lors','fionn','nath','reshman','daniel','milo','adam','metaai','maciek','denize','sichen'].indexOf(d._id) !== -1;
           if (!isDefault) total++;
         });
+        statsData.leden = total;
         document.getElementById('liveStatLeden').textContent = total;
-      }).catch(function() {
-        document.getElementById('liveStatLeden').textContent = defaultMemberCount;
-      });
+      }).catch(function() {});
 
-      db.collection('rankings').get().then(function(snapshot) {
-        var count = snapshot.size;
-        var display = count >= 1000 ? Math.floor(count / 1000) + 'K+' : count.toString();
-        document.getElementById('liveStatRankings').textContent = display;
-      }).catch(function() {
-        document.getElementById('liveStatRankings').textContent = '0';
-      });
-
-      db.collection('categories').get().then(function(snapshot) {
-        var count = 2 + snapshot.size;
+      cachedGet('categories_count', db.collection('categories'), 10).then(function(data) {
+        var count = 2 + data.length;
+        statsData.categories = count;
         document.getElementById('liveStatCategories').textContent = count;
-      }).catch(function() {
-        document.getElementById('liveStatCategories').textContent = '2';
-      });
+      }).catch(function() {});
+
+      cachedGet('rankings_count', db.collection('rankings'), 10).then(function(data) {
+        var count = data.length;
+        var display = count >= 1000 ? Math.floor(count / 1000) + 'K+' : count.toString();
+        statsData.rankings = display;
+        document.getElementById('liveStatRankings').textContent = display;
+        statsData.ts = Date.now();
+        try { localStorage.setItem('widr_cache_stats', JSON.stringify(statsData)); } catch(e) {}
+      }).catch(function() {});
     }
     loadLiveStats();
 
@@ -4594,7 +4665,7 @@
       });
     }
 
-    loadMemes();
+    // memes lazy-loaded when visiting Lore page
   </script>
 
   <!-- CATEGORY MODAL -->
@@ -4783,11 +4854,10 @@
     }
 
     function loadCustomCategories() {
-      db.collection('categories').get().then(function(snapshot) {
-        snapshot.forEach(function(doc) {
-          var data = doc.data();
-          presets[doc.id] = data.items;
-          customCategories[doc.id] = { name: data.name, emoji: data.emoji || '🏷️' };
+      cachedGet('categories', db.collection('categories'), 10).then(function(data) {
+        data.forEach(function(d) {
+          presets[d._id] = d.items;
+          customCategories[d._id] = { name: d.name, emoji: d.emoji || '🏷️' };
         });
         renderPresetButtons();
       }).catch(function() {});
@@ -5003,7 +5073,7 @@
       db.collection('stories').doc(id).delete().then(function() { loadStories(); });
     }
 
-    loadStories();
+    // stories lazy-loaded when visiting Lore page
 
     // ===== BLIND RANKING =====
     var blindOrder = [];
@@ -5628,10 +5698,8 @@
       }).catch(function() {});
     }
 
-    loadSounds();
-
-    loadMembers();
-    loadSections();
+    // sounds, members, sections lazy-loaded when visiting their pages
+    loadCustomCategories();
   </script>
 
   <!-- TIER SELECT -->
@@ -5787,8 +5855,9 @@
         <div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-top:12px;line-height:1.5;">Geef deze wachtwoorden aan anderen. Ze krijgen alleen toegang tot de bijbehorende functies.</div>
 
         <div style="margin-top:20px;padding-top:20px;border-top:2px solid rgba(26,26,46,0.06);">
-          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:12px;">👥 Ingelogde Gebruikers</div>
-          <div id="usersList" style="font-size:0.8rem;color:rgba(26,26,46,0.5);">Laden...</div>
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:4px;">👥 Gebruikers & Rollen</div>
+          <div style="font-size:0.65rem;color:rgba(26,26,46,0.35);margin-bottom:12px;">Vink rollen aan/uit per gebruiker — zoals Discord rollen</div>
+          <div id="usersList" style="font-size:0.8rem;color:rgba(26,26,46,0.5);max-height:400px;overflow-y:auto;">Laden...</div>
         </div>
       </div>
     </div>
@@ -5818,6 +5887,20 @@
     }
 
     function openAdminLogin() {
+      if (currentUser && currentUser.email === 'joshibrahim903@gmail.com') {
+        isAdmin = true;
+        adminRole = 'master';
+        activateAdmin();
+        showRoleManager();
+        return;
+      }
+      if (currentUser && userRoles.indexOf('master') !== -1) {
+        isAdmin = true;
+        adminRole = 'master';
+        activateAdmin();
+        showRoleManager();
+        return;
+      }
       if (isAdmin) {
         if (adminRole === 'master') {
           showRoleManager();
@@ -6015,6 +6098,15 @@
       });
     }
 
+    var allRoleOptions = [
+      { id: 'master', label: '👑 Master', color: '#F5C518', desc: 'Volledige toegang' },
+      { id: 'lore', label: '📜 Lore', color: '#845EC2', desc: 'Verhalen & memes' },
+      { id: 'leden', label: '👥 Leden', color: '#16C79A', desc: 'Leden beheren' },
+      { id: 'ranking', label: '🏆 Ranking', color: '#E94560', desc: 'Categorieën & stemmen' },
+      { id: 'berichten', label: '📬 Berichten', color: '#0F3460', desc: 'Berichten bekijken' },
+      { id: 'soundboard', label: '🔊 Soundboard', color: '#FF6B6B', desc: 'Geluiden beheren' }
+    ];
+
     function loadUsersList() {
       var list = document.getElementById('usersList');
       if (!list) return;
@@ -6023,13 +6115,47 @@
         var usersHtml = '';
         snapshot.forEach(function(doc) {
           var u = doc.data();
+          var uid = doc.id;
+          var roles = u.roles || [];
           var time = u.lastLogin ? new Date(u.lastLogin.seconds * 1000).toLocaleString('nl-NL') : 'onbekend';
-          usersHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;">' +
-            '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
-            '<div style="font-size:0.65rem;color:rgba(26,26,46,0.35);">' + time + '</div></div>';
+
+          var roleBadges = roles.map(function(r) {
+            var opt = allRoleOptions.find(function(o) { return o.id === r; });
+            return '<span style="display:inline-block;padding:2px 8px;border-radius:100px;font-size:0.6rem;font-weight:700;background:' + (opt ? opt.color : '#888') + ';color:white;margin-right:4px;">' + (opt ? opt.label : r) + '</span>';
+          }).join('');
+
+          var roleCheckboxes = allRoleOptions.map(function(opt) {
+            var checked = roles.indexOf(opt.id) !== -1;
+            return '<label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:0.65rem;font-weight:600;color:rgba(26,26,46,0.6);padding:3px 0;">' +
+              '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="toggleUserRole(\'' + uid + '\',\'' + opt.id + '\',this.checked)" style="cursor:pointer;">' +
+              '<span style="color:' + opt.color + ';">' + opt.label + '</span></label>';
+          }).join(' ');
+
+          usersHtml += '<div style="padding:12px 14px;background:var(--bg);border-radius:12px;margin-bottom:8px;border:1px solid rgba(26,26,46,0.06);">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+              '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
+              '<div style="font-size:0.6rem;color:rgba(26,26,46,0.3);">' + time + '</div>' +
+            '</div>' +
+            '<div style="margin-bottom:6px;">' + (roleBadges || '<span style="font-size:0.65rem;color:rgba(26,26,46,0.3);">Geen rollen</span>') + '</div>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + roleCheckboxes + '</div>' +
+          '</div>';
         });
         list.innerHTML = usersHtml;
       }).catch(function() { list.textContent = 'Kon gebruikers niet laden'; });
+    }
+
+    function toggleUserRole(uid, role, enabled) {
+      db.collection('users').doc(uid).get().then(function(doc) {
+        var roles = (doc.exists && doc.data().roles) || [];
+        if (enabled && roles.indexOf(role) === -1) {
+          roles.push(role);
+        } else if (!enabled) {
+          roles = roles.filter(function(r) { return r !== role; });
+        }
+        return db.collection('users').doc(uid).update({ roles: roles });
+      }).then(function() {
+        loadUsersList();
+      }).catch(function(err) { console.error(err); });
     }
 
     function loadAdminMessages() {
@@ -6435,14 +6561,11 @@
     }
 
     function loadTranslationsFromFirebase() {
-      try {
-        db.collection('translations').get().then(function(snapshot) {
-          snapshot.forEach(function(doc) {
-            firebaseTranslations[doc.id] = doc.data();
-          });
-          // Also load custom languages
-        }).catch(function() {});
-      } catch(e) {}
+      cachedGet('translations', db.collection('translations'), 30).then(function(data) {
+        data.forEach(function(d) {
+          firebaseTranslations[d._id] = d;
+        });
+      }).catch(function() {});
     }
 
     loadTranslationsFromFirebase();
