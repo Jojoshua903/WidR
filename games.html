@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wat in de Ranking | Games</title>
+<style>
+:root {
+  --bg: #0a0a12;
+  --bg-card: #14142a;
+  --bg-card-hover: #1c1c3a;
+  --bg-surface: #1a1a30;
+  --text: #f0f0f5;
+  --text-dim: #8888aa;
+  --accent: #FF6B00;
+  --accent-glow: rgba(255,107,0,0.25);
+  --accent2: #FF3366;
+  --accent3: #6C5CE7;
+  --accent4: #00D2FF;
+  --radius: 16px;
+  --font: 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-hover: 0 8px 40px rgba(0,0,0,0.5);
+  --border: 1px solid rgba(255,255,255,0.06);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.view { display: none; min-height: 100vh; }
+.view.active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes glow { 0%,100% { box-shadow: 0 0 20px var(--accent-glow); } 50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(255,107,0,0.1); } }
+@keyframes confetti-fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+@keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* ===== TOP NAV ===== */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: rgba(10,10,18,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.nav-link {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-card); }
+.nav-link.active { color: var(--accent); background: rgba(255,107,0,0.1); }
+
+/* ===== HOME ===== */
+.home-hero {
+  text-align: center;
+  padding: 80px 20px 40px;
+  position: relative;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-emoji { font-size: 56px; display: block; margin-bottom: 16px; position: relative; z-index: 1; animation: float 3s ease-in-out infinite; }
+.hero-title {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+.hero-title .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 17px;
+  color: var(--text-dim);
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  margin-top: 32px;
+  position: relative;
+  z-index: 1;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent);
+}
+.hero-stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.game-grid {
+  max-width: 900px;
+  margin: 40px auto 80px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.game-card {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--bg-card);
+  border: var(--border);
+}
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(255,255,255,0.1);
+}
+.game-card .card-rank {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.game-card .card-emoji {
+  font-size: 40px;
+  margin-bottom: 10px;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+.game-card .card-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.game-card .card-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.c1::before { background: linear-gradient(90deg, #FF6B00, #FF9A44); }
+.c2::before { background: linear-gradient(90deg, #00D2FF, #00B894); }
+.c3::before { background: linear-gradient(90deg, #00B16A, #2ECC71); }
+.c4::before { background: linear-gradient(90deg, #FF3366, #E74C3C); }
+.c5::before { background: linear-gradient(90deg, #FDCB6E, #F39C12); }
+.c6::before { background: linear-gradient(90deg, #A29BFE, #6C5CE7); }
+.c7::before { background: linear-gradient(90deg, #FD79A8, #E84393); }
+.c8::before { background: linear-gradient(90deg, #74B9FF, #0984E3); }
+.c1:hover { border-color: #FF6B00; } .c2:hover { border-color: #00D2FF; }
+.c3:hover { border-color: #00B16A; } .c4:hover { border-color: #FF3366; }
+.c5:hover { border-color: #FDCB6E; } .c6:hover { border-color: #A29BFE; }
+.c7:hover { border-color: #FD79A8; } .c8:hover { border-color: #74B9FF; }
+
+.home-footer {
+  text-align: center;
+  padding: 40px 20px 80px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-top: var(--border);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===== SHARED GAME CHROME ===== */
+.game-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 28px;
+  gap: 14px;
+}
+.back-btn {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  border: var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+.game-title-bar {
+  font-size: 20px;
+  font-weight: 800;
+}
+.game-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 28px 80px;
+}
+
+/* ===== ELEMENT MIXER ===== */
+.mixer-stats {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.mixer-stats span { font-weight: 800; color: var(--accent); }
+.mixer-workspace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  min-height: 300px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: var(--border);
+  align-content: flex-start;
+}
+.element-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.2s;
+  user-select: none;
+}
+.element-chip:hover { background: var(--bg-card-hover); transform: scale(1.05); }
+.element-chip.selected { border-color: var(--accent); background: rgba(255,107,0,0.1); box-shadow: 0 0 0 3px var(--accent-glow); }
+.element-chip.new { animation: popIn 0.4s ease; }
+.mixer-hint {
+  text-align: center;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.combo-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  pointer-events: none;
+  animation: popIn 0.5s ease forwards;
+  z-index: 200;
+  text-align: center;
+  background: var(--bg-card);
+  padding: 20px 36px;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(255,107,0,0.3);
+  border: 1px solid rgba(255,107,0,0.3);
+}
+.combo-flash .flash-emoji { font-size: 44px; display: block; margin-bottom: 8px; }
+.no-combo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px;
+  color: var(--text-dim);
+  pointer-events: none;
+  animation: fadeIn 0.3s ease forwards;
+  z-index: 200;
+  background: var(--bg-card);
+  padding: 14px 28px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: var(--border);
+}
+
+/* ===== PERFECT CIRCLE ===== */
+.circle-container { text-align: center; }
+.circle-canvas {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: var(--border);
+  cursor: crosshair;
+  touch-action: none;
+  display: block;
+  margin: 0 auto;
+}
+.circle-score {
+  font-size: 72px;
+  font-weight: 900;
+  margin: 24px 0 8px;
+  transition: color 0.3s;
+}
+.circle-message {
+  font-size: 18px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.circle-best {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.circle-prompt {
+  font-size: 18px;
+  color: var(--text-dim);
+  margin: 40px 0;
+}
+
+/* ===== SPEND ===== */
+.spend-header-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 50;
+  background: rgba(10,10,18,0.95);
+  backdrop-filter: blur(12px);
+  padding: 16px 0 12px;
+  text-align: center;
+  border-bottom: var(--border);
+  margin-bottom: 24px;
+}
+.spend-remaining {
+  font-family: var(--font-mono);
+  font-size: 38px;
+  font-weight: 900;
+  color: #00B16A;
+  transition: color 0.3s;
+}
+.spend-remaining.low { color: var(--accent2); }
+.spend-label { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+.spend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.spend-item {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 18px;
+  border: var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+.spend-item:hover { border-color: rgba(255,255,255,0.1); }
+.spend-item-top { display: flex; align-items: center; gap: 12px; }
+.spend-item-emoji { font-size: 32px; }
+.spend-item-info { flex: 1; }
+.spend-item-name { font-weight: 700; font-size: 15px; }
+.spend-item-price { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+.spend-item-controls { display: flex; align-items: center; gap: 10px; }
+.spend-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: var(--border);
+  background: var(--bg-surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.spend-btn:hover:not(:disabled) { border-color: #00B16A; color: #00B16A; }
+.spend-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.spend-qty {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: center;
+}
+.spend-item-total {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+.spend-receipt-btn {
+  display: block;
+  margin: 28px auto 0;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00B16A, #2ECC71);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.spend-receipt-btn:hover { transform: scale(1.04); }
+
+/* ===== DILEMMAS ===== */
+.dilemma-container { max-width: 600px; margin: 40px auto; text-align: center; }
+.dilemma-level { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; }
+.dilemma-scenario { font-size: 22px; font-weight: 700; line-height: 1.5; margin-bottom: 32px; min-height: 100px; }
+.dilemma-choices { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.dilemma-btn {
+  flex: 1; min-width: 200px; max-width: 260px;
+  padding: 20px;
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.dilemma-btn:hover { border-color: var(--accent2); transform: translateY(-3px); box-shadow: 0 4px 20px rgba(255,51,102,0.2); }
+.dilemma-btn.chosen { border-color: var(--accent2); background: rgba(255,51,102,0.1); }
+.dilemma-btn.not-chosen { opacity: 0.4; }
+.dilemma-pct { display: block; font-family: var(--font-mono); font-size: 28px; color: var(--accent2); margin-top: 8px; }
+.dilemma-next {
+  margin-top: 28px; padding: 12px 36px;
+  border: none; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent2), #E74C3C);
+  color: white; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.dilemma-next:hover { transform: scale(1.04); }
+.dilemma-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
+.dilemma-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.08); transition: background 0.3s; }
+.dilemma-dot.done { background: var(--accent2); }
+.dilemma-dot.current { background: var(--accent2); animation: pulse 1s infinite; }
+.dilemma-complete { font-size: 28px; font-weight: 800; margin: 60px 0 16px; }
+.dilemma-summary { font-size: 16px; color: var(--text-dim); line-height: 1.6; }
+.dilemma-restart {
+  margin-top: 20px; padding: 12px 36px;
+  border: 2px solid var(--accent2); border-radius: 10px;
+  background: transparent; color: var(--accent2);
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.dilemma-restart:hover { background: var(--accent2); color: white; }
+
+/* ===== REACTION ===== */
+.reaction-zone {
+  width: 100%; height: 400px;
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.15s;
+  user-select: none; position: relative; overflow: hidden;
+}
+.reaction-zone.waiting { background: #C0392B; }
+.reaction-zone.ready { background: #27AE60; }
+.reaction-zone.idle { background: var(--bg-card); border: var(--border); }
+.reaction-zone.too-early { background: #E67E22; }
+.reaction-text { font-size: 28px; font-weight: 800; color: white; text-align: center; pointer-events: none; }
+.reaction-zone.idle .reaction-text { color: var(--text); }
+.reaction-time { font-family: var(--font-mono); font-size: 72px; font-weight: 900; margin-top: 12px; pointer-events: none; }
+.reaction-stats { display: flex; gap: 16px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.reaction-stat {
+  text-align: center; background: var(--bg-card); border: var(--border);
+  padding: 14px 22px; border-radius: 12px; min-width: 110px;
+}
+.reaction-stat-val { font-family: var(--font-mono); font-size: 24px; font-weight: 800; }
+.reaction-stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.reaction-round-info { text-align: center; margin-top: 16px; font-size: 14px; color: var(--text-dim); }
+.reaction-rating { font-size: 20px; font-weight: 700; text-align: center; margin-top: 12px; }
+
+/* ===== MEMORY ===== */
+.memory-info { text-align: center; margin-bottom: 20px; }
+.memory-score { font-size: 18px; font-weight: 700; }
+.memory-score span { color: var(--accent3); }
+.memory-moves-display { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
+.memory-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 460px; margin: 0 auto; }
+.memory-card { aspect-ratio: 1; border-radius: 12px; cursor: pointer; position: relative; perspective: 600px; }
+.memory-card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.5s; transform-style: preserve-3d; }
+.memory-card.flipped .memory-card-inner, .memory-card.matched .memory-card-inner { transform: rotateY(180deg); }
+.memory-card-front, .memory-card-back {
+  position: absolute; width: 100%; height: 100%;
+  border-radius: 12px; backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.memory-card-front {
+  background: linear-gradient(135deg, var(--accent3), #5B4CC4);
+  border: 1px solid rgba(108,92,231,0.3);
+}
+.memory-card-front::after { content: '?'; font-size: 26px; font-weight: 800; color: rgba(255,255,255,0.4); }
+.memory-card-back {
+  background: var(--bg-card); transform: rotateY(180deg);
+  font-size: 36px; border: var(--border);
+}
+.memory-card.matched .memory-card-back { background: rgba(108,92,231,0.15); border-color: rgba(108,92,231,0.3); }
+.memory-complete { text-align: center; margin-top: 32px; }
+.memory-complete h3 { font-size: 26px; font-weight: 800; color: var(--accent3); }
+.memory-complete p { color: var(--text-dim); margin-top: 8px; }
+.memory-restart {
+  margin-top: 16px; padding: 12px 32px;
+  border: 2px solid var(--accent3); border-radius: 10px;
+  background: transparent; color: var(--accent3);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.memory-restart:hover { background: var(--accent3); color: white; }
+
+/* ===== CLICK FRENZY ===== */
+.frenzy-container { text-align: center; position: relative; overflow: hidden; min-height: 500px; }
+.frenzy-count { font-family: var(--font-mono); font-size: 72px; font-weight: 900; margin: 16px 0; transition: color 0.2s; }
+.frenzy-cps { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
+.frenzy-btn {
+  width: 150px; height: 150px; border-radius: 50%;
+  border: none; background: linear-gradient(135deg, #FD79A8, #E84393);
+  color: white; font-size: 18px; font-weight: 800;
+  cursor: pointer; transition: transform 0.1s;
+  box-shadow: 0 0 30px rgba(232,67,147,0.4);
+  position: relative; z-index: 10;
+}
+.frenzy-btn:active { transform: scale(0.9); }
+.frenzy-upgrades { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+.frenzy-upgrade {
+  padding: 12px 18px; border: 1px solid rgba(232,67,147,0.3);
+  border-radius: 10px; background: var(--bg-card);
+  color: var(--text); cursor: pointer; font-size: 13px; font-weight: 600;
+  transition: all 0.2s; min-width: 130px;
+}
+.frenzy-upgrade:hover:not(:disabled) { background: rgba(232,67,147,0.1); border-color: #E84393; }
+.frenzy-upgrade:disabled { opacity: 0.3; cursor: not-allowed; }
+.frenzy-upgrade-cost { font-family: var(--font-mono); font-size: 12px; color: #E84393; margin-top: 4px; }
+.frenzy-milestone {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px; font-weight: 900;
+  color: #E84393; pointer-events: none; z-index: 200;
+  animation: popIn 0.5s ease forwards;
+  text-shadow: 0 0 30px rgba(232,67,147,0.6);
+}
+.particle { position: fixed; pointer-events: none; z-index: 5; border-radius: 50%; animation: confetti-fall linear forwards; }
+.frenzy-level { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+
+/* ===== GUESS ===== */
+.guess-container { max-width: 600px; margin: 40px auto; text-align: center; }
+.guess-category { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; }
+.guess-question { font-size: 22px; font-weight: 700; line-height: 1.4; margin-bottom: 32px; min-height: 70px; }
+.guess-input {
+  font-family: var(--font-mono); font-size: 32px; font-weight: 800;
+  text-align: center; border: 2px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 14px 24px; width: 260px; max-width: 100%;
+  outline: none; transition: border-color 0.2s;
+  background: var(--bg-card); color: var(--text);
+}
+.guess-input:focus { border-color: var(--accent4); }
+.guess-submit {
+  display: block; margin: 16px auto 0; padding: 12px 44px;
+  border: none; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent4), #0984E3);
+  color: white; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.guess-submit:hover { transform: scale(1.04); }
+.guess-result {
+  margin-top: 24px; padding: 24px; border-radius: 14px;
+  background: var(--bg-card); border: var(--border);
+}
+.guess-result-answer { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+.guess-result-number { font-family: var(--font-mono); font-size: 44px; font-weight: 900; color: var(--accent4); margin: 8px 0; }
+.guess-result-accuracy { font-size: 18px; font-weight: 700; }
+.guess-result-fact { font-size: 14px; color: var(--text-dim); margin-top: 12px; line-height: 1.5; font-style: italic; }
+.guess-next {
+  margin-top: 18px; padding: 12px 32px;
+  border: 2px solid var(--accent4); border-radius: 10px;
+  background: transparent; color: var(--accent4);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.guess-next:hover { background: var(--accent4); color: white; }
+.guess-score-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 28px; }
+.guess-score-item { background: var(--bg-card); border: var(--border); padding: 12px 20px; border-radius: 10px; }
+.guess-score-val { font-family: var(--font-mono); font-size: 22px; font-weight: 800; color: var(--accent4); }
+.guess-score-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.guess-final { font-size: 28px; font-weight: 800; margin: 40px 0 16px; }
+.guess-final-score { font-family: var(--font-mono); font-size: 60px; font-weight: 900; color: var(--accent4); }
+.guess-final-label { font-size: 15px; color: var(--text-dim); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .game-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 32px; }
+  .hero-stats { gap: 20px; }
+  .nav-links { display: none; }
+  .dilemma-choices { flex-direction: column; align-items: center; }
+  .spend-grid { grid-template-columns: 1fr; }
+  .reaction-zone { height: 300px; }
+  .frenzy-count { font-size: 52px; }
+  .frenzy-btn { width: 120px; height: 120px; }
+  .circle-score { font-size: 52px; }
+  .memory-board { gap: 8px; }
+}
+
+@media print {
+  .top-nav, .back-btn { display: none; }
+  body { background: white; color: black; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HOME ===== -->
+<div id="home" class="view active">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()">
+      <span class="nav-logo">🏆 Wat in de Ranking</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-link active">🎮 Games</span>
+      <a class="nav-link" href="https://watinderanking.nl" target="_blank">🔥 Rank It</a>
+      <a class="nav-link" href="https://watinderanking.nl" target="_blank">📊 Rankings</a>
+    </div>
+  </nav>
+  <div class="home-hero">
+    <span class="hero-emoji">🎮</span>
+    <h1 class="hero-title">Wat in de <span class="highlight">Games</span></h1>
+    <p class="hero-sub">Speel, compete, en rank alles. Van reflexen tot geheugen — wie is de beste?</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">8</div><div class="hero-stat-label">Games</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">∞</div><div class="hero-stat-label">Chaos</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">0</div><div class="hero-stat-label">Consensus</div></div>
+    </div>
+  </div>
+  <div class="game-grid">
+    <div class="game-card c1" onclick="showGame('elements')">
+      <span class="card-rank">#1</span>
+      <span class="card-emoji">⚗️</span>
+      <div class="card-title">Element Mixer</div>
+      <div class="card-desc">Mix elementen en ontdek nieuwe combinaties. Hoeveel vind jij?</div>
+    </div>
+    <div class="game-card c2" onclick="showGame('circle')">
+      <span class="card-rank">#2</span>
+      <span class="card-emoji">⭕</span>
+      <div class="card-title">Perfecte Cirkel</div>
+      <div class="card-desc">Teken een cirkel. Wij beoordelen hoe perfect hij is.</div>
+    </div>
+    <div class="game-card c3" onclick="showGame('spend')">
+      <span class="card-rank">#3</span>
+      <span class="card-emoji">💰</span>
+      <div class="card-title">Geef €100 Miljard Uit</div>
+      <div class="card-desc">Je hebt €100.000.000.000. Probeer alles uit te geven.</div>
+    </div>
+    <div class="game-card c4" onclick="showGame('dilemma')">
+      <span class="card-rank">#4</span>
+      <span class="card-emoji">🚂</span>
+      <div class="card-title">Absurde Dilemma's</div>
+      <div class="card-desc">Morele keuzes die steeds gekker worden.</div>
+    </div>
+    <div class="game-card c5" onclick="showGame('reaction')">
+      <span class="card-rank">#5</span>
+      <span class="card-emoji">⚡</span>
+      <div class="card-title">Reactiesnelheid</div>
+      <div class="card-desc">Hoe snel kun je klikken? Test je reflexen.</div>
+    </div>
+    <div class="game-card c6" onclick="showGame('memory')">
+      <span class="card-rank">#6</span>
+      <span class="card-emoji">🧠</span>
+      <div class="card-title">Memory Match</div>
+      <div class="card-desc">Vind alle paren. Minder zetten = groter brein.</div>
+    </div>
+    <div class="game-card c7" onclick="showGame('frenzy')">
+      <span class="card-rank">#7</span>
+      <span class="card-emoji">🖱️</span>
+      <div class="card-title">Click Frenzy</div>
+      <div class="card-desc">Klik. Klik sneller. Kijk hoe de chaos groeit.</div>
+    </div>
+    <div class="game-card c8" onclick="showGame('guess')">
+      <span class="card-rank">#8</span>
+      <span class="card-emoji">🔢</span>
+      <div class="card-title">Raad het Getal</div>
+      <div class="card-desc">Hoeveel botten in een menselijk lichaam? Doe je beste gok.</div>
+    </div>
+  </div>
+  <div class="home-footer">© 2026 Wat in de Ranking. Alle rechten voorbehouden.</div>
+</div>
+
+<!-- ===== ELEMENT MIXER ===== -->
+<div id="game-elements" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">⚗️ Element Mixer</div>
+  </div>
+  <div class="game-body">
+    <div class="mixer-stats">Ontdekt: <span id="mixer-count">4</span> / <span id="mixer-total">0</span></div>
+    <div class="mixer-hint" id="mixer-hint">Selecteer twee elementen om te combineren</div>
+    <div class="mixer-workspace" id="mixer-workspace"></div>
+  </div>
+</div>
+
+<!-- ===== PERFECT CIRCLE ===== -->
+<div id="game-circle" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">⭕ Perfecte Cirkel</div>
+  </div>
+  <div class="game-body circle-container">
+    <div class="circle-prompt" id="circle-prompt">Klik en sleep om een cirkel te tekenen</div>
+    <canvas class="circle-canvas" id="circle-canvas" width="500" height="500"></canvas>
+    <div class="circle-score" id="circle-score" style="display:none">0%</div>
+    <div class="circle-message" id="circle-msg" style="display:none"></div>
+    <div class="circle-best" id="circle-best"></div>
+  </div>
+</div>
+
+<!-- ===== SPEND ===== -->
+<div id="game-spend" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">💰 Geef €100 Miljard Uit</div>
+  </div>
+  <div class="game-body">
+    <div class="spend-header-bar">
+      <div class="spend-remaining" id="spend-remaining">€100.000.000.000</div>
+      <div class="spend-label">nog te besteden</div>
+    </div>
+    <div class="spend-grid" id="spend-grid"></div>
+    <button class="spend-receipt-btn" id="spend-receipt-btn" onclick="showReceipt()" style="display:none">Bekijk Bon 🧾</button>
+  </div>
+</div>
+
+<!-- ===== DILEMMAS ===== -->
+<div id="game-dilemma" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">🚂 Absurde Dilemma's</div>
+  </div>
+  <div class="game-body">
+    <div class="dilemma-container" id="dilemma-container"></div>
+  </div>
+</div>
+
+<!-- ===== REACTION ===== -->
+<div id="game-reaction" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">⚡ Reactiesnelheid</div>
+  </div>
+  <div class="game-body">
+    <div class="reaction-zone idle" id="reaction-zone" onclick="reactionClick()">
+      <div class="reaction-text" id="reaction-text">Klik om te starten</div>
+      <div class="reaction-time" id="reaction-time"></div>
+    </div>
+    <div class="reaction-round-info" id="reaction-round-info"></div>
+    <div class="reaction-rating" id="reaction-rating"></div>
+    <div class="reaction-stats" id="reaction-stats"></div>
+  </div>
+</div>
+
+<!-- ===== MEMORY ===== -->
+<div id="game-memory" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">🧠 Memory Match</div>
+  </div>
+  <div class="game-body">
+    <div class="memory-info">
+      <div class="memory-score">Paren gevonden: <span id="memory-pairs">0</span> / 8</div>
+      <div class="memory-moves-display">Zetten: <span id="memory-moves">0</span></div>
+    </div>
+    <div class="memory-board" id="memory-board"></div>
+    <div class="memory-complete" id="memory-complete" style="display:none">
+      <h3>Lekker Bezig! 🧠</h3>
+      <p id="memory-result-text"></p>
+      <button class="memory-restart" onclick="initMemory()">Opnieuw Spelen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CLICK FRENZY ===== -->
+<div id="game-frenzy" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">🖱️ Click Frenzy</div>
+  </div>
+  <div class="game-body">
+    <div class="frenzy-container" id="frenzy-container">
+      <div class="frenzy-level" id="frenzy-level">Level 1: Rustig</div>
+      <div class="frenzy-count" id="frenzy-count">0</div>
+      <div class="frenzy-cps" id="frenzy-cps">0 clicks/sec</div>
+      <button class="frenzy-btn" id="frenzy-btn" onclick="frenzyClick()">KLIK</button>
+      <div class="frenzy-upgrades" id="frenzy-upgrades"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GUESS ===== -->
+<div id="game-guess" class="view">
+  <nav class="top-nav">
+    <a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a>
+    <div class="nav-links"><span class="nav-link active">🎮 Games</span></div>
+  </nav>
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="game-title-bar">🔢 Raad het Getal</div>
+  </div>
+  <div class="game-body">
+    <div class="guess-container" id="guess-container"></div>
+  </div>
+</div>
+
+<script>
+// ===== VIEW MANAGEMENT =====
+function showGame(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('game-' + id);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+  if (id === 'elements') initElements();
+  if (id === 'circle') initCircle();
+  if (id === 'spend') initSpend();
+  if (id === 'dilemma') initDilemma();
+  if (id === 'reaction') initReaction();
+  if (id === 'memory') initMemory();
+  if (id === 'frenzy') initFrenzy();
+  if (id === 'guess') initGuess();
+}
+function goHome() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  window.scrollTo(0, 0);
+  if (frenzyInterval) { clearInterval(frenzyInterval); frenzyInterval = null; }
+}
+
+// ===== ELEMENT MIXER =====
+const BASE_ELEMENTS = [
+  { name: 'Fire', emoji: '🔥' }, { name: 'Water', emoji: '💧' },
+  { name: 'Earth', emoji: '🌍' }, { name: 'Wind', emoji: '💨' },
+];
+const RECIPES = {
+  'Earth+Fire': { name: 'Lava', emoji: '🌋' }, 'Earth+Water': { name: 'Mud', emoji: '🟤' },
+  'Earth+Wind': { name: 'Dust', emoji: '🌪️' }, 'Fire+Water': { name: 'Steam', emoji: '♨️' },
+  'Fire+Wind': { name: 'Smoke', emoji: '🌫️' }, 'Water+Wind': { name: 'Rain', emoji: '🌧️' },
+  'Fire+Steam': { name: 'Engine', emoji: '⚙️' }, 'Steam+Water': { name: 'Cloud', emoji: '☁️' },
+  'Earth+Steam': { name: 'Geyser', emoji: '⛲' }, 'Lava+Water': { name: 'Stone', emoji: '🪨' },
+  'Lava+Wind': { name: 'Obsidian', emoji: '🖤' }, 'Fire+Mud': { name: 'Brick', emoji: '🧱' },
+  'Earth+Rain': { name: 'Plant', emoji: '🌱' }, 'Fire+Rain': { name: 'Rainbow', emoji: '🌈' },
+  'Dust+Water': { name: 'Clay', emoji: '🏺' }, 'Cloud+Wind': { name: 'Storm', emoji: '⛈️' },
+  'Cloud+Fire': { name: 'Lightning', emoji: '⚡' }, 'Fire+Stone': { name: 'Metal', emoji: '⚒️' },
+  'Stone+Water': { name: 'Sand', emoji: '🏖️' }, 'Smoke+Water': { name: 'Fog', emoji: '🌁' },
+  'Plant+Water': { name: 'Tree', emoji: '🌳' }, 'Earth+Plant': { name: 'Forest', emoji: '🌲' },
+  'Fire+Plant': { name: 'Ash', emoji: '⬛' }, 'Lightning+Sand': { name: 'Glass', emoji: '🔮' },
+  'Lightning+Metal': { name: 'Electricity', emoji: '💡' }, 'Storm+Water': { name: 'Tsunami', emoji: '🌊' },
+  'Earth+Storm': { name: 'Earthquake', emoji: '💥' }, 'Brick+Brick': { name: 'Wall', emoji: '🏗️' },
+  'Clay+Fire': { name: 'Pottery', emoji: '🫖' }, 'Metal+Water': { name: 'Rust', emoji: '🟠' },
+  'Metal+Stone': { name: 'Sword', emoji: '⚔️' }, 'Cloud+Rain': { name: 'Snow', emoji: '❄️' },
+  'Sand+Wind': { name: 'Dune', emoji: '🏜️' }, 'Electricity+Water': { name: 'Life', emoji: '🧬' },
+  'Fire+Tree': { name: 'Paper', emoji: '📄' }, 'Fire+Forest': { name: 'Charcoal', emoji: '◼️' },
+  'Wall+Wall': { name: 'House', emoji: '🏠' }, 'Glass+Metal': { name: 'Phone', emoji: '📱' },
+  'Fire+Sword': { name: 'Dragon', emoji: '🐉' }, 'Snow+Wind': { name: 'Blizzard', emoji: '🌨️' },
+  'Glass+Sand': { name: 'Lens', emoji: '🔍' }, 'Earth+Life': { name: 'Human', emoji: '👤' },
+  'Life+Water': { name: 'Fish', emoji: '🐟' }, 'Life+Wind': { name: 'Bird', emoji: '🐦' },
+  'Paper+Plant': { name: 'Book', emoji: '📖' }, 'Human+Metal': { name: 'Robot', emoji: '🤖' },
+  'Human+Phone': { name: 'Selfie', emoji: '🤳' }, 'Fire+Human': { name: 'Cook', emoji: '👨‍🍳' },
+  'Fire+Fish': { name: 'Sushi', emoji: '🍣' }, 'Bird+Metal': { name: 'Airplane', emoji: '✈️' },
+  'Human+House': { name: 'Family', emoji: '👨‍👩‍👧‍👦' }, 'Dragon+Water': { name: 'Sea Monster', emoji: '🐙' },
+  'Electricity+Lens': { name: 'Camera', emoji: '📸' }, 'Book+Human': { name: 'Wisdom', emoji: '🦉' },
+  'Electricity+Robot': { name: 'AI', emoji: '🧠' }, 'Cook+Plant': { name: 'Salad', emoji: '🥗' },
+  'Earthquake+House': { name: 'Ruins', emoji: '🏚️' }, 'Snow+Water': { name: 'Ice', emoji: '🧊' },
+  'Dragon+Human': { name: 'Hero', emoji: '🦸' }, 'AI+Human': { name: 'Future', emoji: '🚀' },
+  'Bird+Fish': { name: 'Penguin', emoji: '🐧' }, 'Forest+Rain': { name: 'Jungle', emoji: '🦜' },
+  'Fire+Ice': { name: 'Aurora', emoji: '🌌' },
+};
+let discoveredElements = [];
+let selectedElement = null;
+
+function initElements() {
+  discoveredElements = [...BASE_ELEMENTS]; selectedElement = null;
+  document.getElementById('mixer-total').textContent = BASE_ELEMENTS.length + Object.keys(RECIPES).length;
+  renderElements();
+}
+function renderElements() {
+  const ws = document.getElementById('mixer-workspace'); ws.innerHTML = '';
+  document.getElementById('mixer-count').textContent = discoveredElements.length;
+  discoveredElements.forEach(el => {
+    const chip = document.createElement('div');
+    chip.className = 'element-chip' + (selectedElement === el.name ? ' selected' : '');
+    chip.innerHTML = el.emoji + ' ' + el.name;
+    chip.onclick = () => selectElement(el.name);
+    ws.appendChild(chip);
+  });
+}
+function selectElement(name) {
+  if (!selectedElement) { selectedElement = name; renderElements(); document.getElementById('mixer-hint').textContent = name + ' geselecteerd — kies een ander element'; }
+  else if (selectedElement === name) { selectedElement = null; renderElements(); document.getElementById('mixer-hint').textContent = 'Selecteer twee elementen om te combineren'; }
+  else { tryCombo(selectedElement, name); selectedElement = null; }
+}
+function tryCombo(a, b) {
+  const key = [a, b].sort().join('+');
+  const recipe = RECIPES[key];
+  if (recipe && !discoveredElements.find(e => e.name === recipe.name)) {
+    discoveredElements.push(recipe); showComboFlash(recipe);
+    document.getElementById('mixer-hint').textContent = recipe.name + ' ontdekt!';
+    setTimeout(() => renderElements(), 600);
+  } else if (recipe) { showNoCombo('Al ontdekt!'); renderElements(); document.getElementById('mixer-hint').textContent = 'Selecteer twee elementen om te combineren'; }
+  else { showNoCombo('Niks gebeurd...'); renderElements(); document.getElementById('mixer-hint').textContent = 'Selecteer twee elementen om te combineren'; }
+}
+function showComboFlash(r) {
+  const f = document.createElement('div'); f.className = 'combo-flash';
+  f.innerHTML = '<span class="flash-emoji">' + r.emoji + '</span>' + r.name;
+  document.body.appendChild(f); setTimeout(() => f.remove(), 1200);
+}
+function showNoCombo(msg) {
+  const f = document.createElement('div'); f.className = 'no-combo'; f.textContent = msg;
+  document.body.appendChild(f); setTimeout(() => f.remove(), 800);
+}
+
+// ===== PERFECT CIRCLE =====
+let circleDrawing = false, circlePoints = [], circleBest = 0, circleCtx;
+function initCircle() {
+  const c = document.getElementById('circle-canvas');
+  const w = Math.min(500, window.innerWidth - 56);
+  c.width = w; c.height = w; c.style.width = w + 'px'; c.style.height = w + 'px';
+  circleCtx = c.getContext('2d'); circleCtx.clearRect(0, 0, w, w);
+  circleDrawing = false; circlePoints = [];
+  document.getElementById('circle-score').style.display = 'none';
+  document.getElementById('circle-msg').style.display = 'none';
+  document.getElementById('circle-prompt').style.display = 'block';
+  if (circleBest > 0) document.getElementById('circle-best').textContent = 'Beste: ' + circleBest + '%';
+  c.onpointerdown = (e) => { e.preventDefault(); circleDrawing = true; circlePoints = [];
+    const r = c.getBoundingClientRect(); circlePoints.push({ x: e.clientX - r.left, y: e.clientY - r.top });
+    circleCtx.clearRect(0, 0, c.width, c.height); circleCtx.beginPath();
+    circleCtx.strokeStyle = '#FF6B00'; circleCtx.lineWidth = 3; circleCtx.lineCap = 'round'; circleCtx.lineJoin = 'round';
+    document.getElementById('circle-prompt').style.display = 'none';
+    document.getElementById('circle-score').style.display = 'none';
+    document.getElementById('circle-msg').style.display = 'none'; };
+  c.onpointermove = (e) => { if (!circleDrawing) return; e.preventDefault();
+    const r = c.getBoundingClientRect(); circlePoints.push({ x: e.clientX - r.left, y: e.clientY - r.top });
+    circleCtx.clearRect(0, 0, c.width, c.height); circleCtx.beginPath();
+    circleCtx.strokeStyle = '#FF6B00'; circleCtx.lineWidth = 3;
+    circleCtx.moveTo(circlePoints[0].x, circlePoints[0].y);
+    for (let i = 1; i < circlePoints.length; i++) circleCtx.lineTo(circlePoints[i].x, circlePoints[i].y);
+    circleCtx.stroke(); };
+  c.onpointerup = c.onpointerleave = () => { if (!circleDrawing) return; circleDrawing = false;
+    if (circlePoints.length < 10) return; scoreCircle(); };
+}
+function scoreCircle() {
+  const pts = circlePoints; let cx = 0, cy = 0;
+  pts.forEach(p => { cx += p.x; cy += p.y; }); cx /= pts.length; cy /= pts.length;
+  const radii = pts.map(p => Math.sqrt((p.x - cx) ** 2 + (p.y - cy) ** 2));
+  const avgR = radii.reduce((a, b) => a + b, 0) / radii.length;
+  if (avgR < 15) { document.getElementById('circle-prompt').style.display = 'block'; return; }
+  const variance = radii.reduce((a, r) => a + (r - avgR) ** 2, 0) / radii.length;
+  const cv = Math.sqrt(variance) / avgR;
+  let score = Math.round(Math.max(0, Math.min(100, (1 - cv * 3) * 100)));
+  const first = pts[0], last = pts[pts.length - 1];
+  const closedness = Math.sqrt((first.x - last.x) ** 2 + (first.y - last.y) ** 2) / avgR;
+  if (closedness > 0.5) score = Math.max(0, score - Math.round(closedness * 15));
+  circleCtx.beginPath(); circleCtx.arc(cx, cy, avgR, 0, Math.PI * 2);
+  circleCtx.strokeStyle = 'rgba(0,210,255,0.3)'; circleCtx.lineWidth = 2;
+  circleCtx.setLineDash([6, 4]); circleCtx.stroke(); circleCtx.setLineDash([]);
+  if (score > circleBest) circleBest = score;
+  const sEl = document.getElementById('circle-score'), mEl = document.getElementById('circle-msg');
+  sEl.style.display = 'block'; mEl.style.display = 'block'; sEl.textContent = score + '%';
+  let msg, color;
+  if (score >= 95) { msg = 'Bovenmenselijk.'; color = '#00D2FF'; }
+  else if (score >= 85) { msg = 'Indrukwekkend rond!'; color = '#00D2FF'; }
+  else if (score >= 70) { msg = 'Best goed eigenlijk.'; color = '#FDCB6E'; }
+  else if (score >= 50) { msg = 'Het is... een vorm.'; color = '#FF6B00'; }
+  else if (score >= 30) { msg = 'Lijkt meer op een aardappel.'; color = '#FF3366'; }
+  else { msg = 'Deed je überhaupt moeite?'; color = '#FF3366'; }
+  sEl.style.color = color; mEl.textContent = msg;
+  document.getElementById('circle-best').textContent = 'Beste: ' + circleBest + '%';
+}
+
+// ===== SPEND €100 BILLION =====
+const SPEND_ITEMS = [
+  { name: 'Koffie', emoji: '☕', price: 3 }, { name: 'Boek', emoji: '📚', price: 15 },
+  { name: 'Pizza', emoji: '🍕', price: 12 }, { name: 'Bioscoop', emoji: '🎬', price: 14 },
+  { name: 'Festival Ticket', emoji: '🎵', price: 200 }, { name: 'Nike Air Max', emoji: '👟', price: 180 },
+  { name: 'PlayStation 5', emoji: '🎮', price: 500 }, { name: 'iPhone', emoji: '📱', price: 1300 },
+  { name: 'Gaming PC', emoji: '🖥️', price: 3000 }, { name: 'Jacuzzi', emoji: '🛁', price: 8000 },
+  { name: 'Rolex', emoji: '⌚', price: 15000 }, { name: 'Tesla', emoji: '🚗', price: 85000 },
+  { name: 'Huis', emoji: '🏠', price: 450000 }, { name: 'Lamborghini', emoji: '🏎️', price: 380000 },
+  { name: 'Jacht', emoji: '🛥️', price: 8000000 }, { name: 'Privé Eiland', emoji: '🏝️', price: 25000000 },
+  { name: 'Boeing 747', emoji: '✈️', price: 400000000 }, { name: 'Cruiseschip', emoji: '🚢', price: 1000000000 },
+  { name: 'Ajax Kopen', emoji: '⚽', price: 500000000 }, { name: 'Wolkenkrabber', emoji: '🏙️', price: 2500000000 },
+];
+let spendBudget = 100000000000, spendQty = {};
+function initSpend() {
+  spendBudget = 100000000000; spendQty = {};
+  SPEND_ITEMS.forEach(i => spendQty[i.name] = 0); renderSpend();
+}
+function fmtEuro(n) {
+  if (n >= 1e9) return '€' + (n / 1e9).toFixed(1).replace('.0', '') + 'B';
+  if (n >= 1e6) return '€' + (n / 1e6).toFixed(1).replace('.0', '') + 'M';
+  if (n >= 1e3) return '€' + (n / 1e3).toFixed(1).replace('.0', '') + 'K';
+  return '€' + n.toLocaleString('nl-NL');
+}
+function renderSpend() {
+  document.getElementById('spend-remaining').textContent = '€' + spendBudget.toLocaleString('nl-NL');
+  document.getElementById('spend-remaining').classList.toggle('low', spendBudget < 10000000000);
+  const grid = document.getElementById('spend-grid'); grid.innerHTML = '';
+  SPEND_ITEMS.forEach(item => {
+    const qty = spendQty[item.name], canBuy = spendBudget >= item.price;
+    const div = document.createElement('div'); div.className = 'spend-item';
+    div.innerHTML = `<div class="spend-item-top"><span class="spend-item-emoji">${item.emoji}</span><div class="spend-item-info"><div class="spend-item-name">${item.name}</div><div class="spend-item-price">${fmtEuro(item.price)}</div></div></div><div class="spend-item-controls"><button class="spend-btn" onclick="spendSell('${item.name}')" ${qty === 0 ? 'disabled' : ''}>−</button><span class="spend-qty">${qty}</span><button class="spend-btn" onclick="spendBuy('${item.name}')" ${!canBuy ? 'disabled' : ''}>+</button><span class="spend-item-total">${qty > 0 ? fmtEuro(qty * item.price) : ''}</span></div>`;
+    grid.appendChild(div);
+  });
+  document.getElementById('spend-receipt-btn').style.display = (100000000000 - spendBudget > 0) ? 'block' : 'none';
+}
+function spendBuy(n) { const i = SPEND_ITEMS.find(x => x.name === n); if (spendBudget >= i.price) { spendBudget -= i.price; spendQty[n]++; renderSpend(); } }
+function spendSell(n) { const i = SPEND_ITEMS.find(x => x.name === n); if (spendQty[n] > 0) { spendBudget += i.price; spendQty[n]--; renderSpend(); } }
+function showReceipt() {
+  const items = SPEND_ITEMS.filter(i => spendQty[i.name] > 0);
+  let msg = '🧾 JOUW BON\n━━━━━━━━━━━━━━━━━━\n';
+  items.forEach(i => { msg += `${i.emoji} ${i.name} x${spendQty[i.name]} = ${fmtEuro(spendQty[i.name] * i.price)}\n`; });
+  msg += `━━━━━━━━━━━━━━━━━━\nTotaal uitgegeven: ${fmtEuro(100000000000 - spendBudget)}\nOver: ${fmtEuro(spendBudget)}`;
+  alert(msg);
+}
+
+// ===== ABSURD DILEMMAS =====
+const DILEMMAS = [
+  { scenario: "Een trolley raast op 5 mensen af. Je kunt de hendel overhalen om hem om te leiden, maar dan raakt hij 1 persoon.", a: "Hendel overhalen", b: "Niks doen", pctA: 72 },
+  { scenario: "Je redt 5 vreemden, OF je favoriete restaurant sluit nooit.", a: "Red de vreemden", b: "Red het restaurant", pctA: 61 },
+  { scenario: "Iemand krijgt een papiertje snee, OF iedereen vergeet je verjaardag voor altijd.", a: "Geef de snee", b: "Verlies mijn verjaardag", pctA: 83 },
+  { scenario: "Je telefoon staat permanent op 1% helderheid, OF je mag nooit meer kaas eten.", a: "1% helderheid", b: "Geen kaas meer", pctA: 44 },
+  { scenario: "WiFi overal wordt permanent 50% trager, OF één vreemdeling stoot zijn teen heel hard.", a: "Trager WiFi voor iedereen", b: "Eén gestoten teen", pctA: 31 },
+  { scenario: "Je kunt tijdreizen maar alleen naar dinsdagen, OF je kunt vliegen maar slechts 60cm boven de grond.", a: "Dinsdag tijdreizen", b: "Laag-vliegende vlucht", pctA: 52 },
+  { scenario: "Alle muziek klinkt voortaan vals, OF je moet alles hardop becommentariëren wat je doet.", a: "Valse muziek", b: "Alles narren", pctA: 63 },
+  { scenario: "Je redt 100 mensen maar moet dabben elke keer als je door een deur loopt, voor altijd.", a: "Dab voor levens", b: "Niks doen", pctA: 78 },
+  { scenario: "Honden kunnen praten maar klagen alleen, OF katten kunnen praten maar geven alleen ongevraagd advies.", a: "Klagende honden", b: "Adviserende katten", pctA: 45 },
+  { scenario: "Je kunt gedachten lezen maar hoort alles in de Minions-stem, OF je bent onzichtbaar maar alleen als niemand kijkt.", a: "Minion telepathie", b: "Nutteloze onzichtbaarheid", pctA: 55 },
+  { scenario: "De trolley vernietigt het concept vrijdag, OF vernietigt alle linkersokken ter wereld.", a: "Vaarwel vrijdag", b: "Vaarwel linkersokken", pctA: 22 },
+  { scenario: "Je krijgt €1 miljard maar elke stoel maakt een scheetgeluid als je gaat zitten, OF je krijgt €0.", a: "€1B + scheetstoel", b: "Arm blijven, stil zitten", pctA: 88 },
+];
+let dilemmaIndex = 0, dilemmaChoices = [];
+function initDilemma() { dilemmaIndex = 0; dilemmaChoices = []; renderDilemma(); }
+function renderDilemma() {
+  const c = document.getElementById('dilemma-container');
+  if (dilemmaIndex >= DILEMMAS.length) {
+    c.innerHTML = `<div class="dilemma-complete">Alle dilemma's beantwoord!</div><div class="dilemma-summary">Je maakte ${dilemmaChoices.length} keuzes. Sommige moreel, sommige chaotisch. Geen oordeel... grotendeels.</div><button class="dilemma-restart" onclick="initDilemma()">Opnieuw Spelen</button>`; return;
+  }
+  const d = DILEMMAS[dilemmaIndex]; let dots = '';
+  for (let i = 0; i < DILEMMAS.length; i++) dots += `<div class="dilemma-dot ${i < dilemmaIndex ? 'done' : ''} ${i === dilemmaIndex ? 'current' : ''}"></div>`;
+  c.innerHTML = `<div class="dilemma-progress">${dots}</div><div class="dilemma-level">Dilemma ${dilemmaIndex + 1}</div><div class="dilemma-scenario">${d.scenario}</div><div class="dilemma-choices"><button class="dilemma-btn" id="dilemma-a" onclick="chooseDilemma('a')">${d.a}</button><button class="dilemma-btn" id="dilemma-b" onclick="chooseDilemma('b')">${d.b}</button></div>`;
+}
+function chooseDilemma(ch) {
+  const d = DILEMMAS[dilemmaIndex], bA = document.getElementById('dilemma-a'), bB = document.getElementById('dilemma-b');
+  bA.onclick = null; bB.onclick = null;
+  const pA = d.pctA + Math.floor(Math.random() * 7) - 3, pB = 100 - pA;
+  bA.classList.add(ch === 'a' ? 'chosen' : 'not-chosen'); bB.classList.add(ch === 'b' ? 'chosen' : 'not-chosen');
+  bA.innerHTML += `<span class="dilemma-pct">${pA}%</span>`; bB.innerHTML += `<span class="dilemma-pct">${pB}%</span>`;
+  dilemmaChoices.push(ch);
+  const next = document.createElement('button'); next.className = 'dilemma-next';
+  next.textContent = dilemmaIndex < DILEMMAS.length - 1 ? 'Volgende →' : 'Resultaten';
+  next.onclick = () => { dilemmaIndex++; renderDilemma(); };
+  document.getElementById('dilemma-container').appendChild(next);
+}
+
+// ===== REACTION SPEED =====
+let reactionState = 'idle', reactionTimeout = null, reactionStart = 0, reactionTimes = [];
+const REACTION_ROUNDS = 5;
+function initReaction() {
+  reactionState = 'idle'; reactionTimes = []; if (reactionTimeout) clearTimeout(reactionTimeout);
+  const z = document.getElementById('reaction-zone'); z.className = 'reaction-zone idle';
+  document.getElementById('reaction-text').textContent = 'Klik om te starten';
+  document.getElementById('reaction-time').textContent = '';
+  document.getElementById('reaction-stats').innerHTML = '';
+  document.getElementById('reaction-round-info').textContent = '';
+  document.getElementById('reaction-rating').textContent = '';
+}
+function reactionClick() {
+  const z = document.getElementById('reaction-zone'), t = document.getElementById('reaction-text'), tE = document.getElementById('reaction-time');
+  if (reactionState === 'idle' || reactionState === 'result') {
+    if (reactionTimes.length >= REACTION_ROUNDS) { showReactionResults(); return; }
+    reactionState = 'waiting'; z.className = 'reaction-zone waiting'; t.textContent = 'Wacht op groen...'; tE.textContent = '';
+    document.getElementById('reaction-round-info').textContent = 'Ronde ' + (reactionTimes.length + 1) + ' van ' + REACTION_ROUNDS;
+    reactionTimeout = setTimeout(() => { reactionState = 'ready'; z.className = 'reaction-zone ready'; t.textContent = 'KLIK NU!'; reactionStart = performance.now(); }, 1500 + Math.random() * 4000);
+  } else if (reactionState === 'waiting') {
+    clearTimeout(reactionTimeout); reactionState = 'result'; z.className = 'reaction-zone too-early'; t.textContent = 'Te vroeg!'; tE.textContent = '';
+    setTimeout(() => { t.textContent = 'Klik om opnieuw te proberen'; z.className = 'reaction-zone idle'; reactionState = 'idle'; }, 1200);
+  } else if (reactionState === 'ready') {
+    const time = Math.round(performance.now() - reactionStart); reactionTimes.push(time);
+    reactionState = 'result'; z.className = 'reaction-zone ready'; t.textContent = ''; tE.textContent = time + 'ms'; tE.style.color = 'white';
+    document.getElementById('reaction-round-info').textContent = reactionTimes.length >= REACTION_ROUNDS ? 'Klik voor resultaten' : 'Klik om door te gaan (' + (REACTION_ROUNDS - reactionTimes.length) + ' over)';
+  } else if (reactionState === 'done') { initReaction(); }
+}
+function showReactionResults() {
+  reactionState = 'done'; const z = document.getElementById('reaction-zone'); z.className = 'reaction-zone idle';
+  const best = Math.min(...reactionTimes), worst = Math.max(...reactionTimes), avg = Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length);
+  document.getElementById('reaction-text').textContent = 'Jouw Resultaten'; document.getElementById('reaction-time').textContent = avg + 'ms'; document.getElementById('reaction-time').style.color = 'var(--text)';
+  let rating, color;
+  if (avg < 180) { rating = '⚡ Bovenmenselijk'; color = '#00D2FF'; }
+  else if (avg < 220) { rating = '🔥 Bliksemsel'; color = '#00D2FF'; }
+  else if (avg < 270) { rating = '👍 Snel'; color = '#FDCB6E'; }
+  else if (avg < 350) { rating = '😐 Gemiddeld'; color = '#FF6B00'; }
+  else if (avg < 450) { rating = '🐢 Langzaam'; color = '#FF3366'; }
+  else { rating = '😴 Slapend'; color = '#FF3366'; }
+  document.getElementById('reaction-rating').innerHTML = `<span style="color:${color}">${rating}</span>`;
+  document.getElementById('reaction-stats').innerHTML = `<div class="reaction-stat"><div class="reaction-stat-val" style="color:#00D2FF">${best}ms</div><div class="reaction-stat-label">Beste</div></div><div class="reaction-stat"><div class="reaction-stat-val">${avg}ms</div><div class="reaction-stat-label">Gemiddeld</div></div><div class="reaction-stat"><div class="reaction-stat-val" style="color:#FF3366">${worst}ms</div><div class="reaction-stat-label">Slechtste</div></div>`;
+  document.getElementById('reaction-round-info').textContent = 'Klik om opnieuw te spelen';
+}
+
+// ===== MEMORY =====
+const MEMORY_EMOJIS = ['🎨', '🎸', '🌺', '🦋', '🍄', '🌙', '🔥', '💎'];
+let memoryCards = [], memoryFlipped = [], memoryMatched = [], memoryMoves = 0, memoryLocked = false;
+function initMemory() {
+  memoryMoves = 0; memoryFlipped = []; memoryMatched = []; memoryLocked = false;
+  document.getElementById('memory-pairs').textContent = '0'; document.getElementById('memory-moves').textContent = '0';
+  document.getElementById('memory-complete').style.display = 'none';
+  let pairs = [...MEMORY_EMOJIS, ...MEMORY_EMOJIS];
+  for (let i = pairs.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pairs[i], pairs[j]] = [pairs[j], pairs[i]]; }
+  memoryCards = pairs; const board = document.getElementById('memory-board'); board.innerHTML = '';
+  pairs.forEach((emoji, i) => { const card = document.createElement('div'); card.className = 'memory-card';
+    card.innerHTML = `<div class="memory-card-inner"><div class="memory-card-front"></div><div class="memory-card-back">${emoji}</div></div>`;
+    card.onclick = () => flipCard(i, card); board.appendChild(card); });
+}
+function flipCard(index, cardEl) {
+  if (memoryLocked || memoryFlipped.length >= 2 || memoryFlipped.find(f => f.index === index) || memoryMatched.includes(index)) return;
+  cardEl.classList.add('flipped'); memoryFlipped.push({ index, el: cardEl });
+  if (memoryFlipped.length === 2) { memoryMoves++; document.getElementById('memory-moves').textContent = memoryMoves;
+    const [a, b] = memoryFlipped;
+    if (memoryCards[a.index] === memoryCards[b.index]) { memoryMatched.push(a.index, b.index); a.el.classList.add('matched'); b.el.classList.add('matched'); memoryFlipped = [];
+      document.getElementById('memory-pairs').textContent = memoryMatched.length / 2;
+      if (memoryMatched.length === memoryCards.length) setTimeout(() => { document.getElementById('memory-complete').style.display = 'block';
+        let msg; if (memoryMoves <= 12) msg = memoryMoves + ' zetten — Fotografisch geheugen! 📸';
+        else if (memoryMoves <= 18) msg = memoryMoves + ' zetten — Scherp! 🧠';
+        else if (memoryMoves <= 25) msg = memoryMoves + ' zetten — Niet slecht!';
+        else msg = memoryMoves + ' zetten — Oefening baart kunst!';
+        document.getElementById('memory-result-text').textContent = msg; }, 500);
+    } else { memoryLocked = true; setTimeout(() => { a.el.classList.remove('flipped'); b.el.classList.remove('flipped'); memoryFlipped = []; memoryLocked = false; }, 800); }
+  }
+}
+
+// ===== CLICK FRENZY =====
+let frenzyCount = 0, frenzyAutoClickers = 0, frenzyAutoClickerCost = 50, frenzyDoubleClick = false, frenzyDoubleCost = 200, frenzyInterval = null, frenzyClickTimes = [];
+function initFrenzy() {
+  frenzyCount = 0; frenzyAutoClickers = 0; frenzyAutoClickerCost = 50; frenzyDoubleClick = false; frenzyDoubleCost = 200; frenzyClickTimes = [];
+  if (frenzyInterval) clearInterval(frenzyInterval); frenzyInterval = setInterval(frenzyTick, 100);
+  frenzyMilestonesHit = new Set(); renderFrenzy();
+}
+function frenzyClick() { frenzyCount += frenzyDoubleClick ? 2 : 1; frenzyClickTimes.push(Date.now()); spawnParticle(); checkFrenzyMilestone(); renderFrenzy(); }
+function frenzyTick() { if (frenzyAutoClickers > 0) { frenzyCount += frenzyAutoClickers; renderFrenzy(); }
+  frenzyClickTimes = frenzyClickTimes.filter(t => Date.now() - t < 1000);
+  document.getElementById('frenzy-cps').textContent = frenzyClickTimes.length + ' clicks/sec'; }
+function renderFrenzy() {
+  document.getElementById('frenzy-count').textContent = frenzyCount.toLocaleString();
+  const btn = document.getElementById('frenzy-btn'); let level, color;
+  if (frenzyCount < 50) { level = 'Level 1: Rustig'; color = '#FD79A8'; }
+  else if (frenzyCount < 200) { level = 'Level 2: Opwarmen'; color = '#E84393'; }
+  else if (frenzyCount < 500) { level = 'Level 3: Intens'; color = '#D63031'; }
+  else if (frenzyCount < 1000) { level = 'Level 4: Chaos'; color = '#6C5CE7'; }
+  else if (frenzyCount < 2000) { level = 'Level 5: Waanzin'; color = '#0984E3'; }
+  else { level = 'Level 6: TRANSCENDENTIE'; color = '#00B894'; }
+  document.getElementById('frenzy-level').textContent = level;
+  document.getElementById('frenzy-count').style.color = color;
+  btn.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
+  btn.style.boxShadow = `0 0 30px ${color}66`;
+  const cont = document.getElementById('frenzy-container');
+  cont.style.animation = frenzyCount >= 200 ? 'shake 0.3s ease infinite' : '';
+  const gv = document.getElementById('game-frenzy');
+  gv.style.background = frenzyCount >= 500 ? `hsl(${(frenzyCount * 0.5) % 360}, 20%, 6%)` : '';
+  document.getElementById('frenzy-upgrades').innerHTML = `<div class="frenzy-upgrade" onclick="buyAutoClicker()" ${frenzyCount < frenzyAutoClickerCost ? 'disabled' : ''}>Auto Clicker (${frenzyAutoClickers})<div class="frenzy-upgrade-cost">Kosten: ${frenzyAutoClickerCost}</div></div><div class="frenzy-upgrade" onclick="buyDoubleClick()" ${frenzyDoubleClick || frenzyCount < frenzyDoubleCost ? 'disabled' : ''}>${frenzyDoubleClick ? '✓ Dubbel Klik' : 'Dubbel Klik'}<div class="frenzy-upgrade-cost">${frenzyDoubleClick ? 'Gekocht' : 'Kosten: ' + frenzyDoubleCost}</div></div>`;
+}
+function buyAutoClicker() { if (frenzyCount >= frenzyAutoClickerCost) { frenzyCount -= frenzyAutoClickerCost; frenzyAutoClickers++; frenzyAutoClickerCost = Math.round(frenzyAutoClickerCost * 1.8); renderFrenzy(); } }
+function buyDoubleClick() { if (!frenzyDoubleClick && frenzyCount >= frenzyDoubleCost) { frenzyCount -= frenzyDoubleCost; frenzyDoubleClick = true; renderFrenzy(); } }
+function spawnParticle() { if (frenzyCount < 100) return; const p = document.createElement('div'); p.className = 'particle';
+  const size = 4 + Math.random() * 8, hue = Math.random() * 360;
+  p.style.cssText = `width:${size}px;height:${size}px;background:hsl(${hue},80%,60%);left:${30+Math.random()*40}%;top:${40+Math.random()*20}%;animation-duration:${1+Math.random()*2}s;`;
+  document.body.appendChild(p); setTimeout(() => p.remove(), 3000); }
+const FRENZY_MILESTONES = [100, 250, 500, 1000, 2000, 5000]; let frenzyMilestonesHit = new Set();
+function checkFrenzyMilestone() { FRENZY_MILESTONES.forEach(m => { if (frenzyCount >= m && !frenzyMilestonesHit.has(m)) { frenzyMilestonesHit.add(m);
+  const el = document.createElement('div'); el.className = 'frenzy-milestone'; el.textContent = m.toLocaleString() + ' clicks!';
+  document.body.appendChild(el); setTimeout(() => el.remove(), 1500); } }); }
+
+// ===== GUESS THE NUMBER =====
+const GUESS_QUESTIONS = [
+  { q: "Hoeveel botten zitten er in het menselijk lichaam?", a: 206, fact: "Baby's worden geboren met zo'n 270 botten, maar veel groeien samen.", category: "Lichaam" },
+  { q: "Hoeveel landen zijn er in de wereld?", a: 195, fact: "193 VN-lidstaten plus 2 waarnemerstaten (Vaticaanstad en Palestina).", category: "Aardrijkskunde" },
+  { q: "Hoe hoog is de Eiffeltoren in meters?", a: 330, fact: "De toren kan in de zomer tot 15 cm groeien door uitzetting van het ijzer.", category: "Monumenten" },
+  { q: "Hoeveel toetsen heeft een standaard piano?", a: 88, fact: "52 witte en 36 zwarte toetsen, over 7 octaven.", category: "Muziek" },
+  { q: "Hoeveel tanden heeft een volwassene?", a: 32, fact: "Inclusief 4 verstandskiezen, die veel mensen laten trekken.", category: "Lichaam" },
+  { q: "Hoeveel manen heeft Jupiter?", a: 95, fact: "De vier grootste werden in 1610 door Galileo ontdekt.", category: "Ruimte" },
+  { q: "Hoe diep is de Marianentrog in meters?", a: 10994, fact: "Als je de Mount Everest op de bodem zet, is de top nog steeds 2 km onder water.", category: "Aardrijkskunde" },
+  { q: "Hoeveel harten heeft een octopus?", a: 3, fact: "Eén pompt bloed door het lichaam, twee pompen bloed door de kieuwen.", category: "Dieren" },
+  { q: "Hoeveel kuiltjes zitten er op een golfbal?", a: 336, fact: "De kuiltjes verminderen luchtweerstand en helpen de bal twee keer zo ver te vliegen.", category: "Sport" },
+  { q: "Hoeveel elementen staan er in het periodiek systeem?", a: 118, fact: "Oganesson (element 118) was het laatst toegevoegde, in 2016.", category: "Wetenschap" },
+  { q: "Hoeveel spieren heeft het menselijk lichaam?", a: 640, fact: "De sterkste spier relatief aan zijn grootte is de kaakspier.", category: "Lichaam" },
+  { q: "Hoeveel talen worden er in de wereld gesproken?", a: 7168, fact: "Ongeveer 40% van de talen is bedreigd, met minder dan 1.000 sprekers elk.", category: "Cultuur" },
+];
+let guessIndex = 0, guessScore = 0, guessAnswered = 0, guessOrder = [];
+function initGuess() {
+  guessIndex = 0; guessScore = 0; guessAnswered = 0;
+  guessOrder = [...Array(GUESS_QUESTIONS.length).keys()];
+  for (let i = guessOrder.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [guessOrder[i], guessOrder[j]] = [guessOrder[j], guessOrder[i]]; }
+  guessOrder = guessOrder.slice(0, 8); renderGuess();
+}
+function renderGuess() {
+  const c = document.getElementById('guess-container');
+  if (guessIndex >= guessOrder.length) { const pct = Math.round((guessScore / guessOrder.length) * 100);
+    c.innerHTML = `<div class="guess-final">Klaar!</div><div class="guess-final-score">${pct}%</div><div class="guess-final-label">gemiddelde nauwkeurigheid over ${guessOrder.length} vragen</div><button class="guess-next" onclick="initGuess()" style="margin-top:24px">Opnieuw Spelen</button>`; return; }
+  const q = GUESS_QUESTIONS[guessOrder[guessIndex]];
+  c.innerHTML = `<div class="guess-score-bar"><div class="guess-score-item"><div class="guess-score-val">${guessIndex + 1}/${guessOrder.length}</div><div class="guess-score-label">Vraag</div></div><div class="guess-score-item"><div class="guess-score-val">${guessAnswered > 0 ? Math.round((guessScore / guessAnswered) * 100) + '%' : '—'}</div><div class="guess-score-label">Score</div></div></div><div class="guess-category">${q.category}</div><div class="guess-question">${q.q}</div><div class="guess-input-area"><input class="guess-input" id="guess-input" type="number" placeholder="?" autofocus></div><button class="guess-submit" onclick="submitGuess()">Vastleggen</button>`;
+  const inp = document.getElementById('guess-input');
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitGuess(); });
+  setTimeout(() => inp.focus(), 100);
+}
+function submitGuess() {
+  const inp = document.getElementById('guess-input'), val = parseInt(inp.value); if (isNaN(val)) return;
+  const q = GUESS_QUESTIONS[guessOrder[guessIndex]], actual = q.a, diff = Math.abs(val - actual);
+  const accuracy = Math.max(0, Math.round((1 - diff / actual) * 100));
+  guessScore += accuracy / 100; guessAnswered++;
+  let grade, gc;
+  if (accuracy >= 95) { grade = 'Bingo!'; gc = '#00D2FF'; }
+  else if (accuracy >= 80) { grade = 'Heel dichtbij!'; gc = '#00D2FF'; }
+  else if (accuracy >= 60) { grade = 'Niet slecht!'; gc = '#FDCB6E'; }
+  else if (accuracy >= 30) { grade = 'Ver ernaast'; gc = '#FF6B00'; }
+  else { grade = 'Totaal mis'; gc = '#FF3366'; }
+  const c = document.getElementById('guess-container');
+  const ex = c.querySelector('.guess-result'); if (ex) ex.remove();
+  const eb = c.querySelector('.guess-submit'); if (eb) eb.remove(); inp.disabled = true;
+  const r = document.createElement('div'); r.className = 'guess-result'; r.style.animation = 'fadeIn 0.4s ease';
+  r.innerHTML = `<div class="guess-result-answer">Het antwoord</div><div class="guess-result-number">${actual.toLocaleString('nl-NL')}</div><div class="guess-result-accuracy" style="color:${gc}">${grade} (${accuracy}% nauwkeurig)</div><div class="guess-result-fact">${q.fact}</div><button class="guess-next" onclick="guessIndex++; renderGuess();">${guessIndex < guessOrder.length - 1 ? 'Volgende Vraag →' : 'Resultaten'}</button>`;
+  c.appendChild(r);
+}
+</script>
+</body>
+</html>
