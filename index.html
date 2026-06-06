@@ -3602,13 +3602,17 @@
     <div class="modal" style="position:relative;">
       <button onclick="closeMerchModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
       <h2 id="merchModalTitle">🛍️ Product Toevoegen</h2>
-      <div class="modal-sub">Voeg een product toe met een afbeelding, beschrijving en link naar de webshop</div>
+      <div class="modal-sub">Voeg een product toe met afbeeldingen, beschrijving en link naar de webshop</div>
 
       <label class="modal-label">Naam</label>
       <input type="text" class="modal-input" id="merchName" placeholder="bijv. CHOPPED T-Shirt">
 
-      <label class="modal-label">Afbeelding URL</label>
-      <input type="text" class="modal-input" id="merchImage" placeholder="https://... .jpg / .png / .webp">
+      <label class="modal-label">Afbeeldingen (meerdere mogelijk)</label>
+      <div id="merchImagesList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input type="text" class="modal-input" id="merchImageInput" placeholder="https://... .jpg / .png / .webp" style="margin-bottom:0;flex:1;">
+        <button onclick="addMerchImage()" style="padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;white-space:nowrap;">+ Foto</button>
+      </div>
 
       <label class="modal-label">Prijs</label>
       <input type="text" class="modal-input" id="merchPrice" placeholder="bijv. €24,99" style="max-width:200px;">
@@ -5792,6 +5796,7 @@
     // ===== MERCH =====
     var merchData = [];
     var editingMerchId = null;
+    var merchImages = [];
 
     function loadMerch() {
       db.collection('merch').orderBy('timestamp', 'desc').get().then(function(snapshot) {
@@ -5799,6 +5804,7 @@
         snapshot.forEach(function(doc) {
           var d = doc.data();
           d.id = doc.id;
+          if (d.image && !d.images) d.images = [d.image];
           merchData.push(d);
         });
         renderMerch();
@@ -5806,6 +5812,52 @@
         renderMerch();
       });
     }
+
+    function openMerchLink(url) {
+      if (url) window.open(url, '_blank');
+    }
+
+    function merchCarousel(id, dir) {
+      var el = document.getElementById('merch-carousel-' + id);
+      if (!el) return;
+      var imgs = el.querySelectorAll('.merch-slide');
+      var dots = el.querySelectorAll('.merch-dot');
+      var current = parseInt(el.getAttribute('data-idx') || '0');
+      var next = (current + dir + imgs.length) % imgs.length;
+      if (next === current) return;
+      el.setAttribute('data-idx', next);
+      imgs[next].style.opacity = '0';
+      imgs[next].style.display = 'block';
+      imgs[next].style.zIndex = '2';
+      imgs[current].style.zIndex = '1';
+      var step = 0;
+      var fade = setInterval(function() {
+        step += 0.06;
+        if (step >= 1) {
+          step = 1;
+          clearInterval(fade);
+          imgs.forEach(function(img, i) {
+            if (i !== next) { img.style.display = 'none'; img.style.zIndex = '1'; }
+          });
+        }
+        imgs[next].style.opacity = step;
+      }, 16);
+      dots.forEach(function(dot, i) {
+        dot.style.background = i === next ? 'white' : 'rgba(255,255,255,0.4)';
+        dot.style.transform = i === next ? 'scale(1.3)' : 'scale(1)';
+      });
+    }
+
+    setInterval(function() {
+      var carousels = document.querySelectorAll('[id^="merch-carousel-"]');
+      carousels.forEach(function(el) {
+        var imgs = el.querySelectorAll('.merch-slide');
+        if (imgs.length > 1) {
+          var id = el.id.replace('merch-carousel-', '');
+          merchCarousel(id, 1);
+        }
+      });
+    }, 4000);
 
     function renderMerch() {
       var grid = document.getElementById('merchGrid');
@@ -5833,17 +5885,37 @@
       Object.keys(categories).forEach(function(cat) {
         html += '<div style="grid-column:1/-1;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-top:16px;margin-bottom:-4px;">' + cat + '</div>';
         categories[cat].forEach(function(m) {
-          html += '<div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:all 0.3s;cursor:pointer;" onmouseover="this.style.transform=\'translateY(-6px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.15)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.08)\'" onclick="' + (m.link ? 'window.open(\\\'' + m.link.replace(/'/g, "\\\\'") + '\\\',\\\'_blank\\\')' : '') + '">';
-          if (m.image) {
-            html += '<div style="width:100%;height:220px;background:url(\'' + m.image + '\') center/cover no-repeat;background-color:rgba(26,26,46,0.05);"></div>';
+          var images = m.images || [];
+          var hasMultiple = images.length > 1;
+
+          html += '<div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:all 0.3s;" onmouseover="this.style.transform=\'translateY(-6px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.15)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.08)\'">';
+
+          if (images.length > 0) {
+            html += '<div id="merch-carousel-' + m.id + '" data-idx="0" style="position:relative;width:100%;height:260px;background:rgba(26,26,46,0.05);overflow:hidden;">';
+            images.forEach(function(img, i) {
+              html += '<img class="merch-slide" src="' + img + '" style="position:absolute;top:0;left:0;width:100%;height:260px;object-fit:cover;display:' + (i === 0 ? 'block' : 'none') + ';opacity:' + (i === 0 ? '1' : '0') + ';z-index:' + (i === 0 ? '2' : '1') + ';" onerror="this.style.display=\'none\'">';
+            });
+            if (hasMultiple) {
+              html += '<button onclick="event.stopPropagation();merchCarousel(\'' + m.id + '\',-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.5);color:white;border:none;cursor:pointer;font-size:1rem;">‹</button>';
+              html += '<button onclick="event.stopPropagation();merchCarousel(\'' + m.id + '\',1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.5);color:white;border:none;cursor:pointer;font-size:1rem;">›</button>';
+              html += '<div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;">';
+              images.forEach(function(img, i) {
+                html += '<div class="merch-dot" style="width:8px;height:8px;border-radius:50%;background:' + (i === 0 ? 'white' : 'rgba(255,255,255,0.4)') + ';transition:all 0.3s;transform:' + (i === 0 ? 'scale(1.3)' : 'scale(1)') + ';"></div>';
+              });
+              html += '</div>';
+            }
+            html += '</div>';
           } else {
-            html += '<div style="width:100%;height:220px;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;font-size:4rem;">🛍️</div>';
+            html += '<div style="width:100%;height:260px;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;font-size:4rem;">🛍️</div>';
           }
+
           html += '<div style="padding:16px 20px;">' +
             '<div style="font-size:1rem;font-weight:800;margin-bottom:4px;">' + (m.name || 'Product') + '</div>' +
             (m.price ? '<div style="font-size:0.9rem;font-weight:800;color:var(--accent);margin-bottom:6px;">' + m.price + '</div>' : '') +
-            (m.desc ? '<div style="font-size:0.8rem;color:rgba(26,26,46,0.5);line-height:1.5;margin-bottom:8px;">' + m.desc + '</div>' : '') +
-            (m.link ? '<div style="font-size:0.75rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">Bekijk in Shop →</div>' : '');
+            (m.desc ? '<div style="font-size:0.8rem;color:rgba(26,26,46,0.5);line-height:1.5;margin-bottom:8px;">' + m.desc + '</div>' : '');
+          if (m.link) {
+            html += '<button onclick="event.stopPropagation();openMerchLink(\'' + m.link.replace(/'/g, "\\'") + '\')" style="padding:8px 16px;background:var(--gold);color:var(--primary);border:none;border-radius:8px;font-weight:800;font-size:0.75rem;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.2s;" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'\'">Bekijk in Shop →</button>';
+          }
           if (hasPermission('merch')) {
             html += '<div style="margin-top:10px;display:flex;gap:6px;border-top:1px solid rgba(26,26,46,0.06);padding-top:10px;">' +
               '<button onclick="event.stopPropagation();editMerch(\'' + m.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--blue);">✏️ Bewerken</button>' +
@@ -5857,13 +5929,38 @@
       grid.innerHTML = html;
     }
 
+    function addMerchImage() {
+      var input = document.getElementById('merchImageInput');
+      var url = input.value.trim();
+      if (!url) return;
+      merchImages.push(url);
+      input.value = '';
+      renderMerchImages();
+    }
+
+    function removeMerchImage(idx) {
+      merchImages.splice(idx, 1);
+      renderMerchImages();
+    }
+
+    function renderMerchImages() {
+      var list = document.getElementById('merchImagesList');
+      list.innerHTML = merchImages.map(function(url, i) {
+        return '<div style="position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:2px solid rgba(26,26,46,0.1);">' +
+          '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.src=\'\'">' +
+          '<button onclick="removeMerchImage(' + i + ')" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:var(--accent);color:white;border:none;cursor:pointer;font-size:0.6rem;line-height:18px;">×</button>' +
+        '</div>';
+      }).join('');
+    }
+
     function openMerchModal(editId) {
       editingMerchId = editId || null;
+      merchImages = [];
       if (editId) {
         var m = merchData.find(function(x) { return x.id === editId; });
         if (m) {
           document.getElementById('merchName').value = m.name || '';
-          document.getElementById('merchImage').value = m.image || '';
+          merchImages = (m.images || []).slice();
           document.getElementById('merchPrice').value = m.price || '';
           document.getElementById('merchDesc').value = m.desc || '';
           document.getElementById('merchLink').value = m.link || '';
@@ -5872,19 +5969,21 @@
         }
       } else {
         document.getElementById('merchName').value = '';
-        document.getElementById('merchImage').value = '';
         document.getElementById('merchPrice').value = '';
         document.getElementById('merchDesc').value = '';
         document.getElementById('merchLink').value = '';
         document.getElementById('merchCategory').value = '';
         document.getElementById('merchModalTitle').textContent = '🛍️ Product Toevoegen';
       }
+      document.getElementById('merchImageInput').value = '';
+      renderMerchImages();
       document.getElementById('merchModal').classList.add('active');
     }
 
     function closeMerchModal() {
       document.getElementById('merchModal').classList.remove('active');
       editingMerchId = null;
+      merchImages = [];
     }
 
     function saveMerch() {
@@ -5897,7 +5996,7 @@
 
       var data = {
         name: name,
-        image: document.getElementById('merchImage').value.trim(),
+        images: merchImages.slice(),
         price: document.getElementById('merchPrice').value.trim(),
         desc: document.getElementById('merchDesc').value.trim(),
         link: document.getElementById('merchLink').value.trim(),
