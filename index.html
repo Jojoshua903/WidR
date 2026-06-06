@@ -2680,6 +2680,7 @@
 
     body.perm-leden .admin-controls { display: flex; }
     body.perm-soundboard .soundboard-admin { display: block; }
+    body.perm-merch .merch-admin { display: block; }
     body.perm-ranking .preset-btn-delete { display: inline; }
 
     .admin-logout {
@@ -2954,7 +2955,8 @@
     body.dark-mode .lore-cta,
     body.dark-mode .vote-entry,
     body.dark-mode .msg-entry,
-    body.dark-mode .sound-btn {
+    body.dark-mode .sound-btn,
+    body.dark-mode #merchGrid > div {
       background: #1a1a2e;
       color: #FAF3E0;
     }
@@ -3161,6 +3163,8 @@
           <a href="#contact" onclick="navigate('contact');closeNavDrops()">✉️ Contact</a>
         </div>
       </div>
+
+      <a href="#merch" onclick="navigate('merch')" style="display:flex;align-items:center;gap:4px;">🛍️ Merch</a>
     </ul>
   </nav>
 
@@ -3568,6 +3572,63 @@
     </div>
   </div>
 
+  <!-- MERCH PAGE -->
+  <div class="page" id="page-merch">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #FF9A3C 0%, var(--accent) 50%, var(--primary) 100%);">
+      <h1>Merch 🛍️</h1>
+      <p>Officiële Wat in de Ranking merchandise — rep de groep!</p>
+    </div>
+    <div style="max-width:1000px;margin:0 auto;padding:48px 40px 100px;">
+
+      <div class="merch-admin" style="text-align:center;margin-bottom:24px;display:none;">
+        <button class="preset-btn-add" onclick="openMerchModal()" style="font-size:0.8rem;padding:10px 24px;">🛍️ Product Toevoegen</button>
+      </div>
+
+      <div id="merchGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;"></div>
+      <div id="merchEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">🛍️</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen producten</div>
+        <div style="font-size:0.85rem;">Binnenkort beschikbaar!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
+  <!-- MERCH MODAL -->
+  <div class="modal-overlay" id="merchModal">
+    <div class="modal" style="position:relative;">
+      <button onclick="closeMerchModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
+      <h2 id="merchModalTitle">🛍️ Product Toevoegen</h2>
+      <div class="modal-sub">Voeg een product toe met een afbeelding, beschrijving en link naar de webshop</div>
+
+      <label class="modal-label">Naam</label>
+      <input type="text" class="modal-input" id="merchName" placeholder="bijv. CHOPPED T-Shirt">
+
+      <label class="modal-label">Afbeelding URL</label>
+      <input type="text" class="modal-input" id="merchImage" placeholder="https://... .jpg / .png / .webp">
+
+      <label class="modal-label">Prijs</label>
+      <input type="text" class="modal-input" id="merchPrice" placeholder="bijv. €24,99" style="max-width:200px;">
+
+      <label class="modal-label">Beschrijving</label>
+      <input type="text" class="modal-input" id="merchDesc" placeholder="Korte beschrijving van het product...">
+
+      <label class="modal-label">Webshop Link</label>
+      <input type="text" class="modal-input" id="merchLink" placeholder="https://... link naar waar je het kunt kopen">
+
+      <label class="modal-label">Categorie (optioneel)</label>
+      <input type="text" class="modal-input" id="merchCategory" placeholder="bijv. T-Shirts, Hoodies, Stickers...">
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeMerchModal()">Annuleren</button>
+        <button class="modal-save" id="merchSaveBtn" onclick="saveMerch()">Opslaan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ABOUT PAGE -->
   <div class="page" id="page-about">
     <div class="about-hero">
@@ -3727,7 +3788,7 @@
       if (userRoles.indexOf(perm) !== -1 || userRoles.indexOf('master') !== -1) return true;
       if (!isAdmin || !adminRole) return false;
       if (adminRole === 'master') return true;
-      var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'], soundboard:['soundboard'] };
+      var adminRoles = { lore:['lore'], leden:['leden'], ranking:['ranking'], berichten:['berichten'], soundboard:['soundboard'], merch:['merch'] };
       var r = adminRoles[adminRole];
       return r && r.indexOf(perm) !== -1;
     }
@@ -3917,7 +3978,7 @@
             if (userRoles.indexOf('master') !== -1) {
               isAdmin = true;
               adminRole = 'master';
-              ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+              ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.add('perm-' + p); });
             } else if (userRoles.length > 0) {
               userRoles.forEach(function(r) {
                 document.body.classList.add('perm-' + r);
@@ -3962,6 +4023,7 @@
 
       if (page === 'rankings') loadRankings(currentCategory);
       if (page === 'soundboard') { loadSounds(); }
+      if (page === 'merch') { loadMerch(); }
       if (page === 'lore' && !loreLoaded) { loadStories(); loadMemes(); loreLoaded = true; }
       if (page === 'members' && !membersLoaded) { loadMembers(); loadSections(); membersLoaded = true; }
       if (page === 'stats') {}
@@ -5727,6 +5789,146 @@
       }).catch(function() {});
     }
 
+    // ===== MERCH =====
+    var merchData = [];
+    var editingMerchId = null;
+
+    function loadMerch() {
+      db.collection('merch').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        merchData = [];
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          d.id = doc.id;
+          merchData.push(d);
+        });
+        renderMerch();
+      }).catch(function() {
+        renderMerch();
+      });
+    }
+
+    function renderMerch() {
+      var grid = document.getElementById('merchGrid');
+      var empty = document.getElementById('merchEmpty');
+      var adminDiv = document.querySelector('.merch-admin');
+      if (!grid) return;
+
+      if (adminDiv) adminDiv.style.display = hasPermission('merch') ? 'block' : 'none';
+
+      if (merchData.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      var categories = {};
+      merchData.forEach(function(m) {
+        var cat = m.category || 'Overig';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(m);
+      });
+
+      var html = '';
+      Object.keys(categories).forEach(function(cat) {
+        html += '<div style="grid-column:1/-1;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-top:16px;margin-bottom:-4px;">' + cat + '</div>';
+        categories[cat].forEach(function(m) {
+          html += '<div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:all 0.3s;cursor:pointer;" onmouseover="this.style.transform=\'translateY(-6px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.15)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 4px 20px rgba(0,0,0,0.08)\'" onclick="' + (m.link ? 'window.open(\\\'' + m.link.replace(/'/g, "\\\\'") + '\\\',\\\'_blank\\\')' : '') + '">';
+          if (m.image) {
+            html += '<div style="width:100%;height:220px;background:url(\'' + m.image + '\') center/cover no-repeat;background-color:rgba(26,26,46,0.05);"></div>';
+          } else {
+            html += '<div style="width:100%;height:220px;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;font-size:4rem;">🛍️</div>';
+          }
+          html += '<div style="padding:16px 20px;">' +
+            '<div style="font-size:1rem;font-weight:800;margin-bottom:4px;">' + (m.name || 'Product') + '</div>' +
+            (m.price ? '<div style="font-size:0.9rem;font-weight:800;color:var(--accent);margin-bottom:6px;">' + m.price + '</div>' : '') +
+            (m.desc ? '<div style="font-size:0.8rem;color:rgba(26,26,46,0.5);line-height:1.5;margin-bottom:8px;">' + m.desc + '</div>' : '') +
+            (m.link ? '<div style="font-size:0.75rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">Bekijk in Shop →</div>' : '');
+          if (hasPermission('merch')) {
+            html += '<div style="margin-top:10px;display:flex;gap:6px;border-top:1px solid rgba(26,26,46,0.06);padding-top:10px;">' +
+              '<button onclick="event.stopPropagation();editMerch(\'' + m.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--blue);">✏️ Bewerken</button>' +
+              '<button onclick="event.stopPropagation();deleteMerch(\'' + m.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--accent);">🗑 Verwijderen</button>' +
+            '</div>';
+          }
+          html += '</div></div>';
+        });
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function openMerchModal(editId) {
+      editingMerchId = editId || null;
+      if (editId) {
+        var m = merchData.find(function(x) { return x.id === editId; });
+        if (m) {
+          document.getElementById('merchName').value = m.name || '';
+          document.getElementById('merchImage').value = m.image || '';
+          document.getElementById('merchPrice').value = m.price || '';
+          document.getElementById('merchDesc').value = m.desc || '';
+          document.getElementById('merchLink').value = m.link || '';
+          document.getElementById('merchCategory').value = m.category || '';
+          document.getElementById('merchModalTitle').textContent = '✏️ Product Bewerken';
+        }
+      } else {
+        document.getElementById('merchName').value = '';
+        document.getElementById('merchImage').value = '';
+        document.getElementById('merchPrice').value = '';
+        document.getElementById('merchDesc').value = '';
+        document.getElementById('merchLink').value = '';
+        document.getElementById('merchCategory').value = '';
+        document.getElementById('merchModalTitle').textContent = '🛍️ Product Toevoegen';
+      }
+      document.getElementById('merchModal').classList.add('active');
+    }
+
+    function closeMerchModal() {
+      document.getElementById('merchModal').classList.remove('active');
+      editingMerchId = null;
+    }
+
+    function saveMerch() {
+      var name = document.getElementById('merchName').value.trim();
+      if (!name) { alert('Vul een productnaam in'); return; }
+
+      var btn = document.getElementById('merchSaveBtn');
+      btn.textContent = 'Opslaan...';
+      btn.disabled = true;
+
+      var data = {
+        name: name,
+        image: document.getElementById('merchImage').value.trim(),
+        price: document.getElementById('merchPrice').value.trim(),
+        desc: document.getElementById('merchDesc').value.trim(),
+        link: document.getElementById('merchLink').value.trim(),
+        category: document.getElementById('merchCategory').value.trim() || 'Overig',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      var p = editingMerchId
+        ? db.collection('merch').doc(editingMerchId).update(data)
+        : db.collection('merch').add(data);
+
+      p.then(function() {
+        loadMerch();
+        closeMerchModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      }).catch(function() {
+        closeMerchModal();
+        btn.textContent = 'Opslaan';
+        btn.disabled = false;
+      });
+    }
+
+    function editMerch(id) { openMerchModal(id); }
+
+    function deleteMerch(id) {
+      var m = merchData.find(function(x) { return x.id === id; });
+      if (!confirm('Product "' + (m ? m.name : id) + '" verwijderen?')) return;
+      db.collection('merch').doc(id).delete().then(function() { loadMerch(); }).catch(function() {});
+    }
+
     // sounds, members, sections lazy-loaded when visiting their pages
     loadCustomCategories();
   </script>
@@ -5905,7 +6107,8 @@
       leden: { label: '👥 Leden Admin', desc: 'Leden toevoegen/bewerken', perms: ['leden'] },
       ranking: { label: '🏆 Ranking Admin', desc: 'Categorieën & stemmen', perms: ['ranking'] },
       berichten: { label: '📬 Berichten Admin', desc: 'Berichten bekijken', perms: ['berichten'] },
-      soundboard: { label: '🔊 Soundboard Admin', desc: 'Geluiden toevoegen/bewerken', perms: ['soundboard'] }
+      soundboard: { label: '🔊 Soundboard Admin', desc: 'Geluiden toevoegen/bewerken', perms: ['soundboard'] },
+      merch: { label: '🛍️ Merch Admin', desc: 'Producten toevoegen/bewerken', perms: ['merch'] }
     };
 
     function simpleHash(str) {
@@ -6037,7 +6240,7 @@
     function activateAdmin() {
       document.body.classList.add('admin-mode');
       if (adminRole === 'master') {
-        ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+        ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.add('perm-' + p); });
       } else {
         var r = adminRoles[adminRole];
         if (r) r.perms.forEach(function(p) { document.body.classList.add('perm-' + p); });
@@ -6058,7 +6261,7 @@
       isAdmin = false;
       adminRole = null;
       document.body.classList.remove('admin-mode');
-      ['lore','leden','ranking','berichten','soundboard'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
+      ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
       document.getElementById('adminBadge').classList.remove('active');
       renderPresetButtons();
       renderMembers();
@@ -6084,7 +6287,7 @@
 
     function renderRoleManager(currentRoles) {
       var list = document.getElementById('roleList');
-      var subRoles = ['lore','leden','ranking','berichten','soundboard'];
+      var subRoles = ['lore','leden','ranking','berichten','soundboard','merch'];
       list.innerHTML = subRoles.map(function(role) {
         var info = adminRoles[role];
         var hasPass = currentRoles[role] ? true : false;
@@ -6136,7 +6339,8 @@
       { id: 'leden', label: '👥 Leden', color: '#16C79A', desc: 'Leden beheren' },
       { id: 'ranking', label: '🏆 Ranking', color: '#E94560', desc: 'Categorieën & stemmen' },
       { id: 'berichten', label: '📬 Berichten', color: '#0F3460', desc: 'Berichten bekijken' },
-      { id: 'soundboard', label: '🔊 Soundboard', color: '#FF6B6B', desc: 'Geluiden beheren' }
+      { id: 'soundboard', label: '🔊 Soundboard', color: '#FF6B6B', desc: 'Geluiden beheren' },
+      { id: 'merch', label: '🛍️ Merch', color: '#FF9A3C', desc: 'Producten beheren' }
     ];
 
     function loadUsersList() {
@@ -6889,7 +7093,7 @@
     var _origNavigate = window.navigate;
     window.navigate = function(page) {
       _origNavigate(page);
-      if (Math.random() < 0.10) {
+      if (Math.random() < 0.01) {
         var msgs = [
           'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
           'Ik heb berekend dat Nathananiel gemiddeld 3.7 keer per dag geïrriteerd is.',
