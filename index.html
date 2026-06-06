@@ -6044,13 +6044,13 @@
       document.getElementById('adminBadge').classList.add('active');
       var roleInfo = adminRoles[adminRole] || adminRoles.master;
       document.getElementById('adminBadgeText').textContent = roleInfo.label;
-      renderPresetButtons();
-      if (hasPermission('ranking')) loadRankings(currentCategory);
-      if (hasPermission('berichten')) loadAdminMessages();
-      if (hasPermission('lore')) renderMemes(allMemes);
-      if (hasPermission('soundboard')) renderSoundboard();
-      renderMembers();
-      if (typeof updateTranslateBar === 'function') updateTranslateBar();
+      try { renderPresetButtons(); } catch(e) {}
+      try { if (hasPermission('ranking')) loadRankings(currentCategory); } catch(e) {}
+      try { if (hasPermission('berichten')) loadAdminMessages(); } catch(e) {}
+      try { if (hasPermission('lore') && typeof allMemes !== 'undefined') renderMemes(allMemes); } catch(e) {}
+      try { if (hasPermission('soundboard') && typeof renderSoundboard === 'function') renderSoundboard(); } catch(e) {}
+      try { renderMembers(); } catch(e) {}
+      try { if (typeof updateTranslateBar === 'function') updateTranslateBar(); } catch(e) {}
     }
 
     function logoutAdmin() {
