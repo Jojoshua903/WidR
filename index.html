@@ -3097,6 +3097,10 @@
           <button onclick="signInWithEmail()" style="flex:1;padding:14px;background:var(--gold);color:var(--primary);border:none;border-radius:12px;font-weight:800;font-size:0.9rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all 0.3s;">Inloggen</button>
           <button onclick="signUpWithEmail()" style="flex:1;padding:14px;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.3s;">Registreren</button>
         </div>
+
+        <div style="margin-top:16px;text-align:center;">
+          <button onclick="loginAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Doorgaan als gast (alleen kijken)</button>
+        </div>
       </div>
       <div style="margin-top:20px;font-size:0.7rem;color:rgba(255,255,255,0.2);">Gebruik je school- of persoonlijke e-mail</div>
     </div>
@@ -3903,7 +3907,18 @@
       });
     }
 
+    var isGuest = false;
+
+    function loginAsGuest() {
+      isGuest = true;
+      currentUser = null;
+      loggedInUser = 'Gast';
+      document.getElementById('loginGate').style.display = 'none';
+      updateNavAuth();
+    }
+
     function logoutGroup() {
+      isGuest = false;
       if (auth) {
         auth.signOut().then(function() {
           currentUser = null;
@@ -3927,9 +3942,16 @@
         nameEl.style.display = 'inline';
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
+      } else if (isGuest) {
+        nameEl.textContent = '👤 Gast';
+        nameEl.style.display = 'inline';
+        loginBtn.style.display = 'inline-block';
+        loginBtn.textContent = 'ACCOUNT MAKEN';
+        logoutBtn.style.display = 'inline-block';
       } else {
         nameEl.style.display = 'none';
         loginBtn.style.display = 'inline-block';
+        loginBtn.textContent = 'INLOGGEN';
         logoutBtn.style.display = 'none';
       }
     }
@@ -4167,17 +4189,65 @@
     }
 
     function saveRankingToFirebase(category, winsData) {
-      if (!currentUser) {
+      if (!currentUser || isGuest) {
+        alert('Je moet ingelogd zijn met een account om te stemmen. Gasten kunnen alleen kijken.');
         showLoginPopup();
         return;
       }
       var voterName = currentUser.displayName || currentUser.email.split('@')[0] || 'Anoniem';
-      db.collection('rankings').add({
-        category: category,
-        items: winsData,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        voter: voterName,
-        uid: currentUser.uid
+      var uid = currentUser.uid;
+
+      var meta = getPresetMeta(category);
+      var limit = (meta && meta.voteLimit) || 'unlimited';
+
+      if (limit === 'unlimited') {
+        db.collection('rankings').add({
+          category: category, items: winsData,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          voter: voterName, uid: uid
+        });
+        return;
+      }
+
+      var cooldownMs = 0;
+      var cooldownLabel = '';
+      if (limit === 'hour') { cooldownMs = 3600000; cooldownLabel = 'uur'; }
+      else if (limit === 'day') { cooldownMs = 86400000; cooldownLabel = 'dag'; }
+      else if (limit === 'once') { cooldownMs = Infinity; cooldownLabel = ''; }
+
+      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).orderBy('timestamp', 'desc').limit(1).get().then(function(snapshot) {
+        if (!snapshot.empty) {
+          var lastVote = snapshot.docs[0].data();
+          if (lastVote.timestamp) {
+            var lastTime = lastVote.timestamp.toDate().getTime();
+            if (limit === 'once') {
+              alert('Je kunt maar 1x stemmen in deze categorie.');
+              return;
+            }
+            if (Date.now() - lastTime < cooldownMs) {
+              var left = cooldownMs - (Date.now() - lastTime);
+              var minutesLeft = Math.ceil(left / 60000);
+              var display = minutesLeft >= 60 ? Math.ceil(minutesLeft / 60) + ' uur' : minutesLeft + ' minuten';
+              alert('Je kunt maar 1x per ' + cooldownLabel + ' stemmen in deze categorie. Probeer het over ' + display + ' opnieuw.');
+              return;
+            }
+          }
+        }
+        return db.collection('rankings').add({
+          category: category, items: winsData,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          voter: voterName, uid: uid
+        });
+      }).catch(function(err) {
+        if (err.code === 'failed-precondition') {
+          db.collection('rankings').add({
+            category: category, items: winsData,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            voter: voterName, uid: uid
+          });
+          return;
+        }
+        console.error(err);
       }).then(function() {
         console.log('Ranking saved!');
       }).catch(function(err) {
@@ -4187,6 +4257,7 @@
 
     // ===== CONTACT FORM =====
     function submitForm() {
+      if (isGuest) { alert('Log in met een account om een bericht te sturen.'); showLoginPopup(); return; }
       var btn = document.querySelector('.form-submit');
       var naam = document.querySelector('.contact-form input[type="text"]').value.trim();
       var email = document.querySelector('.contact-form input[type="email"]').value.trim();
@@ -4727,6 +4798,7 @@
     }
 
     function addMeme() {
+      if (isGuest) { alert('Log in met een account om memes toe te voegen.'); showLoginPopup(); return; }
       var input = document.getElementById('memeInput');
       var text = input.value.trim();
       if (!text) return;
@@ -4781,10 +4853,15 @@
         </div>
       </div>
 
+      <label class="modal-label">Stem limiet</label>
+      <select class="modal-input" id="catVoteLimit" style="padding:12px 16px;">
+        <option value="unlimited">♾️ Onbeperkt</option>
+        <option value="hour">⏱️ 1x per uur</option>
+        <option value="day">📅 1x per dag</option>
+        <option value="once">🔒 1x totaal</option>
+      </select>
+
       <div class="modal-buttons">
-        <button class="modal-cancel" onclick="closeCategoryModal()">Annuleren</button>
-        <button class="modal-save" id="catSaveBtn" onclick="saveCategory()" disabled>Opslaan</button>
-      </div>
     </div>
   </div>
 
@@ -4801,11 +4878,13 @@
         var meta = getPresetMeta(editId);
         document.getElementById('catName').value = meta.name;
         document.getElementById('catEmoji').value = meta.emoji || '';
+        document.getElementById('catVoteLimit').value = meta.voteLimit || 'unlimited';
         catItems = presets[editId] ? presets[editId].slice() : [];
         document.getElementById('catSaveBtn').textContent = 'Wijzigingen Opslaan';
       } else {
         document.getElementById('catName').value = '';
         document.getElementById('catEmoji').value = '';
+        document.getElementById('catVoteLimit').value = 'unlimited';
         document.getElementById('catSaveBtn').textContent = 'Opslaan';
       }
       document.getElementById('catItemInput').value = '';
@@ -4847,6 +4926,7 @@
     function saveCategory() {
       var name = document.getElementById('catName').value.trim();
       var emoji = document.getElementById('catEmoji').value.trim() || '🏷️';
+      var voteLimit = document.getElementById('catVoteLimit').value;
       if (!name || catItems.length < 3) return;
 
       var btn = document.getElementById('catSaveBtn');
@@ -4858,12 +4938,13 @@
       db.collection('categories').doc(catId).set({
         name: name,
         emoji: emoji,
+        voteLimit: voteLimit,
         items: catItems.slice(),
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(function() {
         presets[catId] = catItems.slice();
-        customCategories[catId] = { name: name, emoji: emoji };
-        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji };
+        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -4872,8 +4953,8 @@
         editingCategoryId = null;
       }).catch(function() {
         presets[catId] = catItems.slice();
-        customCategories[catId] = { name: name, emoji: emoji };
-        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji };
+        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -4949,7 +5030,7 @@
       cachedGet('categories', db.collection('categories'), 10).then(function(data) {
         data.forEach(function(d) {
           presets[d._id] = d.items;
-          customCategories[d._id] = { name: d.name, emoji: d.emoji || '🏷️' };
+          customCategories[d._id] = { name: d.name, emoji: d.emoji || '🏷️', voteLimit: d.voteLimit || 'unlimited' };
         });
         renderPresetButtons();
       }).catch(function() {});
@@ -5127,6 +5208,7 @@
     }
 
     function saveStory() {
+      if (isGuest) { alert('Log in met een account om verhalen toe te voegen.'); showLoginPopup(); return; }
       var title = document.getElementById('storyTitle').value.trim();
       var text = document.getElementById('storyText').value.trim();
       if (!title || !text) { alert('Vul minimaal een titel en verhaal in'); return; }
