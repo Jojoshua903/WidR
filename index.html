@@ -3811,7 +3811,6 @@
         appId: "1:138866882601:web:eee27036c5d95bdbc2c438"
       });
       db = firebase.firestore();
-      db.enablePersistence({ synchronizeTabs: true }).catch(function(err) {});
     } catch(e) {
       db = { collection: function() { return { get: function() { return Promise.reject(); }, doc: function() { return { get: function() { return Promise.reject(); }, set: function() { return Promise.reject(); }, update: function() { return Promise.reject(); }, delete: function() { return Promise.reject(); } }; }, add: function() { return Promise.reject(); }, where: function() { return { get: function() { return Promise.reject(); } }; }, orderBy: function() { return { get: function() { return Promise.reject(); } }; } }; } };
     }
