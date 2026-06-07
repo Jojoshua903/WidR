@@ -4010,9 +4010,10 @@
                 document.body.classList.add('perm-' + r);
               });
             }
-            renderMembers();
-            if (typeof renderSoundboard === 'function') renderSoundboard();
-            renderMemes(allMemes);
+            try { renderMembers(); } catch(e) {}
+            try { if (typeof renderSoundboard === 'function') renderSoundboard(); } catch(e) {}
+            try { if (typeof allMemes !== 'undefined') renderMemes(allMemes); } catch(e) {}
+            try { if (typeof renderMerch === 'function') renderMerch(); } catch(e) {}
           }).catch(function() { userRoles = []; });
         } else {
           currentUser = null;
@@ -5895,6 +5896,14 @@
       });
     }
 
+    setInterval(function() {
+      document.querySelectorAll('[id^="merch-carousel-"]').forEach(function(el) {
+        if (el.querySelectorAll('.merch-slide').length > 1) {
+          merchCarousel(el.id.replace('merch-carousel-', ''), 1);
+        }
+      });
+    }, 4000);
+
     function openMerchLink(url) {
       if (url) window.open(url, '_blank');
     }
@@ -6444,9 +6453,11 @@
       document.body.classList.remove('admin-mode');
       ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
       document.getElementById('adminBadge').classList.remove('active');
-      renderPresetButtons();
-      renderMembers();
-      renderMemes(allMemes);
+      try { renderPresetButtons(); } catch(e) {}
+      try { renderMembers(); } catch(e) {}
+      try { if (typeof allMemes !== 'undefined') renderMemes(allMemes); } catch(e) {}
+      try { if (typeof renderSoundboard === 'function') renderSoundboard(); } catch(e) {}
+      try { if (typeof renderMerch === 'function') renderMerch(); } catch(e) {}
     }
 
     function showRoleManager() {
