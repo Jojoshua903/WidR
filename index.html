@@ -11,7 +11,7 @@
       --accent: #E94560;
       --gold: #F5C518;
       --blue: #0F3460;
-      --light: #FAF3E0;
+      --light: #ebb92e;
       --mint: #16C79A;
       --coral: #FF6B6B;
       --purple: #845EC2;
@@ -6332,8 +6332,11 @@
       document.getElementById('adminConfirmPass').value = '';
       document.getElementById('roleManager').style.display = 'none';
 
+      // Try Firebase first, fall back to localStorage
       db.collection('config').doc('admin').get().then(function(doc) {
-        if (doc.exists && doc.data().passwordHash) {
+        var hasFirebasePassword = doc.exists && doc.data().passwordHash;
+        var hasLocalPassword = !!localStorage.getItem('widr_local_admin_hash');
+        if (hasFirebasePassword || hasLocalPassword) {
           document.getElementById('adminSetup').style.display = 'none';
           document.getElementById('adminLogin').style.display = 'block';
           document.getElementById('adminTitle').innerHTML = 'Admin Login 🔒';
@@ -6346,10 +6349,19 @@
         }
         document.getElementById('adminModal').classList.add('active');
       }).catch(function() {
-        document.getElementById('adminSetup').style.display = 'block';
-        document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
-        document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
+        // Firebase unavailable — use localStorage fallback
+        var hasLocalPassword = !!localStorage.getItem('widr_local_admin_hash');
+        if (hasLocalPassword) {
+          document.getElementById('adminSetup').style.display = 'none';
+          document.getElementById('adminLogin').style.display = 'block';
+          document.getElementById('adminTitle').innerHTML = 'Admin Login 🔒';
+          document.getElementById('adminSub').textContent = 'Voer je wachtwoord in (lokaal)';
+        } else {
+          document.getElementById('adminSetup').style.display = 'block';
+          document.getElementById('adminLogin').style.display = 'none';
+          document.getElementById('adminTitle').innerHTML = 'Admin Setup 🔑';
+          document.getElementById('adminSub').textContent = 'Eerste keer? Stel een master admin wachtwoord in';
+        }
         document.getElementById('adminModal').classList.add('active');
       });
     }
@@ -6374,12 +6386,23 @@
         passwordHash: hash,
         roles: {}
       }).then(function() {
+        // Also save locally as fallback
+        try { localStorage.setItem('widr_local_admin_hash', hash); } catch(e) {}
         isAdmin = true;
         adminRole = 'master';
         activateAdmin();
         closeAdminModal();
       }).catch(function() {
-        alert('Kon wachtwoord niet opslaan. Check je Firebase verbinding.');
+        // Firebase failed — save locally only
+        try {
+          localStorage.setItem('widr_local_admin_hash', hash);
+          isAdmin = true;
+          adminRole = 'master';
+          activateAdmin();
+          closeAdminModal();
+        } catch(e) {
+          alert('Kon wachtwoord niet opslaan.');
+        }
       });
     }
 
@@ -6388,34 +6411,58 @@
       var hash = simpleHash(pass);
 
       db.collection('config').doc('admin').get().then(function(doc) {
-        if (!doc.exists) {
-          document.getElementById('adminError').style.display = 'block';
-          return;
-        }
-        var data = doc.data();
-        if (data.passwordHash === hash) {
+        var localHash = null;
+        try { localHash = localStorage.getItem('widr_local_admin_hash'); } catch(e) {}
+
+        // Check Firebase password
+        if (doc.exists && doc.data().passwordHash) {
+          var data = doc.data();
+          if (data.passwordHash === hash) {
+            // Also keep local hash in sync
+            try { localStorage.setItem('widr_local_admin_hash', hash); } catch(e) {}
+            isAdmin = true;
+            adminRole = 'master';
+            activateAdmin();
+            closeAdminModal();
+            return;
+          }
+          // Check sub-roles
+          var roles = data.roles || {};
+          var foundRole = null;
+          Object.keys(roles).forEach(function(role) {
+            if (roles[role] === hash) foundRole = role;
+          });
+          if (foundRole) {
+            isAdmin = true;
+            adminRole = foundRole;
+            activateAdmin();
+            closeAdminModal();
+            return;
+          }
+        } else if (localHash && localHash === hash) {
+          // Firebase has no password but local does — accept local
           isAdmin = true;
           adminRole = 'master';
           activateAdmin();
           closeAdminModal();
           return;
         }
-        var roles = data.roles || {};
-        var foundRole = null;
-        Object.keys(roles).forEach(function(role) {
-          if (roles[role] === hash) foundRole = role;
-        });
-        if (foundRole) {
+
+        document.getElementById('adminError').style.display = 'block';
+        document.getElementById('adminPass').value = '';
+      }).catch(function() {
+        // Firebase unavailable — try localStorage fallback
+        var localHash = null;
+        try { localHash = localStorage.getItem('widr_local_admin_hash'); } catch(e) {}
+        if (localHash && localHash === hash) {
           isAdmin = true;
-          adminRole = foundRole;
+          adminRole = 'master';
           activateAdmin();
           closeAdminModal();
         } else {
           document.getElementById('adminError').style.display = 'block';
           document.getElementById('adminPass').value = '';
         }
-      }).catch(function() {
-        alert('Kon niet verbinden met Firebase');
       });
     }
 
