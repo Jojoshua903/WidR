@@ -109,7 +109,7 @@ canvas { display: block; }
 
 <div id="hud">
   <span class="name-tag" id="hudName"></span>
-  <span class="level-tag" id="hudLevel">Lv 1</span>
+  <span class="level-tag" id="hudLevel">Lv 0</span>
   <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBar"></div></div>
 </div>
 <div id="scoreDisplay"></div>
@@ -167,7 +167,7 @@ const COLORS = {
 const TANK_CLASSES = {
   basic: {
     name: 'Basic', tier: 0, barrels: [{angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5}],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4,
     upgrades: ['twin','sniper','machine_gun','flank_guard','trapper','smasher'],
   },
   twin: {
@@ -175,17 +175,17 @@ const TANK_CLASSES = {
       {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:-8},
       {angle:0, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:8},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4,
     upgrades: ['triple_shot','quad_tank','twin_flank'],
   },
   sniper: {
     name: 'Sniper', tier: 1, barrels: [{angle:0, width:12, length:38, reload:28, spread:0.02, speed:11, damage:12, pen:7}],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02,
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 900, hpRegen: 0.4,
     upgrades: ['assassin','overseer','hunter','rifle'],
   },
   machine_gun: {
     name: 'Machine Gun', tier: 1, barrels: [{angle:0, width:12, length:26, reload:10, spread:0.15, speed:6, damage:5, pen:4, sizeF:0.7}],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4,
     upgrades: ['destroyer','sprayer','gunner'],
   },
   flank_guard: {
@@ -193,17 +193,17 @@ const TANK_CLASSES = {
       {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
       {angle:Math.PI, width:14, length:24, reload:18, spread:0.06, speed:7, damage:6, pen:4},
     ],
-    bodySize: 22, speed: 1.05, bodyDamage: 4, maxHp: 50, hpRegen: 0.02,
+    bodySize: 22, speed: 1.05, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4,
     upgrades: ['tri_angle','quad_tank','twin_flank'],
   },
   trapper: {
     name: 'Trapper', tier: 1, barrels: [{angle:0, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true}],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02,
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1100, hpRegen: 0.4,
     upgrades: ['mega_trapper','tri_trapper','overtrapper'],
   },
   smasher: {
     name: 'Smasher', tier: 1, barrels: [],
-    bodySize: 26, speed: 1.15, bodyDamage: 5.5, maxHp: 80, hpRegen: 0.04, smasher: true,
+    bodySize: 26, speed: 1.15, bodyDamage: 5.5, maxHp: 1600, hpRegen: 0.8, smasher: true,
     upgrades: ['landmine','spike','auto_smasher'],
   },
   // Tier 2
@@ -213,7 +213,7 @@ const TANK_CLASSES = {
       {angle:0, width:12, length:30, reload:16, spread:0.06, speed:7, damage:7, pen:5},
       {angle:0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
     ],
-    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['penta_shot','spread_shot'],
+    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: ['penta_shot','spread_shot'],
   },
   quad_tank: {
     name: 'Quad Tank', tier: 2, barrels: [
@@ -222,7 +222,7 @@ const TANK_CLASSES = {
       {angle:Math.PI, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
       {angle:-Math.PI/2, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: ['octo_tank'],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1100, hpRegen: 0.4, upgrades: ['octo_tank'],
   },
   twin_flank: {
     name: 'Twin Flank', tier: 2, barrels: [
@@ -231,40 +231,40 @@ const TANK_CLASSES = {
       {angle:Math.PI, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:-8},
       {angle:Math.PI, width:10, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4, offset:8},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['octo_tank','battleship'],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: ['octo_tank','battleship'],
   },
   assassin: {
     name: 'Assassin', tier: 2, barrels: [{angle:0, width:12, length:46, reload:34, spread:0.01, speed:13, damage:16, pen:9}],
-    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: ['ranger','stalker'],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, upgrades: ['ranger','stalker'],
   },
   overseer: {
     name: 'Overseer', tier: 2, barrels: [
       {angle:Math.PI/2, width:16, length:18, reload:60, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
       {angle:-Math.PI/2, width:16, length:18, reload:60, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
     ],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: ['overlord','necromancer'],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: ['overlord','necromancer'],
   },
   hunter: {
     name: 'Hunter', tier: 2, barrels: [
       {angle:0, width:14, length:36, reload:28, spread:0.02, speed:10, damage:10, pen:6},
       {angle:0, width:10, length:42, reload:28, spread:0.02, speed:11, damage:8, pen:5, delayTicks:5},
     ],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: ['predator'],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, upgrades: ['predator'],
   },
   rifle: {
     name: 'Rifle', tier: 2, barrels: [{angle:0, width:8, length:42, reload:12, spread:0.03, speed:12, damage:6, pen:4}],
-    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, upgrades: [],
   },
   destroyer: {
     name: 'Destroyer', tier: 2, barrels: [{angle:0, width:22, length:28, reload:50, spread:0.03, speed:5, damage:30, pen:14, sizeF:2}],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: ['annihilator','hybrid','rocketeer'],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 1100, hpRegen: 0.4, upgrades: ['annihilator','hybrid','rocketeer'],
   },
   sprayer: {
     name: 'Sprayer', tier: 2, barrels: [
       {angle:0, width:14, length:28, reload:18, spread:0.06, speed:7, damage:7, pen:5},
       {angle:0, width:8, length:32, reload:8, spread:0.18, speed:6, damage:4, pen:3, sizeF:0.5},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   gunner: {
     name: 'Gunner', tier: 2, barrels: [
@@ -272,7 +272,7 @@ const TANK_CLASSES = {
       {angle:0, width:7, length:30, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:0},
       {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:7},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: ['streamliner','auto_gunner'],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, upgrades: ['streamliner','auto_gunner'],
   },
   tri_angle: {
     name: 'Tri-Angle', tier: 2, barrels: [
@@ -280,11 +280,11 @@ const TANK_CLASSES = {
       {angle:Math.PI - 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
       {angle:Math.PI + 0.4, width:12, length:22, reload:18, spread:0.1, speed:6, damage:5, pen:3},
     ],
-    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: ['booster','fighter'],
+    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, thrustBack: true, upgrades: ['booster','fighter'],
   },
   mega_trapper: {
     name: 'Mega Trapper', tier: 2, barrels: [{angle:0, width:20, length:26, reload:40, spread:0, speed:3.5, damage:12, pen:25, trap:true, sizeF:1.6}],
-    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 60, hpRegen: 0.02, upgrades: [],
+    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 1200, hpRegen: 0.4, upgrades: [],
   },
   tri_trapper: {
     name: 'Tri-Trapper', tier: 2, barrels: [
@@ -292,7 +292,7 @@ const TANK_CLASSES = {
       {angle:2*Math.PI/3, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
       {angle:4*Math.PI/3, width:14, length:24, reload:30, spread:0, speed:4, damage:6, pen:15, trap:true},
     ],
-    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 60, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 1200, hpRegen: 0.4, upgrades: [],
   },
   overtrapper: {
     name: 'Overtrapper', tier: 2, barrels: [
@@ -300,21 +300,21 @@ const TANK_CLASSES = {
       {angle:Math.PI/2, width:14, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
       {angle:-Math.PI/2, width:14, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
     ],
-    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 1100, hpRegen: 0.4, upgrades: [],
   },
   landmine: {
     name: 'Landmine', tier: 2, barrels: [],
-    bodySize: 28, speed: 1.1, bodyDamage: 6, maxHp: 90, hpRegen: 0.05, smasher: true, upgrades: [],
+    bodySize: 28, speed: 1.1, bodyDamage: 6, maxHp: 1800, hpRegen: 1.0, smasher: true, upgrades: [],
   },
   spike: {
     name: 'Spike', tier: 2, barrels: [],
-    bodySize: 28, speed: 1.05, bodyDamage: 4, maxHp: 100, hpRegen: 0.04, smasher: true, spike: true, upgrades: [],
+    bodySize: 28, speed: 1.05, bodyDamage: 4, maxHp: 2000, hpRegen: 0.8, smasher: true, spike: true, upgrades: [],
   },
   auto_smasher: {
     name: 'Auto Smasher', tier: 2, barrels: [
       {angle:0, width:10, length:24, reload:14, spread:0.08, speed:7, damage:5, pen:4, auto:true},
     ],
-    bodySize: 26, speed: 1.1, bodyDamage: 5.5, maxHp: 80, hpRegen: 0.04, smasher: true, upgrades: [],
+    bodySize: 26, speed: 1.1, bodyDamage: 5.5, maxHp: 1600, hpRegen: 0.8, smasher: true, upgrades: [],
   },
   // Tier 3
   penta_shot: {
@@ -325,7 +325,7 @@ const TANK_CLASSES = {
       {angle:0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
       {angle:0.7, width:12, length:26, reload:16, spread:0.08, speed:6.5, damage:5, pen:3.5},
     ],
-    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 24, speed: 1, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   spread_shot: {
     name: 'Spread Shot', tier: 3,
@@ -337,7 +337,7 @@ const TANK_CLASSES = {
       }
       return b;
     })(),
-    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 24, speed: 0.95, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   octo_tank: {
     name: 'Octo Tank', tier: 3, barrels: (()=>{
@@ -345,15 +345,15 @@ const TANK_CLASSES = {
       for(let i=0;i<8;i++) b.push({angle:i*Math.PI/4, width:12, length:26, reload:18, spread:0.06, speed:7, damage:6, pen:4});
       return b;
     })(),
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 55, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 1100, hpRegen: 0.4, upgrades: [],
   },
   ranger: {
     name: 'Ranger', tier: 3, barrels: [{angle:0, width:10, length:54, reload:36, spread:0.005, speed:15, damage:18, pen:10}],
-    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, fov: 1.3, upgrades: [],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, fov: 1.3, upgrades: [],
   },
   stalker: {
     name: 'Stalker', tier: 3, barrels: [{angle:0, width:12, length:48, reload:38, spread:0.01, speed:14, damage:17, pen:9}],
-    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.85, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, upgrades: [],
   },
   overlord: {
     name: 'Overlord', tier: 3, barrels: [
@@ -362,14 +362,14 @@ const TANK_CLASSES = {
       {angle:Math.PI, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
       {angle:-Math.PI/2, width:16, length:18, reload:50, spread:0, speed:3, damage:10, pen:8, drone:true, maxDrones:4},
     ],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   necromancer: {
     name: 'Necromancer', tier: 3, barrels: [
       {angle:Math.PI/2, width:22, length:16, reload:100, spread:0, speed:2.5, damage:6, pen:5, drone:true, maxDrones:10, necro:true},
       {angle:-Math.PI/2, width:22, length:16, reload:100, spread:0, speed:2.5, damage:6, pen:5, drone:true, maxDrones:10, necro:true},
     ],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   predator: {
     name: 'Predator', tier: 3, barrels: [
@@ -377,22 +377,22 @@ const TANK_CLASSES = {
       {angle:0, width:12, length:40, reload:28, spread:0.02, speed:10, damage:9, pen:5, delayTicks:5},
       {angle:0, width:8, length:46, reload:28, spread:0.01, speed:11, damage:7, pen:4, delayTicks:10},
     ],
-    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 45, hpRegen: 0.02, fov: 1.2, upgrades: [],
+    bodySize: 22, speed: 0.9, bodyDamage: 4, maxHp: 900, hpRegen: 0.4, fov: 1.2, upgrades: [],
   },
   annihilator: {
     name: 'Annihilator', tier: 3, barrels: [{angle:0, width:26, length:30, reload:60, spread:0.02, speed:4.5, damage:45, pen:18, sizeF:2.5}],
-    bodySize: 24, speed: 0.85, bodyDamage: 4.2, maxHp: 60, hpRegen: 0.02, upgrades: [],
+    bodySize: 24, speed: 0.85, bodyDamage: 4.2, maxHp: 1200, hpRegen: 0.4, upgrades: [],
   },
   hybrid: {
     name: 'Hybrid', tier: 3, barrels: [
       {angle:0, width:22, length:28, reload:50, spread:0.03, speed:5, damage:30, pen:14, sizeF:2},
       {angle:Math.PI, width:16, length:16, reload:80, spread:0, speed:2.5, damage:8, pen:6, drone:true, maxDrones:2},
     ],
-    bodySize: 24, speed: 0.9, bodyDamage: 4.1, maxHp: 55, hpRegen: 0.02, upgrades: [],
+    bodySize: 24, speed: 0.9, bodyDamage: 4.1, maxHp: 1100, hpRegen: 0.4, upgrades: [],
   },
   rocketeer: {
     name: 'Rocketeer', tier: 3, barrels: [{angle:0, width:20, length:32, reload:45, spread:0.02, speed:4, damage:25, pen:16, sizeF:1.8}],
-    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
   booster: {
     name: 'Booster', tier: 3, barrels: [
@@ -401,7 +401,7 @@ const TANK_CLASSES = {
       {angle:Math.PI + 0.4, width:12, length:22, reload:12, spread:0.12, speed:6, damage:4, pen:2},
       {angle:Math.PI, width:10, length:20, reload:12, spread:0.12, speed:6, damage:4, pen:2},
     ],
-    bodySize: 22, speed: 1.35, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: [],
+    bodySize: 22, speed: 1.35, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, thrustBack: true, upgrades: [],
   },
   fighter: {
     name: 'Fighter', tier: 3, barrels: [
@@ -411,7 +411,7 @@ const TANK_CLASSES = {
       {angle:Math.PI/2, width:12, length:22, reload:18, spread:0.08, speed:6.5, damage:5, pen:3},
       {angle:-Math.PI/2, width:12, length:22, reload:18, spread:0.08, speed:6.5, damage:5, pen:3},
     ],
-    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, thrustBack: true, upgrades: [],
+    bodySize: 22, speed: 1.2, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, thrustBack: true, upgrades: [],
   },
   streamliner: {
     name: 'Streamliner', tier: 3, barrels: (()=>{
@@ -419,7 +419,7 @@ const TANK_CLASSES = {
       for(let i=0;i<5;i++) b.push({angle:0, width:7, length:24+i*4, reload:6, spread:0.04, speed:8, damage:3, pen:2.5, delayTicks:i*3});
       return b;
     })(),
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, upgrades: [],
   },
   auto_gunner: {
     name: 'Auto Gunner', tier: 3, barrels: [
@@ -428,7 +428,7 @@ const TANK_CLASSES = {
       {angle:0, width:7, length:26, reload:8, spread:0.1, speed:7, damage:4, pen:3, offset:7},
       {angle:0, width:8, length:22, reload:10, spread:0.08, speed:7, damage:4, pen:3, auto:true},
     ],
-    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 48, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 1, bodyDamage: 4, maxHp: 960, hpRegen: 0.4, upgrades: [],
   },
   battleship: {
     name: 'Battleship', tier: 3, barrels: [
@@ -437,7 +437,7 @@ const TANK_CLASSES = {
       {angle:Math.PI/2, width:10, length:12, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6, offset:8},
       {angle:-Math.PI/2, width:10, length:12, reload:14, spread:0.15, speed:4, damage:4, pen:3, drone:true, maxDrones:6, offset:-8},
     ],
-    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 50, hpRegen: 0.02, upgrades: [],
+    bodySize: 22, speed: 0.95, bodyDamage: 4, maxHp: 1000, hpRegen: 0.4, upgrades: [],
   },
 };
 
@@ -463,7 +463,7 @@ addEventListener('keydown', e => {
   if(e.key.toLowerCase() === 'o' && playing) {
     while(player.level < MAX_LEVEL) { player.level++; statPoints++; player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2); }
     player.xp = 0;
-    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMultHp();
+    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*57.6) * lvlMultHp();
     player.hp = player.maxHp;
     buildClassUI(); updateStatUI();
   }
@@ -507,8 +507,8 @@ function startGame() {
     x: WORLD_CX + (Math.random()-0.5)*400,
     y: WORLD_CY + (Math.random()-0.5)*400,
     vx: 0, vy: 0,
-    angle: 0, name, level: 1, xp: 0, xpNeeded: 15,
-    classId: 'basic', hp: 50, maxHp: 50,
+    angle: 0, name, level: 0, xp: 0, xpNeeded: 15,
+    classId: 'basic', hp: 1000, maxHp: 1000,
     reloadTimers: [],
     invuln: 60,
     drones: [],
@@ -539,15 +539,15 @@ function spawnInitialFood() {
 function spawnFood() {
   const r = Math.random();
   let type, hp, xp, size, levelUp;
-  if(r < 0.50) { type = 'square'; hp = 10; xp = 10; size = 12; }
-  else if(r < 0.75) { type = 'triangle'; hp = 25; xp = 25; size = 14; }
-  else if(r < 0.87) { type = 'pentagon'; hp = 100; xp = 130; size = 22; }
-  else if(r < 0.92) { type = 'hexagon'; hp = 250; xp = 400; size = 30; }
-  else if(r < 0.96) { type = 'diamond'; hp = 500; xp = 800; size = 40; }
-  else if(r < 0.975) { type = 'star'; hp = 2500; xp = 0; size = 130; levelUp = true; }
-  else if(r < 0.988) { type = 'heptagon'; hp = 1200; xp = 2000; size = 80; }
-  else if(r < 0.996) { type = 'cross'; hp = 3000; xp = 6000; size = 160; }
-  else { type = 'nonagon'; hp = 8000; xp = 20000; size = 320; }
+  if(r < 0.50) { type = 'square'; hp = 100; xp = 10; size = 12; }
+  else if(r < 0.75) { type = 'triangle'; hp = 250; xp = 25; size = 14; }
+  else if(r < 0.87) { type = 'pentagon'; hp = 2500; xp = 130; size = 22; }
+  else if(r < 0.92) { type = 'hexagon'; hp = 10000; xp = 400; size = 30; }
+  else if(r < 0.96) { type = 'diamond'; hp = 30000; xp = 800; size = 40; }
+  else if(r < 0.975) { type = 'star'; hp = 1000000; xp = 0; size = 130; levelUp = true; }
+  else if(r < 0.988) { type = 'heptagon'; hp = 100000; xp = 2000; size = 80; }
+  else if(r < 0.996) { type = 'cross'; hp = 300000; xp = 6000; size = 160; }
+  else { type = 'nonagon'; hp = 750000; xp = 20000; size = 320; }
   const sp = randInCircle(40);
   foods.push({
     x: sp.x, y: sp.y,
@@ -642,7 +642,7 @@ function upgradeClass(id) {
   player.classId = id;
   const cls = TANK_CLASSES[id];
   player.reloadTimers = cls.barrels.map(() => 0);
-  player.maxHp = (cls.maxHp + stats[1]*2.88) * lvlMultHp();
+  player.maxHp = (cls.maxHp + stats[1]*57.6) * lvlMultHp();
   player.hp = player.maxHp;
   player.drones = [];
   buildClassUI();
@@ -666,8 +666,8 @@ function collisionSelfDmg(targetSize, tankMaxHp, level) {
 function getStatMult(statIdx, val) {
   if(val === undefined) val = stats[statIdx];
   const m = [
-    0.00288, // hp regen
-    2.88,    // max hp per point
+    0.0576, // hp regen
+    57.6,    // max hp per point
     0.0288,  // body damage
     0.144,   // bullet speed
     0.288,   // bullet pen
@@ -1127,7 +1127,7 @@ function addXP(amount) {
     player.level++;
     statPoints++;
     player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2);
-    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMultHp();
+    player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*57.6) * lvlMultHp();
     player.hp = player.maxHp;
     buildClassUI();
     updateStatUI();
@@ -1140,7 +1140,7 @@ function addLevel() {
   statPoints++;
   player.xp = 0;
   player.xpNeeded = Math.floor(player.xpNeeded * 1.02 + 2);
-  player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*2.88) * lvlMult();
+  player.maxHp = (TANK_CLASSES[player.classId].maxHp + stats[1]*57.6) * lvlMult();
   player.hp = player.maxHp;
   score += player.level * 20;
   buildClassUI();
@@ -1295,7 +1295,7 @@ function drawFoods() {
     else if(f.type === 'triangle') drawPoly(3, f.size, -Math.PI/2);
     else if(f.type === 'pentagon') drawPoly(5, f.size, -Math.PI/2);
     else if(f.type === 'star') { drawStar(8, f.size, f.size * 0.55); ctx.shadowColor = '#ff44cc'; ctx.shadowBlur = 16; }
-    else if(f.type === 'diamond') drawPoly(4, f.size, 0);
+    else if(f.type === 'diamond') drawDiamond(f.size, f.size * 1.6);
     else if(f.type === 'heptagon') drawPoly(7, f.size, -Math.PI/2);
     else if(f.type === 'cross') { drawCross(f.size); ctx.shadowColor = '#6c5ce7'; ctx.shadowBlur = 14; }
     else if(f.type === 'nonagon') { drawPoly(9, f.size, -Math.PI/2); ctx.shadowColor = '#d63031'; ctx.shadowBlur = 20; }
@@ -1326,6 +1326,15 @@ function drawStar(points, outerR, innerR) {
     const r = i % 2 === 0 ? outerR : innerR;
     ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
   }
+  ctx.closePath();
+}
+
+function drawDiamond(w, h) {
+  ctx.beginPath();
+  ctx.moveTo(0, -h);
+  ctx.lineTo(w, 0);
+  ctx.lineTo(0, h);
+  ctx.lineTo(-w, 0);
   ctx.closePath();
 }
 
