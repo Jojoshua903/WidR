@@ -4127,15 +4127,25 @@
           var score = totals[name];
           var pct = Math.round((score / maxScore) * 100);
           var posColor = i < 3 ? colors[i] : 'rgba(26,26,46,0.15)';
+          var boostBtns = '';
+          if (hasPermission('ranking')) {
+            boostBtns = '<div style="display:flex;gap:4px;margin-left:12px;">' +
+              '<button onclick="event.stopPropagation();boostRanking(\'' + category + '\',\'' + name.replace(/'/g, "\\'") + '\',10)" style="width:28px;height:28px;border-radius:6px;background:var(--mint);color:white;border:none;cursor:pointer;font-weight:800;font-size:0.8rem;" title="+10 punten">+</button>' +
+              '<button onclick="event.stopPropagation();boostRanking(\'' + category + '\',\'' + name.replace(/'/g, "\\'") + '\',-10)" style="width:28px;height:28px;border-radius:6px;background:var(--accent);color:white;border:none;cursor:pointer;font-weight:800;font-size:0.8rem;" title="-10 punten">−</button>' +
+            '</div>';
+          }
           return '<div class="ranking-item" style="animation: fadeIn 0.4s ease ' + (i * 0.05) + 's both;">' +
             '<div class="ranking-pos" style="color:' + posColor + '">' + (i + 1) + '</div>' +
             '<div class="ranking-info">' +
               '<div class="ranking-name">' + name + '</div>' +
               '<div class="ranking-detail">' + score + ' punten totaal</div>' +
             '</div>' +
-            '<div style="text-align:right;">' +
-              '<div class="ranking-score">' + pct + '%</div>' +
-              '<div class="ranking-score-label">Score</div>' +
+            '<div style="display:flex;align-items:center;">' +
+              '<div style="text-align:right;">' +
+                '<div class="ranking-score">' + pct + '%</div>' +
+                '<div class="ranking-score-label">Score</div>' +
+              '</div>' +
+              boostBtns +
             '</div>' +
           '</div>';
         }).join('');
@@ -4178,6 +4188,28 @@
       if (!confirm('Weet je zeker dat je deze stem wilt verwijderen?')) return;
       db.collection('rankings').doc(docId).delete().then(function() {
         loadRankings(currentCategory);
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function boostRanking(category, itemName, amount) {
+      var boostId = 'admin_boost_' + category;
+      db.collection('rankings').doc(boostId).get().then(function(doc) {
+        var items = {};
+        if (doc.exists) {
+          items = doc.data().items || {};
+        }
+        if (!items[itemName]) items[itemName] = 0;
+        items[itemName] += amount;
+        if (items[itemName] <= 0) delete items[itemName];
+        return db.collection('rankings').doc(boostId).set({
+          category: category,
+          items: items,
+          voter: '🛡 Admin Boost',
+          uid: 'admin_boost',
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }).then(function() {
+        loadRankings(category);
       }).catch(function(err) { console.error(err); });
     }
 
