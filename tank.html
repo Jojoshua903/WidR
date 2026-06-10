@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tank Arena</title>
+<title>Tank Arena - Multiplayer</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='30' y='12' width='12' height='28' rx='2' fill='%23999'/><circle cx='32' cy='36' r='18' fill='%2300b2e1' stroke='%23008fae' stroke-width='3'/></svg>">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { overflow: hidden; background: #cdcdcd; font-family: 'Segoe UI', Ubuntu, sans-serif; }
@@ -16,18 +19,24 @@ canvas { display: block; }
   background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   color: #fff;
 }
-#menu h1 { font-size: 64px; margin-bottom: 8px; text-shadow: 3px 3px 0 rgba(0,0,0,.3); letter-spacing: 2px; }
-#menu .sub { font-size: 18px; opacity: .7; margin-bottom: 32px; }
-#nameInput {
+#menu h1 { font-size: 64px; margin-bottom: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,.3); letter-spacing: 2px; }
+#menu .sub { font-size: 18px; opacity: .7; margin-bottom: 28px; }
+#menu .mp-badge { font-size: 13px; background: #e74c3c; padding: 3px 10px; border-radius: 4px; margin-bottom: 16px; letter-spacing: 1px; font-weight: 700; }
+#nameInput, #roomInput {
   width: 280px; padding: 12px 16px; font-size: 18px; border: none; border-radius: 8px;
-  text-align: center; margin-bottom: 24px; outline: none;
+  text-align: center; margin-bottom: 12px; outline: none;
 }
+#roomInput { font-size: 15px; background: rgba(255,255,255,.85); }
 #playBtn {
   padding: 14px 48px; font-size: 22px; font-weight: 700; border: none; border-radius: 8px;
   background: #e74c3c; color: #fff; cursor: pointer; transition: transform .1s;
+  margin-top: 8px;
 }
 #playBtn:hover { transform: scale(1.05); }
 #playBtn:active { transform: scale(.97); }
+#connectionStatus {
+  margin-top: 12px; font-size: 13px; opacity: .7;
+}
 
 #upgradePanel {
   position: fixed; bottom: 60px; left: 12px; z-index: 50;
@@ -72,11 +81,21 @@ canvas { display: block; }
 .xp-bar-inner { height: 100%; background: #f1c40f; transition: width .2s; width: 0%; }
 #scoreDisplay { position: fixed; top: 10px; right: 16px; z-index: 40; font-size: 18px; font-weight: 700; color: #333; display: none; }
 #classLabel { position: fixed; top: 34px; right: 16px; z-index: 40; font-size: 14px; color: #555; display: none; }
+#onlineCount { position: fixed; top: 56px; right: 16px; z-index: 40; font-size: 13px; color: #27ae60; display: none; font-weight: 600; }
 #minimap {
   position: fixed; bottom: 60px; right: 12px; z-index: 45;
   width: 140px; height: 140px; background: transparent; border-radius: 50%;
   border: 2px solid rgba(0,0,0,.2); display: none;
 }
+
+#leaderboard {
+  position: fixed; top: 80px; right: 12px; z-index: 40;
+  display: none; background: rgba(0,0,0,.35); border-radius: 8px;
+  padding: 10px 14px; min-width: 160px; color: #fff;
+}
+#leaderboard h3 { font-size: 13px; margin-bottom: 6px; opacity: .8; text-align: center; }
+.lb-entry { font-size: 12px; padding: 2px 0; display: flex; justify-content: space-between; gap: 12px; }
+.lb-entry.me { color: #00b2e1; font-weight: 700; }
 
 #deathScreen {
   position: fixed; inset: 0; z-index: 200; display: none;
@@ -84,25 +103,37 @@ canvas { display: block; }
   background: rgba(0,0,0,.65); color: #fff;
 }
 #deathScreen h2 { font-size: 48px; margin-bottom: 8px; }
+#killedBy { font-size: 18px; margin-bottom: 4px; opacity: .7; }
 #finalScore { font-size: 24px; margin-bottom: 24px; opacity: .8; }
 #respawnBtn {
   padding: 12px 40px; font-size: 20px; font-weight: 700; border: none;
   border-radius: 8px; background: #e74c3c; color: #fff; cursor: pointer;
 }
 
+#configWarning {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  background: #e74c3c; color: #fff; text-align: center;
+  padding: 10px; font-size: 14px; display: none;
+}
+
 @media print {
   body { background: #fff; }
-  #menu, #hud, #upgradePanel, #classPanel, #minimap, #deathScreen, #scoreDisplay, #classLabel { display: none !important; }
+  #menu, #hud, #upgradePanel, #classPanel, #minimap, #deathScreen, #scoreDisplay, #classLabel, #leaderboard, #onlineCount, #configWarning { display: none !important; }
 }
 </style>
 </head>
 <body>
 
+<div id="configWarning">Firebase not configured. Edit the firebaseConfig in index.html to enable multiplayer. Playing offline with AI.</div>
+
 <div id="menu">
   <h1>TANK ARENA</h1>
+  <div class="mp-badge">MULTIPLAYER</div>
   <div class="sub">Destroy. Upgrade. Evolve.</div>
   <input id="nameInput" placeholder="Enter your name" maxlength="16" autofocus>
+  <input id="roomInput" placeholder="Room code (or leave blank)" maxlength="20">
   <button id="playBtn">PLAY</button>
+  <div id="connectionStatus"></div>
 </div>
 
 <canvas id="game"></canvas>
@@ -114,6 +145,9 @@ canvas { display: block; }
 </div>
 <div id="scoreDisplay"></div>
 <div id="classLabel"></div>
+<div id="onlineCount"></div>
+
+<div id="leaderboard"><h3>Leaderboard</h3><div id="lbEntries"></div></div>
 
 <div id="upgradePanel"></div>
 <div id="classPanel"></div>
@@ -121,11 +155,59 @@ canvas { display: block; }
 
 <div id="deathScreen">
   <h2>You were destroyed</h2>
+  <div id="killedBy"></div>
   <div id="finalScore"></div>
   <button id="respawnBtn">RESPAWN</button>
 </div>
 
 <script>
+// ==================== FIREBASE CONFIG ====================
+// TO ENABLE MULTIPLAYER:
+// 1. Go to https://console.firebase.google.com
+// 2. Create a new project (or use existing)
+// 3. Enable Authentication > Anonymous sign-in
+// 4. Create a Realtime Database (start in test mode)
+// 5. Copy your config below:
+const firebaseConfig = {
+  apiKey: "AIzaSyBpCNLBwrINteT1ZidyH49i6a21FkrPsRM",
+  authDomain: "tankio-c4b98.firebaseapp.com",
+  databaseURL: "https://tankio-c4b98-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tankio-c4b98",
+  storageBucket: "tankio-c4b98.firebasestorage.app",
+  messagingSenderId: "275809117341",
+  appId: "1:275809117341:web:37c8b67c3d9fc8a210a074",
+  measurementId: "G-VGTFTMCP0P"
+};
+
+let firebaseReady = false;
+let offlineMode = false;
+let db = null;
+let myPlayerId = null;
+let currentRoomCode = '';
+let roomPlayersRef = null;
+let roomDamageRef = null;
+let remotePlayers = {};
+let remotePlayersList = [];
+let lastKilledBy = '';
+
+try {
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY" && typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    firebaseReady = true;
+    document.getElementById('connectionStatus').textContent = 'Firebase connected';
+    document.getElementById('connectionStatus').style.color = '#2ecc71';
+  } else {
+    throw new Error('Not configured');
+  }
+} catch(e) {
+  offlineMode = true;
+  document.getElementById('configWarning').style.display = 'block';
+  document.getElementById('connectionStatus').textContent = 'Offline mode (Firebase not configured)';
+  document.getElementById('connectionStatus').style.color = '#e74c3c';
+  document.getElementById('roomInput').style.display = 'none';
+}
+
 // ==================== CONSTANTS ====================
 const WORLD_R = 12000;
 const WORLD_CX = 0, WORLD_CY = 0;
@@ -148,20 +230,23 @@ const MAX_STAT = 125;
 const COLORS = {
   player: '#00b2e1',
   enemy: '#f14e54',
+  remote: '#9b59b6',
   neutral: '#ffe869',
-  food1: '#ffe869',  // square
-  food2: '#fc7677',  // triangle
-  food3: '#768dfc',  // pentagon
-  food4: '#00e16e',  // hexagon (big)
-  food5: '#ff44cc',  // star (level up)
-  food6: '#ff8c00',  // diamond
-  food7: '#00cec9',  // heptagon
-  food8: '#6c5ce7',  // cross
-  food9: '#d63031',  // nonagon
+  food1: '#ffe869',
+  food2: '#fc7677',
+  food3: '#768dfc',
+  food4: '#00e16e',
+  food5: '#ff44cc',
+  food6: '#ff8c00',
+  food7: '#00cec9',
+  food8: '#6c5ce7',
+  food9: '#d63031',
   barrel: '#999',
   grid: '#c4c4c4',
   bg: '#cdcdcd',
 };
+
+const REMOTE_COLORS = ['#9b59b6','#e67e22','#1abc9c','#e84393','#fd79a8','#00cec9','#6c5ce7','#fdcb6e','#e17055','#0984e3'];
 
 // ==================== TANK CLASS DEFINITIONS ====================
 const TANK_CLASSES = {
@@ -206,7 +291,6 @@ const TANK_CLASSES = {
     bodySize: 26, speed: 1.15, bodyDamage: 5.5, maxHp: 1600, hpRegen: 0.8, smasher: true,
     upgrades: ['landmine','spike','auto_smasher'],
   },
-  // Tier 2
   triple_shot: {
     name: 'Triple Shot', tier: 2, barrels: [
       {angle:-0.35, width:12, length:28, reload:16, spread:0.06, speed:7, damage:6, pen:4},
@@ -316,7 +400,6 @@ const TANK_CLASSES = {
     ],
     bodySize: 26, speed: 1.1, bodyDamage: 5.5, maxHp: 1600, hpRegen: 0.8, smasher: true, upgrades: [],
   },
-  // Tier 3
   penta_shot: {
     name: 'Penta Shot', tier: 3, barrels: [
       {angle:-0.7, width:12, length:26, reload:16, spread:0.08, speed:6.5, damage:5, pen:3.5},
@@ -491,10 +574,14 @@ addEventListener('contextmenu', e => e.preventDefault());
 // ==================== MENU ====================
 document.getElementById('playBtn').onclick = startGame;
 document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
+document.getElementById('roomInput').addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
 document.getElementById('respawnBtn').onclick = () => { document.getElementById('deathScreen').style.display = 'none'; startGame(); };
 
 function startGame() {
   const name = document.getElementById('nameInput').value.trim() || 'Tank';
+  const room = document.getElementById('roomInput').value.trim() || 'public';
+  currentRoomCode = room;
+
   document.getElementById('menu').style.display = 'none';
   document.getElementById('hud').style.display = 'block';
   document.getElementById('upgradePanel').style.display = 'flex';
@@ -502,6 +589,10 @@ function startGame() {
   document.getElementById('classLabel').style.display = 'block';
   document.getElementById('minimap').style.display = 'block';
   document.getElementById('hudName').textContent = name;
+  if(!offlineMode) {
+    document.getElementById('onlineCount').style.display = 'block';
+    document.getElementById('leaderboard').style.display = 'block';
+  }
 
   player = {
     x: WORLD_CX + (Math.random()-0.5)*400,
@@ -518,6 +609,9 @@ function startGame() {
   bullets = []; foods = []; enemies = []; particles = [];
   player.touchingFoods = new Set();
   camera = { x: player.x, y: player.y, zoom: 1 };
+  remotePlayers = {};
+  remotePlayersList = [];
+  lastKilledBy = '';
 
   spawnInitialFood();
   spawnInitialEnemies();
@@ -530,6 +624,154 @@ function startGame() {
   buildUpgradeUI();
   buildClassUI();
   playing = true;
+
+  if(firebaseReady) {
+    setupMultiplayer(room);
+  }
+}
+
+// ==================== MULTIPLAYER ====================
+function setupMultiplayer(roomCode) {
+  firebase.auth().signInAnonymously().then(cred => {
+    myPlayerId = cred.user.uid;
+    roomPlayersRef = db.ref('rooms/' + roomCode + '/players');
+    roomDamageRef = db.ref('rooms/' + roomCode + '/damage/' + myPlayerId);
+
+    roomPlayersRef.child(myPlayerId).onDisconnect().remove();
+
+    roomPlayersRef.on('child_added', snap => {
+      if(snap.key === myPlayerId) return;
+      const data = snap.val();
+      if(!data) return;
+      const colorIdx = Math.abs(hashCode(snap.key)) % REMOTE_COLORS.length;
+      remotePlayers[snap.key] = {
+        id: snap.key,
+        x: data.x || 0, y: data.y || 0,
+        displayX: data.x || 0, displayY: data.y || 0,
+        angle: data.a || 0, displayAngle: data.a || 0,
+        classId: data.c || 'basic',
+        name: data.n || 'Player',
+        level: data.l || 1,
+        hp: data.h || 1000, maxHp: data.mh || 1000,
+        score: data.s || 0,
+        color: REMOTE_COLORS[colorIdx],
+        lastUpdate: Date.now(),
+      };
+      rebuildRemoteList();
+    });
+
+    roomPlayersRef.on('child_changed', snap => {
+      if(snap.key === myPlayerId) return;
+      const data = snap.val();
+      if(!data || !remotePlayers[snap.key]) return;
+      const rp = remotePlayers[snap.key];
+      rp.x = data.x || 0;
+      rp.y = data.y || 0;
+      rp.angle = data.a || 0;
+      rp.classId = data.c || 'basic';
+      rp.name = data.n || 'Player';
+      rp.level = data.l || 1;
+      rp.hp = data.h || 1000;
+      rp.maxHp = data.mh || 1000;
+      rp.score = data.s || 0;
+      rp.lastUpdate = Date.now();
+    });
+
+    roomPlayersRef.on('child_removed', snap => {
+      delete remotePlayers[snap.key];
+      rebuildRemoteList();
+    });
+
+    roomDamageRef.on('child_added', snap => {
+      const dmg = snap.val();
+      if(playing && player && dmg) {
+        player.hp -= (dmg.d || 0);
+        addParticle(player.x, player.y, COLORS.player);
+        if(player.hp <= 0) {
+          lastKilledBy = dmg.n || 'a player';
+          die();
+        }
+      }
+      snap.ref.remove();
+    });
+
+    document.getElementById('connectionStatus').textContent = 'Room: ' + roomCode;
+  }).catch(err => {
+    console.error('Firebase auth error:', err);
+    offlineMode = true;
+  });
+}
+
+function hashCode(str) {
+  let hash = 0;
+  for(let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return hash;
+}
+
+function rebuildRemoteList() {
+  remotePlayersList = Object.values(remotePlayers);
+}
+
+function syncMyState() {
+  if(!firebaseReady || !roomPlayersRef || !myPlayerId || !playing) return;
+  if(tick % 3 !== 0) return;
+  roomPlayersRef.child(myPlayerId).set({
+    x: Math.round(player.x),
+    y: Math.round(player.y),
+    a: Math.round(player.angle * 100) / 100,
+    c: player.classId,
+    n: player.name,
+    l: player.level,
+    h: Math.round(player.hp),
+    mh: Math.round(player.maxHp),
+    s: score,
+  });
+}
+
+function sendDamageToRemote(targetId, amount) {
+  if(!firebaseReady || !db) return;
+  db.ref('rooms/' + currentRoomCode + '/damage/' + targetId).push({
+    d: Math.round(amount),
+    n: player.name,
+  });
+}
+
+function updateRemotePlayers() {
+  const now = Date.now();
+  for(let i = remotePlayersList.length - 1; i >= 0; i--) {
+    const rp = remotePlayersList[i];
+    if(now - rp.lastUpdate > 15000) {
+      delete remotePlayers[rp.id];
+      remotePlayersList.splice(i, 1);
+      continue;
+    }
+    rp.displayX += (rp.x - rp.displayX) * 0.12;
+    rp.displayY += (rp.y - rp.displayY) * 0.12;
+    rp.displayAngle = lerpAngle(rp.displayAngle, rp.angle, 0.12);
+  }
+}
+
+function lerpAngle(a, b, t) {
+  let diff = b - a;
+  while(diff > Math.PI) diff -= Math.PI * 2;
+  while(diff < -Math.PI) diff += Math.PI * 2;
+  return a + diff * t;
+}
+
+function cleanupMultiplayer() {
+  if(roomPlayersRef && myPlayerId) {
+    roomPlayersRef.child(myPlayerId).remove();
+    roomPlayersRef.off();
+  }
+  if(roomDamageRef) {
+    roomDamageRef.off();
+  }
+  remotePlayers = {};
+  remotePlayersList = [];
 }
 
 // ==================== FOOD ====================
@@ -558,7 +800,8 @@ function spawnFood() {
 
 // ==================== ENEMIES (AI) ====================
 function spawnInitialEnemies() {
-  for(let i = 0; i < 25; i++) spawnEnemy();
+  const count = offlineMode ? 25 : 15;
+  for(let i = 0; i < count; i++) spawnEnemy();
 }
 function spawnEnemy() {
   const tierKeys = Object.keys(TANK_CLASSES);
@@ -600,9 +843,9 @@ function buildUpgradeUI() {
   STAT_NAMES.forEach((name, i) => {
     const row = document.createElement('div');
     row.className = 'stat-row';
-    row.innerHTML = `<span class="label">${name}</span><div class="stat-bar" id="bar${i}"></div><button class="stat-btn" id="sbtn${i}">+</button>`;
+    row.innerHTML = '<span class="label">' + name + '</span><div class="stat-bar" id="bar' + i + '"></div><button class="stat-btn" id="sbtn' + i + '">+</button>';
     panel.appendChild(row);
-    document.getElementById(`sbtn${i}`).onclick = () => {
+    document.getElementById('sbtn' + i).onclick = () => {
       if(statPoints > 0 && stats[i] < MAX_STAT) { stats[i]++; statPoints--; updateStatUI(); }
     };
   });
@@ -610,13 +853,13 @@ function buildUpgradeUI() {
 }
 function updateStatUI() {
   STAT_NAMES.forEach((_, i) => {
-    const bar = document.getElementById(`bar${i}`);
+    const bar = document.getElementById('bar' + i);
     const pct = Math.min(100, (stats[i] / MAX_STAT) * 100);
-    bar.innerHTML = `<div style="width:80px;height:14px;background:#555;border-radius:3px;overflow:hidden;position:relative"><div style="width:${pct}%;height:100%;background:#f1c40f"></div><span style="position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;color:#fff;font-weight:700">${stats[i]}/${MAX_STAT}</span></div>`;
-    const btn = document.getElementById(`sbtn${i}`);
+    bar.innerHTML = '<div style="width:80px;height:14px;background:#555;border-radius:3px;overflow:hidden;position:relative"><div style="width:' + pct + '%;height:100%;background:#f1c40f"></div><span style="position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;color:#fff;font-weight:700">' + stats[i] + '/' + MAX_STAT + '</span></div>';
+    const btn = document.getElementById('sbtn' + i);
     btn.className = 'stat-btn' + (statPoints <= 0 || stats[i] >= MAX_STAT ? ' disabled' : '');
   });
-  document.getElementById('hudLevel').textContent = `Lv ${player.level} | ${statPoints} pts`;
+  document.getElementById('hudLevel').textContent = 'Lv ' + player.level + ' | ' + statPoints + ' pts';
 }
 function buildClassUI() {
   const panel = document.getElementById('classPanel');
@@ -666,14 +909,7 @@ function collisionSelfDmg(targetSize, tankMaxHp, level) {
 function getStatMult(statIdx, val) {
   if(val === undefined) val = stats[statIdx];
   const m = [
-    0.0576, // hp regen
-    57.6,    // max hp per point
-    0.0288,  // body damage
-    0.144,   // bullet speed
-    0.288,   // bullet pen
-    0.24,    // bullet damage
-    -0.0144, // reload (negative = faster)
-    0.0096,  // move speed
+    0.0576, 57.6, 0.0288, 0.144, 0.288, 0.24, -0.0144, 0.0096,
   ];
   return val * m[statIdx];
 }
@@ -700,12 +936,16 @@ function gameLoop() {
   updateFoods();
   updateParticles();
   checkCollisions();
+  checkRemoteCollisions();
   resolveBodyCollisions();
   maintainPopulation();
+  updateRemotePlayers();
+  syncMyState();
   updateCamera();
   draw();
   drawMinimap();
   updateHUD();
+  if(tick % 30 === 0) updateLeaderboard();
 }
 
 // ==================== PLAYER UPDATE ====================
@@ -729,22 +969,18 @@ function updatePlayer() {
   player.y += player.vy;
   clampToCircle(player, cls.bodySize * lvlMult());
 
-  // Aim at mouse
   const wx = camera.x + (mouse.x - W/2) / camera.zoom;
   const wy = camera.y + (mouse.y - H/2) / camera.zoom;
   player.angle = Math.atan2(wy - player.y, wx - player.x);
 
-  // HP regen
   const regen = cls.hpRegen + getStatMult(0);
   player.hp = Math.min(player.maxHp, player.hp + regen);
 
-  // Fire
   if(mouse.down || keys[' ']) {
     fireTank(player, cls, stats, null);
   }
   cls.barrels.forEach((b, i) => { if(player.reloadTimers[i] > 0) player.reloadTimers[i]--; });
 
-  // Drone control
   const targetX = wx, targetY = wy;
   player.drones.forEach(d => {
     const da = Math.atan2(targetY - d.y, targetX - d.x);
@@ -812,7 +1048,6 @@ function fireTank(entity, cls, entityStats, statMults) {
     };
     bullets.push(bul);
 
-    // Recoil
     const recoil = (b.sizeF || 1) * 0.3;
     entity.vx -= Math.cos(ang) * recoil;
     entity.vy -= Math.sin(ang) * recoil;
@@ -860,7 +1095,6 @@ function updateEnemies() {
     } else {
       e.vx += Math.cos(e.wanderAngle) * spd * 0.05;
       e.vy += Math.sin(e.wanderAngle) * spd * 0.05;
-      // Shoot food nearby
       let nearFood = null, nfd = 250;
       foods.forEach(f => {
         const d = Math.sqrt((f.x-e.x)**2 + (f.y-e.y)**2);
@@ -878,10 +1112,8 @@ function updateEnemies() {
 
     cls.barrels.forEach((b, i) => { if(e.reloadTimers[i] > 0) e.reloadTimers[i]--; });
 
-    // HP regen
     e.hp = Math.min(e.maxHp, e.hp + cls.hpRegen * 1.5);
 
-    // Drone control for AI
     if(e.drones.length > 0) {
       const tx = e.target ? e.target.x : e.x + Math.cos(e.angle)*200;
       const ty = e.target ? e.target.y : e.y + Math.sin(e.angle)*200;
@@ -975,7 +1207,6 @@ function checkCollisions() {
   const cls = TANK_CLASSES[player.classId];
   const pSize = cls.bodySize * lvlMult();
 
-  // Bullets vs food
   for(let i = bullets.length-1; i >= 0; i--) {
     const b = bullets[i];
     for(let j = foods.length-1; j >= 0; j--) {
@@ -1005,7 +1236,6 @@ function checkCollisions() {
     }
   }
 
-  // Bullets vs player
   for(let i = bullets.length-1; i >= 0; i--) {
     const b = bullets[i];
     if(b.isPlayerBullet) continue;
@@ -1022,7 +1252,6 @@ function checkCollisions() {
     }
   }
 
-  // Bullets vs enemies
   for(let i = bullets.length-1; i >= 0; i--) {
     const b = bullets[i];
     if(!b.isPlayerBullet) continue;
@@ -1038,7 +1267,6 @@ function checkCollisions() {
         if(e.hp <= 0) {
           addXP(e.level * 18 + 50);
           addParticle(e.x, e.y, COLORS.enemy);
-          // Remove drones
           e.drones.forEach(dr => { const idx = bullets.indexOf(dr); if(idx>=0) bullets.splice(idx,1); });
           enemies.splice(j, 1);
           spawnEnemy();
@@ -1052,18 +1280,14 @@ function checkCollisions() {
     }
   }
 
-  // Player body vs enemies
   enemies.forEach(e => {
     const ecls = TANK_CLASSES[e.classId];
     if(!ecls) return;
     const d = Math.sqrt((player.x-e.x)**2 + (player.y-e.y)**2);
     if(d < pSize + ecls.bodySize * lvlMult(e)) {
-      const bd = cls.bodyDamage + getStatMult(2);
-      const ebd = ecls.bodyDamage * (e.statMults?.damage || 1);
       const eSize = ecls.bodySize * lvlMult(e);
       if(player.invuln <= 0) player.hp -= collisionSelfDmg(eSize, player.maxHp, player.level);
       e.hp -= collisionSelfDmg(pSize, e.maxHp, e.level);
-      // Push apart
       const ang = Math.atan2(player.y - e.y, player.x - e.x);
       player.vx += Math.cos(ang) * 3;
       player.vy += Math.sin(ang) * 3;
@@ -1079,7 +1303,6 @@ function checkCollisions() {
     }
   });
 
-  // Player body vs food
   const currentTouching = new Set();
   for(let j = foods.length-1; j >= 0; j--) {
     const f = foods[j];
@@ -1102,6 +1325,59 @@ function checkCollisions() {
     }
   }
   player.touchingFoods = currentTouching;
+}
+
+// ==================== REMOTE PLAYER COLLISIONS ====================
+function checkRemoteCollisions() {
+  if(remotePlayersList.length === 0) return;
+  const cls = TANK_CLASSES[player.classId];
+  const pSize = cls.bodySize * lvlMult();
+
+  // Player bullets vs remote players
+  for(let i = bullets.length-1; i >= 0; i--) {
+    const b = bullets[i];
+    if(!b.isPlayerBullet) continue;
+    for(let j = 0; j < remotePlayersList.length; j++) {
+      const rp = remotePlayersList[j];
+      const rcls = TANK_CLASSES[rp.classId];
+      if(!rcls) continue;
+      const rpLvlMult = 1 + ((rp.level || 1) - 1) * 0.025;
+      const rpSize = rcls.bodySize * rpLvlMult;
+      const d = Math.sqrt((b.x - rp.displayX)**2 + (b.y - rp.displayY)**2);
+      if(d < b.size + rpSize) {
+        addParticle(rp.displayX, rp.displayY, rp.color);
+        sendDamageToRemote(rp.id, b.damage);
+        b.hp -= 1;
+        if(b.hp <= 0) {
+          if(b.isDrone && b.owner) b.owner.drones = b.owner.drones.filter(d=>d!==b);
+          bullets.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  // Player body vs remote players
+  for(let j = 0; j < remotePlayersList.length; j++) {
+    const rp = remotePlayersList[j];
+    const rcls = TANK_CLASSES[rp.classId];
+    if(!rcls) continue;
+    const rpLvlMult = 1 + ((rp.level || 1) - 1) * 0.025;
+    const rpSize = rcls.bodySize * rpLvlMult;
+    const d = Math.sqrt((player.x - rp.displayX)**2 + (player.y - rp.displayY)**2);
+    if(d < pSize + rpSize && player.invuln <= 0) {
+      const ang = Math.atan2(player.y - rp.displayY, player.x - rp.displayX);
+      player.vx += Math.cos(ang) * 3;
+      player.vy += Math.sin(ang) * 3;
+      const bodyDmg = collisionSelfDmg(rpSize, player.maxHp, player.level);
+      player.hp -= bodyDmg;
+      sendDamageToRemote(rp.id, collisionSelfDmg(pSize, rp.maxHp, rp.level));
+      if(player.hp <= 0) {
+        lastKilledBy = rp.name;
+        die();
+      }
+    }
+  }
 }
 
 function getColor(type) {
@@ -1155,15 +1431,22 @@ function die() {
   document.getElementById('scoreDisplay').style.display = 'none';
   document.getElementById('classLabel').style.display = 'none';
   document.getElementById('minimap').style.display = 'none';
+  document.getElementById('onlineCount').style.display = 'none';
+  document.getElementById('leaderboard').style.display = 'none';
   document.getElementById('deathScreen').style.display = 'flex';
-  document.getElementById('finalScore').textContent = `Score: ${score.toLocaleString()}`;
-  // Clean up drones
+  document.getElementById('finalScore').textContent = 'Score: ' + score.toLocaleString();
+  document.getElementById('killedBy').textContent = lastKilledBy ? 'Killed by ' + lastKilledBy : '';
   player.drones.forEach(dr => { const idx = bullets.indexOf(dr); if(idx>=0) bullets.splice(idx,1); });
+
+  if(roomPlayersRef && myPlayerId) {
+    roomPlayersRef.child(myPlayerId).remove();
+  }
 }
 
 function maintainPopulation() {
   while(foods.length < 9000) spawnFood();
-  while(enemies.length < 25) spawnEnemy();
+  const maxEnemies = offlineMode ? 25 : 15;
+  while(enemies.length < maxEnemies) spawnEnemy();
 }
 
 function pushApart(a, b, aR, bR) {
@@ -1181,7 +1464,6 @@ function pushApart(a, b, aR, bR) {
 }
 
 function resolveBodyCollisions() {
-  // Enemy vs enemy
   for(let i = 0; i < enemies.length; i++) {
     const a = enemies[i];
     const ac = TANK_CLASSES[a.classId];
@@ -1198,7 +1480,6 @@ function resolveBodyCollisions() {
     }
   }
 
-  // Enemy vs food
   for(let i = 0; i < enemies.length; i++) {
     const e = enemies[i];
     const ec = TANK_CLASSES[e.classId];
@@ -1212,7 +1493,6 @@ function resolveBodyCollisions() {
     }
   }
 
-  // Food vs food (only check nearby - skip tiny pairs for performance)
   for(let i = 0; i < foods.length; i++) {
     const a = foods[i];
     if(a.size < 30) continue;
@@ -1249,6 +1529,7 @@ function draw() {
   drawFoods();
   drawBullets();
   drawEnemies();
+  drawRemotePlayers();
   drawPlayer();
   drawParticles();
 
@@ -1273,7 +1554,6 @@ function drawGrid() {
   ctx.stroke();
   ctx.restore();
 
-  // World border circle
   ctx.strokeStyle = 'rgba(0,0,0,.2)';
   ctx.lineWidth = 6;
   ctx.beginPath();
@@ -1358,11 +1638,9 @@ function drawTank(x, y, angle, classId, color, size, alpha, scaleFactor) {
   ctx.translate(x, y);
   ctx.globalAlpha = alpha || 1;
 
-  // Barrels
   cls.barrels.forEach(b => {
     ctx.save();
     ctx.rotate(angle + b.angle);
-    const ox = b.offset || 0;
     ctx.fillStyle = COLORS.barrel;
     ctx.strokeStyle = '#777';
     ctx.lineWidth = 2;
@@ -1372,7 +1650,6 @@ function drawTank(x, y, angle, classId, color, size, alpha, scaleFactor) {
     ctx.restore();
   });
 
-  // Handle offset barrels properly
   cls.barrels.forEach(b => {
     if(!b.offset) return;
     ctx.save();
@@ -1386,14 +1663,12 @@ function drawTank(x, y, angle, classId, color, size, alpha, scaleFactor) {
     ctx.restore();
   });
 
-  // Body
   const bs = size || cls.bodySize;
   ctx.fillStyle = color;
   ctx.strokeStyle = darken(color);
   ctx.lineWidth = 3;
 
   if(cls.smasher) {
-    // Smasher ring
     ctx.save();
     ctx.rotate(angle + tick * 0.02);
     ctx.strokeStyle = '#555';
@@ -1430,16 +1705,14 @@ function drawPlayer() {
   const pDrawSize = cls.bodySize * lvlMult();
   drawTank(player.x, player.y, player.angle, player.classId, COLORS.player, pDrawSize, alpha, lvlMult());
 
-  // Name
   ctx.fillStyle = '#333';
   ctx.font = 'bold 14px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(player.name, player.x, player.y - pDrawSize - 18);
   ctx.fillStyle = '#666';
   ctx.font = '11px sans-serif';
-  ctx.fillText(`Lv ${player.level} ${TANK_CLASSES[player.classId].name}`, player.x, player.y - pDrawSize - 6);
+  ctx.fillText('Lv ' + player.level + ' ' + TANK_CLASSES[player.classId].name, player.x, player.y - pDrawSize - 6);
 
-  // HP bar
   if(player.hp < player.maxHp) drawHpBar(player.x, player.y + pDrawSize + 10, pDrawSize * 1.5, player.hp, player.maxHp);
 }
 
@@ -1457,9 +1730,30 @@ function drawEnemies() {
     ctx.fillText(e.name, e.x, e.y - eDrawSize - 16);
     ctx.fillStyle = '#777';
     ctx.font = '10px sans-serif';
-    ctx.fillText(`Lv ${e.level} ${ecls.name}`, e.x, e.y - eDrawSize - 5);
+    ctx.fillText('Lv ' + e.level + ' ' + ecls.name, e.x, e.y - eDrawSize - 5);
 
     if(e.hp < e.maxHp) drawHpBar(e.x, e.y + eDrawSize + 10, eDrawSize * 1.5, e.hp, e.maxHp);
+  });
+}
+
+function drawRemotePlayers() {
+  remotePlayersList.forEach(rp => {
+    if(!onScreen(rp.displayX, rp.displayY, 80)) return;
+    const rcls = TANK_CLASSES[rp.classId];
+    if(!rcls) return;
+    const rpLvlMult = 1 + ((rp.level || 1) - 1) * 0.025;
+    const rpSize = rcls.bodySize * rpLvlMult;
+    drawTank(rp.displayX, rp.displayY, rp.displayAngle, rp.classId, rp.color, rpSize, 1, rpLvlMult);
+
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(rp.name, rp.displayX, rp.displayY - rpSize - 18);
+    ctx.fillStyle = rp.color;
+    ctx.font = '10px sans-serif';
+    ctx.fillText('Lv ' + rp.level + ' ' + rcls.name, rp.displayX, rp.displayY - rpSize - 6);
+
+    if(rp.hp < rp.maxHp) drawHpBar(rp.displayX, rp.displayY + rpSize + 10, rpSize * 1.5, rp.hp, rp.maxHp);
   });
 }
 
@@ -1517,7 +1811,7 @@ function onScreen(x, y, margin) {
 
 function darken(hex) {
   const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-  return `rgb(${Math.floor(r*0.7)},${Math.floor(g*0.7)},${Math.floor(b*0.7)})`;
+  return 'rgb(' + Math.floor(r*0.7) + ',' + Math.floor(g*0.7) + ',' + Math.floor(b*0.7) + ')';
 }
 
 // ==================== MINIMAP ====================
@@ -1534,13 +1828,11 @@ function drawMinimap() {
   mmCtx.fillStyle = 'rgba(200,200,200,.6)';
   mmCtx.fill();
 
-  // Food dots
   mmCtx.fillStyle = 'rgba(180,180,180,.5)';
   foods.forEach(f => {
     mmCtx.fillRect((f.x - WORLD_CX + WORLD_R)*s, (f.y - WORLD_CY + WORLD_R)*s, 1.5, 1.5);
   });
 
-  // Enemies
   enemies.forEach(e => {
     mmCtx.fillStyle = e.level === 1000 ? '#000' : COLORS.enemy;
     mmCtx.beginPath();
@@ -1548,7 +1840,14 @@ function drawMinimap() {
     mmCtx.fill();
   });
 
-  // Player
+  // Remote players on minimap
+  remotePlayersList.forEach(rp => {
+    mmCtx.fillStyle = rp.color;
+    mmCtx.beginPath();
+    mmCtx.arc((rp.displayX - WORLD_CX + WORLD_R)*s, (rp.displayY - WORLD_CY + WORLD_R)*s, 3, 0, Math.PI*2);
+    mmCtx.fill();
+  });
+
   mmCtx.fillStyle = COLORS.player;
   mmCtx.beginPath();
   mmCtx.arc((player.x - WORLD_CX + WORLD_R)*s, (player.y - WORLD_CY + WORLD_R)*s, 3.5, 0, Math.PI*2);
@@ -1556,7 +1855,6 @@ function drawMinimap() {
 
   mmCtx.restore();
 
-  // Border
   mmCtx.strokeStyle = 'rgba(0,0,0,.3)';
   mmCtx.lineWidth = 1.5;
   mmCtx.beginPath();
@@ -1568,13 +1866,36 @@ function drawMinimap() {
 function updateHUD() {
   const pct = player.level >= MAX_LEVEL ? 100 : (player.xp / player.xpNeeded * 100);
   document.getElementById('xpBar').style.width = pct + '%';
-  document.getElementById('scoreDisplay').textContent = `Score: ${score.toLocaleString()}`;
+  document.getElementById('scoreDisplay').textContent = 'Score: ' + score.toLocaleString();
   document.getElementById('classLabel').textContent = TANK_CLASSES[player.classId].name;
-  document.getElementById('hudLevel').textContent = `Lv ${player.level} | ${statPoints} pts`;
+  document.getElementById('hudLevel').textContent = 'Lv ' + player.level + ' | ' + statPoints + ' pts';
+
+  if(!offlineMode) {
+    const online = remotePlayersList.length + 1;
+    document.getElementById('onlineCount').textContent = online + ' player' + (online !== 1 ? 's' : '') + ' online';
+  }
 }
 
-// ==================== BARREL OFFSET FIX ====================
-// Redraw barrels that have offsets properly - already handled above
+// ==================== LEADERBOARD ====================
+function updateLeaderboard() {
+  if(offlineMode) return;
+  const entries = [];
+  entries.push({ name: player.name, score: score, me: true });
+  remotePlayersList.forEach(rp => {
+    entries.push({ name: rp.name, score: rp.score || 0, me: false });
+  });
+  entries.sort((a, b) => b.score - a.score);
+  const top = entries.slice(0, 10);
+
+  const container = document.getElementById('lbEntries');
+  container.innerHTML = '';
+  top.forEach((e, i) => {
+    const div = document.createElement('div');
+    div.className = 'lb-entry' + (e.me ? ' me' : '');
+    div.innerHTML = '<span>' + (i+1) + '. ' + e.name + '</span><span>' + e.score.toLocaleString() + '</span>';
+    container.appendChild(div);
+  });
+}
 
 // ==================== START ====================
 gameLoop();
