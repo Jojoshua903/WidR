@@ -226,6 +226,12 @@ body {
 .c3:hover { border-color: #00B16A; } .c4:hover { border-color: #FF3366; }
 .c5:hover { border-color: #FDCB6E; } .c6:hover { border-color: #A29BFE; }
 .c7:hover { border-color: #FD79A8; } .c8:hover { border-color: #74B9FF; }
+.c9::before { background: linear-gradient(90deg, #E17055, #D63031); }
+.c10::before { background: linear-gradient(90deg, #00CEC9, #00B894); }
+.c11::before { background: linear-gradient(90deg, #FFEAA7, #FDCB6E); }
+.c12::before { background: linear-gradient(90deg, #55E6C1, #1ABC9C); }
+.c9:hover { border-color: #E17055; } .c10:hover { border-color: #00CEC9; }
+.c11:hover { border-color: #FFEAA7; } .c12:hover { border-color: #55E6C1; }
 
 .home-footer {
   text-align: center;
@@ -651,6 +657,63 @@ body {
 .guess-final-score { font-family: var(--font-mono); font-size: 60px; font-weight: 900; color: var(--accent4); }
 .guess-final-label { font-size: 15px; color: var(--text-dim); }
 
+/* ===== TYPING ===== */
+.typing-area { max-width: 700px; margin: 20px auto; text-align: center; }
+.typing-text { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 28px; font-size: 20px; line-height: 1.8; text-align: left; margin-bottom: 20px; min-height: 120px; }
+.typing-text .done { color: #00B894; } .typing-text .wrong { color: #FF3366; text-decoration: underline; } .typing-text .current { background: var(--accent); color: white; padding: 1px 2px; border-radius: 3px; } .typing-text .pending { color: var(--text-dim); }
+.typing-input { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text); font-size: 18px; outline: none; font-family: var(--font-mono); }
+.typing-input:focus { border-color: #E17055; }
+.typing-stats { display: flex; gap: 16px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+.typing-stat { background: var(--bg-card); border: var(--border); padding: 14px 22px; border-radius: 12px; text-align: center; min-width: 100px; }
+.typing-stat-val { font-family: var(--font-mono); font-size: 28px; font-weight: 800; color: #E17055; }
+.typing-stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.typing-restart { margin-top: 20px; padding: 12px 32px; border: 2px solid #E17055; border-radius: 10px; background: transparent; color: #E17055; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.typing-restart:hover { background: #E17055; color: white; }
+
+/* ===== COLOR ===== */
+.color-game { max-width: 500px; margin: 30px auto; text-align: center; }
+.color-swatch { width: 200px; height: 200px; border-radius: 20px; margin: 0 auto 24px; border: var(--border); }
+.color-hex { font-family: var(--font-mono); font-size: 28px; font-weight: 800; margin-bottom: 24px; }
+.color-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.color-opt { padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.color-opt:hover { border-color: #00CEC9; transform: translateY(-2px); }
+.color-opt.correct { border-color: #00B894; background: rgba(0,184,148,0.15); }
+.color-opt.wrong { border-color: #FF3366; background: rgba(255,51,102,0.1); opacity: 0.5; }
+.color-score-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
+.color-score-item { background: var(--bg-card); border: var(--border); padding: 10px 18px; border-radius: 10px; }
+.color-score-val { font-family: var(--font-mono); font-size: 22px; font-weight: 800; color: #00CEC9; }
+.color-score-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ===== FLAG ===== */
+.flag-game { max-width: 500px; margin: 30px auto; text-align: center; }
+.flag-display { font-size: 100px; margin: 20px 0; }
+.flag-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.flag-opt { padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.flag-opt:hover { border-color: #FDCB6E; transform: translateY(-2px); }
+.flag-opt.correct { border-color: #00B894; background: rgba(0,184,148,0.15); }
+.flag-opt.wrong { border-color: #FF3366; background: rgba(255,51,102,0.1); opacity: 0.5; }
+.flag-score-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; }
+.flag-next { margin-top: 20px; padding: 12px 32px; border: none; border-radius: 10px; background: linear-gradient(135deg, #FFEAA7, #FDCB6E); color: #1B1B1F; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.flag-next:hover { transform: scale(1.04); }
+
+/* ===== HIGHER LOWER ===== */
+.hl-game { max-width: 600px; margin: 30px auto; text-align: center; }
+.hl-card { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 32px; margin-bottom: 20px; }
+.hl-label { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.hl-item { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.hl-number { font-family: var(--font-mono); font-size: 48px; font-weight: 900; color: #55E6C1; }
+.hl-unit { font-size: 14px; color: var(--text-dim); }
+.hl-vs { font-size: 28px; font-weight: 900; color: var(--text-dim); margin: 16px 0; }
+.hl-buttons { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
+.hl-btn { flex: 1; max-width: 200px; padding: 18px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text); font-size: 18px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+.hl-btn:hover { transform: translateY(-3px); }
+.hl-btn.higher:hover { border-color: #55E6C1; box-shadow: 0 4px 20px rgba(85,230,193,0.2); }
+.hl-btn.lower:hover { border-color: #FF3366; box-shadow: 0 4px 20px rgba(255,51,102,0.2); }
+.hl-result { font-size: 24px; font-weight: 800; margin: 20px 0; }
+.hl-streak { background: var(--bg-card); border: var(--border); padding: 12px 24px; border-radius: 10px; display: inline-block; margin-bottom: 20px; }
+.hl-streak-val { font-family: var(--font-mono); font-size: 28px; font-weight: 800; color: #55E6C1; }
+.hl-streak-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .game-grid { grid-template-columns: 1fr; }
@@ -691,7 +754,7 @@ body {
     <h1 class="hero-title">Wat in de <span class="highlight">Games</span></h1>
     <p class="hero-sub">Speel, compete, en rank alles. Van reflexen tot geheugen — wie is de beste?</p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-val">8</div><div class="hero-stat-label">Games</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">12</div><div class="hero-stat-label">Games</div></div>
       <div class="hero-stat"><div class="hero-stat-val">∞</div><div class="hero-stat-label">Chaos</div></div>
       <div class="hero-stat"><div class="hero-stat-val">0</div><div class="hero-stat-label">Consensus</div></div>
     </div>
@@ -725,7 +788,7 @@ body {
       <span class="card-rank">#5</span>
       <span class="card-emoji">⚡</span>
       <div class="card-title">Reactiesnelheid</div>
-      <div class="card-desc">Hoe snel kun je klikken? Test je reflexen.</div>
+      <div class="card-desc">Klik of druk op spatie. Hoe snel ben jij?</div>
     </div>
     <div class="game-card c6" onclick="showGame('memory')">
       <span class="card-rank">#6</span>
@@ -744,6 +807,30 @@ body {
       <span class="card-emoji">🔢</span>
       <div class="card-title">Raad het Getal</div>
       <div class="card-desc">Hoeveel botten in een menselijk lichaam? Doe je beste gok.</div>
+    </div>
+    <div class="game-card c9" onclick="showGame('typing')">
+      <span class="card-rank">#9</span>
+      <span class="card-emoji">⌨️</span>
+      <div class="card-title">Typing Race</div>
+      <div class="card-desc">Typ zo snel mogelijk. Hoeveel woorden per minuut haal jij?</div>
+    </div>
+    <div class="game-card c10" onclick="showGame('color')">
+      <span class="card-rank">#10</span>
+      <span class="card-emoji">🎨</span>
+      <div class="card-title">Kleur Raden</div>
+      <div class="card-desc">Welke kleur hoort bij deze hex code? Test je ogen.</div>
+    </div>
+    <div class="game-card c11" onclick="showGame('flag')">
+      <span class="card-rank">#11</span>
+      <span class="card-emoji">🏳️</span>
+      <div class="card-title">Vlag Quiz</div>
+      <div class="card-desc">Ken jij alle 195 vlaggen? Van makkelijk tot onmogelijk.</div>
+    </div>
+    <div class="game-card c12" onclick="showGame('highlow')">
+      <span class="card-rank">#12</span>
+      <span class="card-emoji">📈</span>
+      <div class="card-title">Hoger of Lager</div>
+      <div class="card-desc">Is het volgende getal hoger of lager? Hoe lang hou je vol?</div>
     </div>
   </div>
   <div class="home-footer">© 2026 Wat in de Ranking. Alle rechten voorbehouden.</div>
@@ -832,7 +919,7 @@ body {
   </div>
   <div class="game-body">
     <div class="reaction-zone idle" id="reaction-zone" onclick="reactionClick()">
-      <div class="reaction-text" id="reaction-text">Klik om te starten</div>
+      <div class="reaction-text" id="reaction-text">Klik of druk op spatie</div>
       <div class="reaction-time" id="reaction-time"></div>
     </div>
     <div class="reaction-round-info" id="reaction-round-info"></div>
@@ -901,6 +988,34 @@ body {
   </div>
 </div>
 
+<!-- ===== TYPING RACE ===== -->
+<div id="game-typing" class="view">
+  <nav class="top-nav"><a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a><div class="nav-links"><span class="nav-link active">🎮 Games</span></div></nav>
+  <div class="game-header"><button class="back-btn" onclick="goHome()">←</button><div class="game-title-bar">⌨️ Typing Race</div></div>
+  <div class="game-body"><div class="typing-area" id="typing-area"></div></div>
+</div>
+
+<!-- ===== KLEUR RADEN ===== -->
+<div id="game-color" class="view">
+  <nav class="top-nav"><a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a><div class="nav-links"><span class="nav-link active">🎮 Games</span></div></nav>
+  <div class="game-header"><button class="back-btn" onclick="goHome()">←</button><div class="game-title-bar">🎨 Kleur Raden</div></div>
+  <div class="game-body"><div class="color-game" id="color-game"></div></div>
+</div>
+
+<!-- ===== VLAG QUIZ ===== -->
+<div id="game-flag" class="view">
+  <nav class="top-nav"><a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a><div class="nav-links"><span class="nav-link active">🎮 Games</span></div></nav>
+  <div class="game-header"><button class="back-btn" onclick="goHome()">←</button><div class="game-title-bar">🏳️ Vlag Quiz</div></div>
+  <div class="game-body"><div class="flag-game" id="flag-game"></div></div>
+</div>
+
+<!-- ===== HOGER OF LAGER ===== -->
+<div id="game-highlow" class="view">
+  <nav class="top-nav"><a class="nav-brand" onclick="goHome()"><span class="nav-logo">🏆 Wat in de Ranking</span></a><div class="nav-links"><span class="nav-link active">🎮 Games</span></div></nav>
+  <div class="game-header"><button class="back-btn" onclick="goHome()">←</button><div class="game-title-bar">📈 Hoger of Lager</div></div>
+  <div class="game-body"><div class="hl-game" id="hl-game"></div></div>
+</div>
+
 <script>
 // ===== VIEW MANAGEMENT =====
 function showGame(id) {
@@ -915,6 +1030,10 @@ function showGame(id) {
   if (id === 'memory') initMemory();
   if (id === 'frenzy') initFrenzy();
   if (id === 'guess') initGuess();
+  if (id === 'typing') initTyping();
+  if (id === 'color') initColor();
+  if (id === 'flag') initFlag();
+  if (id === 'highlow') initHighLow();
 }
 function goHome() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1155,12 +1274,17 @@ const REACTION_ROUNDS = 5;
 function initReaction() {
   reactionState = 'idle'; reactionTimes = []; if (reactionTimeout) clearTimeout(reactionTimeout);
   const z = document.getElementById('reaction-zone'); z.className = 'reaction-zone idle';
-  document.getElementById('reaction-text').textContent = 'Klik om te starten';
+  document.getElementById('reaction-text').textContent = 'Klik of druk op spatie';
   document.getElementById('reaction-time').textContent = '';
   document.getElementById('reaction-stats').innerHTML = '';
   document.getElementById('reaction-round-info').textContent = '';
   document.getElementById('reaction-rating').textContent = '';
 }
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && document.getElementById('game-reaction').classList.contains('active')) {
+    e.preventDefault(); reactionClick();
+  }
+});
 function reactionClick() {
   const z = document.getElementById('reaction-zone'), t = document.getElementById('reaction-text'), tE = document.getElementById('reaction-time');
   if (reactionState === 'idle' || reactionState === 'result') {
@@ -1170,7 +1294,7 @@ function reactionClick() {
     reactionTimeout = setTimeout(() => { reactionState = 'ready'; z.className = 'reaction-zone ready'; t.textContent = 'KLIK NU!'; reactionStart = performance.now(); }, 1500 + Math.random() * 4000);
   } else if (reactionState === 'waiting') {
     clearTimeout(reactionTimeout); reactionState = 'result'; z.className = 'reaction-zone too-early'; t.textContent = 'Te vroeg!'; tE.textContent = '';
-    setTimeout(() => { t.textContent = 'Klik om opnieuw te proberen'; z.className = 'reaction-zone idle'; reactionState = 'idle'; }, 1200);
+    setTimeout(() => { t.textContent = 'Klik of spatie om opnieuw te proberen'; z.className = 'reaction-zone idle'; reactionState = 'idle'; }, 1200);
   } else if (reactionState === 'ready') {
     const time = Math.round(performance.now() - reactionStart); reactionTimes.push(time);
     reactionState = 'result'; z.className = 'reaction-zone ready'; t.textContent = ''; tE.textContent = time + 'ms'; tE.style.color = 'white';
@@ -1314,6 +1438,209 @@ function submitGuess() {
   const r = document.createElement('div'); r.className = 'guess-result'; r.style.animation = 'fadeIn 0.4s ease';
   r.innerHTML = `<div class="guess-result-answer">Het antwoord</div><div class="guess-result-number">${actual.toLocaleString('nl-NL')}</div><div class="guess-result-accuracy" style="color:${gc}">${grade} (${accuracy}% nauwkeurig)</div><div class="guess-result-fact">${q.fact}</div><button class="guess-next" onclick="guessIndex++; renderGuess();">${guessIndex < guessOrder.length - 1 ? 'Volgende Vraag →' : 'Resultaten'}</button>`;
   c.appendChild(r);
+}
+
+// ===== TYPING RACE =====
+const TYPING_TEXTS = [
+  "de kat zat op de mat en keek naar de muis die snel over de vloer rende",
+  "het was een mooie dag in amsterdam en de grachten waren helder blauw",
+  "elke dag is een nieuwe kans om iets geweldigs te doen en de wereld te veranderen",
+  "de trein reed snel door het vlakke land met windmolens aan beide kanten",
+  "coding is leuk maar soms wil je gewoon buiten spelen met je vrienden",
+  "pizza met ananas is de meest controversiele ranking discussie ooit",
+  "de beste manier om iets te leren is door het gewoon te proberen",
+  "nederland is een klein land maar heeft een grote cultuur en veel kaas",
+];
+let typingText = '', typingPos = 0, typingErrors = 0, typingStart = 0, typingDone = false;
+function initTyping() {
+  typingText = TYPING_TEXTS[Math.floor(Math.random() * TYPING_TEXTS.length)];
+  typingPos = 0; typingErrors = 0; typingStart = 0; typingDone = false;
+  const area = document.getElementById('typing-area');
+  area.innerHTML = `<div class="typing-text" id="typing-display"></div><input class="typing-input" id="typing-input" placeholder="Begin met typen..." autofocus><div class="typing-stats" id="typing-stats"></div>`;
+  renderTypingText();
+  const inp = document.getElementById('typing-input');
+  inp.addEventListener('input', handleTypingInput);
+  setTimeout(() => inp.focus(), 100);
+}
+function renderTypingText() {
+  const d = document.getElementById('typing-display'); let html = '';
+  for (let i = 0; i < typingText.length; i++) {
+    const ch = typingText[i] === ' ' ? '&nbsp;' : typingText[i];
+    if (i < typingPos) html += `<span class="done">${ch}</span>`;
+    else if (i === typingPos) html += `<span class="current">${ch}</span>`;
+    else html += `<span class="pending">${ch}</span>`;
+  }
+  d.innerHTML = html;
+}
+function handleTypingInput(e) {
+  if (typingDone) return;
+  if (!typingStart) typingStart = performance.now();
+  const val = e.target.value;
+  const lastChar = val[val.length - 1];
+  if (lastChar === typingText[typingPos]) { typingPos++; } else { typingErrors++; }
+  e.target.value = '';
+  renderTypingText();
+  if (typingPos >= typingText.length) {
+    typingDone = true;
+    const elapsed = (performance.now() - typingStart) / 1000;
+    const words = typingText.split(' ').length;
+    const wpm = Math.round((words / elapsed) * 60);
+    const accuracy = Math.round(((typingText.length - typingErrors) / typingText.length) * 100);
+    document.getElementById('typing-input').disabled = true;
+    document.getElementById('typing-stats').innerHTML = `<div class="typing-stat"><div class="typing-stat-val">${wpm}</div><div class="typing-stat-label">WPM</div></div><div class="typing-stat"><div class="typing-stat-val">${accuracy}%</div><div class="typing-stat-label">Nauwkeurig</div></div><div class="typing-stat"><div class="typing-stat-val">${elapsed.toFixed(1)}s</div><div class="typing-stat-label">Tijd</div></div>`;
+    document.getElementById('typing-area').innerHTML += `<button class="typing-restart" onclick="initTyping()">Opnieuw Spelen</button>`;
+  }
+}
+
+// ===== KLEUR RADEN =====
+let colorScore = 0, colorRound = 0, colorTotal = 10;
+function randHex() { return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'); }
+function hexToName(h) { return h.toUpperCase(); }
+function similarColor(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const shift = () => Math.max(0, Math.min(255, Math.floor(Math.random() * 120) - 60));
+  return '#' + [Math.max(0,Math.min(255,r+shift())),Math.max(0,Math.min(255,g+shift())),Math.max(0,Math.min(255,b+shift()))].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function initColor() { colorScore = 0; colorRound = 0; renderColor(); }
+function renderColor() {
+  const g = document.getElementById('color-game');
+  if (colorRound >= colorTotal) {
+    g.innerHTML = `<div class="guess-final">Klaar!</div><div class="guess-final-score" style="color:#00CEC9">${colorScore}/${colorTotal}</div><div class="guess-final-label">kleuren goed geraden</div><button class="guess-next" style="border-color:#00CEC9;color:#00CEC9" onclick="initColor()">Opnieuw Spelen</button>`; return;
+  }
+  const correct = randHex();
+  const options = [correct, similarColor(correct), similarColor(correct), similarColor(correct)];
+  for (let i = options.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [options[i],options[j]] = [options[j],options[i]]; }
+  g.innerHTML = `<div class="color-score-bar"><div class="color-score-item"><div class="color-score-val">${colorRound+1}/${colorTotal}</div><div class="color-score-label">Ronde</div></div><div class="color-score-item"><div class="color-score-val">${colorScore}</div><div class="color-score-label">Score</div></div></div><div class="color-hex">${correct.toUpperCase()}</div><div class="color-options" id="color-options">${options.map(o => `<button class="color-opt" style="background:${o};min-height:80px;border-color:transparent" data-hex="${o}" onclick="pickColor(this,'${correct}')"></button>`).join('')}</div>`;
+}
+function pickColor(el, correct) {
+  const picked = el.dataset.hex;
+  document.querySelectorAll('.color-opt').forEach(b => { b.onclick = null; if (b.dataset.hex === correct) b.classList.add('correct'); else b.classList.add('wrong'); });
+  if (picked === correct) colorScore++;
+  setTimeout(() => { colorRound++; renderColor(); }, 1000);
+}
+
+// ===== VLAG QUIZ =====
+const FLAGS = [
+  {flag:'🇦🇫',name:'Afghanistan'},{flag:'🇦🇱',name:'Albanië'},{flag:'🇩🇿',name:'Algerije'},{flag:'🇦🇩',name:'Andorra'},
+  {flag:'🇦🇴',name:'Angola'},{flag:'🇦🇬',name:'Antigua en Barbuda'},{flag:'🇦🇷',name:'Argentinië'},{flag:'🇦🇲',name:'Armenië'},
+  {flag:'🇦🇺',name:'Australië'},{flag:'🇦🇹',name:'Oostenrijk'},{flag:'🇦🇿',name:'Azerbeidzjan'},{flag:'🇧🇸',name:'Bahama\'s'},
+  {flag:'🇧🇭',name:'Bahrein'},{flag:'🇧🇩',name:'Bangladesh'},{flag:'🇧🇧',name:'Barbados'},{flag:'🇧🇾',name:'Wit-Rusland'},
+  {flag:'🇧🇪',name:'België'},{flag:'🇧🇿',name:'Belize'},{flag:'🇧🇯',name:'Benin'},{flag:'🇧🇹',name:'Bhutan'},
+  {flag:'🇧🇴',name:'Bolivia'},{flag:'🇧🇦',name:'Bosnië'},{flag:'🇧🇼',name:'Botswana'},{flag:'🇧🇷',name:'Brazilië'},
+  {flag:'🇧🇳',name:'Brunei'},{flag:'🇧🇬',name:'Bulgarije'},{flag:'🇧🇫',name:'Burkina Faso'},{flag:'🇧🇮',name:'Burundi'},
+  {flag:'🇰🇭',name:'Cambodja'},{flag:'🇨🇲',name:'Kameroen'},{flag:'🇨🇦',name:'Canada'},{flag:'🇨🇻',name:'Kaapverdië'},
+  {flag:'🇨🇫',name:'Centraal-Afrikaanse Republiek'},{flag:'🇹🇩',name:'Tsjaad'},{flag:'🇨🇱',name:'Chili'},{flag:'🇨🇳',name:'China'},
+  {flag:'🇨🇴',name:'Colombia'},{flag:'🇰🇲',name:'Comoren'},{flag:'🇨🇬',name:'Congo-Brazzaville'},{flag:'🇨🇩',name:'Congo-Kinshasa'},
+  {flag:'🇨🇷',name:'Costa Rica'},{flag:'🇭🇷',name:'Kroatië'},{flag:'🇨🇺',name:'Cuba'},{flag:'🇨🇾',name:'Cyprus'},
+  {flag:'🇨🇿',name:'Tsjechië'},{flag:'🇩🇰',name:'Denemarken'},{flag:'🇩🇯',name:'Djibouti'},{flag:'🇩🇲',name:'Dominica'},
+  {flag:'🇩🇴',name:'Dominicaanse Republiek'},{flag:'🇪🇨',name:'Ecuador'},{flag:'🇪🇬',name:'Egypte'},{flag:'🇸🇻',name:'El Salvador'},
+  {flag:'🇬🇶',name:'Equatoriaal-Guinea'},{flag:'🇪🇷',name:'Eritrea'},{flag:'🇪🇪',name:'Estland'},{flag:'🇸🇿',name:'Eswatini'},
+  {flag:'🇪🇹',name:'Ethiopië'},{flag:'🇫🇯',name:'Fiji'},{flag:'🇫🇮',name:'Finland'},{flag:'🇫🇷',name:'Frankrijk'},
+  {flag:'🇬🇦',name:'Gabon'},{flag:'🇬🇲',name:'Gambia'},{flag:'🇬🇪',name:'Georgië'},{flag:'🇩🇪',name:'Duitsland'},
+  {flag:'🇬🇭',name:'Ghana'},{flag:'🇬🇷',name:'Griekenland'},{flag:'🇬🇩',name:'Grenada'},{flag:'🇬🇹',name:'Guatemala'},
+  {flag:'🇬🇳',name:'Guinee'},{flag:'🇬🇼',name:'Guinee-Bissau'},{flag:'🇬🇾',name:'Guyana'},{flag:'🇭🇹',name:'Haïti'},
+  {flag:'🇭🇳',name:'Honduras'},{flag:'🇭🇺',name:'Hongarije'},{flag:'🇮🇸',name:'IJsland'},{flag:'🇮🇳',name:'India'},
+  {flag:'🇮🇩',name:'Indonesië'},{flag:'🇮🇷',name:'Iran'},{flag:'🇮🇶',name:'Irak'},{flag:'🇮🇪',name:'Ierland'},
+  {flag:'🇮🇱',name:'Israël'},{flag:'🇮🇹',name:'Italië'},{flag:'🇨🇮',name:'Ivoorkust'},{flag:'🇯🇲',name:'Jamaica'},
+  {flag:'🇯🇵',name:'Japan'},{flag:'🇯🇴',name:'Jordanië'},{flag:'🇰🇿',name:'Kazachstan'},{flag:'🇰🇪',name:'Kenia'},
+  {flag:'🇰🇮',name:'Kiribati'},{flag:'🇰🇼',name:'Koeweit'},{flag:'🇰🇬',name:'Kirgizië'},{flag:'🇱🇦',name:'Laos'},
+  {flag:'🇱🇻',name:'Letland'},{flag:'🇱🇧',name:'Libanon'},{flag:'🇱🇸',name:'Lesotho'},{flag:'🇱🇷',name:'Liberia'},
+  {flag:'🇱🇾',name:'Libië'},{flag:'🇱🇮',name:'Liechtenstein'},{flag:'🇱🇹',name:'Litouwen'},{flag:'🇱🇺',name:'Luxemburg'},
+  {flag:'🇲🇬',name:'Madagaskar'},{flag:'🇲🇼',name:'Malawi'},{flag:'🇲🇾',name:'Maleisië'},{flag:'🇲🇻',name:'Maldiven'},
+  {flag:'🇲🇱',name:'Mali'},{flag:'🇲🇹',name:'Malta'},{flag:'🇲🇭',name:'Marshalleilanden'},{flag:'🇲🇷',name:'Mauritanië'},
+  {flag:'🇲🇺',name:'Mauritius'},{flag:'🇲🇽',name:'Mexico'},{flag:'🇫🇲',name:'Micronesië'},{flag:'🇲🇩',name:'Moldavië'},
+  {flag:'🇲🇨',name:'Monaco'},{flag:'🇲🇳',name:'Mongolië'},{flag:'🇲🇪',name:'Montenegro'},{flag:'🇲🇦',name:'Marokko'},
+  {flag:'🇲🇿',name:'Mozambique'},{flag:'🇲🇲',name:'Myanmar'},{flag:'🇳🇦',name:'Namibië'},{flag:'🇳🇷',name:'Nauru'},
+  {flag:'🇳🇵',name:'Nepal'},{flag:'🇳🇱',name:'Nederland'},{flag:'🇳🇿',name:'Nieuw-Zeeland'},{flag:'🇳🇮',name:'Nicaragua'},
+  {flag:'🇳🇪',name:'Niger'},{flag:'🇳🇬',name:'Nigeria'},{flag:'🇰🇵',name:'Noord-Korea'},{flag:'🇲🇰',name:'Noord-Macedonië'},
+  {flag:'🇳🇴',name:'Noorwegen'},{flag:'🇴🇲',name:'Oman'},{flag:'🇵🇰',name:'Pakistan'},{flag:'🇵🇼',name:'Palau'},
+  {flag:'🇵🇦',name:'Panama'},{flag:'🇵🇬',name:'Papoea-Nieuw-Guinea'},{flag:'🇵🇾',name:'Paraguay'},{flag:'🇵🇪',name:'Peru'},
+  {flag:'🇵🇭',name:'Filipijnen'},{flag:'🇵🇱',name:'Polen'},{flag:'🇵🇹',name:'Portugal'},{flag:'🇶🇦',name:'Qatar'},
+  {flag:'🇷🇴',name:'Roemenië'},{flag:'🇷🇺',name:'Rusland'},{flag:'🇷🇼',name:'Rwanda'},{flag:'🇰🇳',name:'Saint Kitts en Nevis'},
+  {flag:'🇱🇨',name:'Saint Lucia'},{flag:'🇻🇨',name:'Saint Vincent'},{flag:'🇼🇸',name:'Samoa'},{flag:'🇸🇲',name:'San Marino'},
+  {flag:'🇸🇹',name:'Sao Tomé en Principe'},{flag:'🇸🇦',name:'Saudi-Arabië'},{flag:'🇸🇳',name:'Senegal'},{flag:'🇷🇸',name:'Servië'},
+  {flag:'🇸🇨',name:'Seychellen'},{flag:'🇸🇱',name:'Sierra Leone'},{flag:'🇸🇬',name:'Singapore'},{flag:'🇸🇰',name:'Slowakije'},
+  {flag:'🇸🇮',name:'Slovenië'},{flag:'🇸🇧',name:'Salomonseilanden'},{flag:'🇸🇴',name:'Somalië'},{flag:'🇿🇦',name:'Zuid-Afrika'},
+  {flag:'🇰🇷',name:'Zuid-Korea'},{flag:'🇸🇸',name:'Zuid-Soedan'},{flag:'🇪🇸',name:'Spanje'},{flag:'🇱🇰',name:'Sri Lanka'},
+  {flag:'🇸🇩',name:'Soedan'},{flag:'🇸🇷',name:'Suriname'},{flag:'🇸🇪',name:'Zweden'},{flag:'🇨🇭',name:'Zwitserland'},
+  {flag:'🇸🇾',name:'Syrië'},{flag:'🇹🇼',name:'Taiwan'},{flag:'🇹🇯',name:'Tadzjikistan'},{flag:'🇹🇿',name:'Tanzania'},
+  {flag:'🇹🇭',name:'Thailand'},{flag:'🇹🇱',name:'Oost-Timor'},{flag:'🇹🇬',name:'Togo'},{flag:'🇹🇴',name:'Tonga'},
+  {flag:'🇹🇹',name:'Trinidad en Tobago'},{flag:'🇹🇳',name:'Tunesië'},{flag:'🇹🇷',name:'Turkije'},{flag:'🇹🇲',name:'Turkmenistan'},
+  {flag:'🇹🇻',name:'Tuvalu'},{flag:'🇺🇬',name:'Oeganda'},{flag:'🇺🇦',name:'Oekraïne'},{flag:'🇦🇪',name:'VAE'},
+  {flag:'🇬🇧',name:'VK'},{flag:'🇺🇸',name:'VS'},{flag:'🇺🇾',name:'Uruguay'},{flag:'🇺🇿',name:'Oezbekistan'},
+  {flag:'🇻🇺',name:'Vanuatu'},{flag:'🇻🇦',name:'Vaticaanstad'},{flag:'🇻🇪',name:'Venezuela'},{flag:'🇻🇳',name:'Vietnam'},
+  {flag:'🇾🇪',name:'Jemen'},{flag:'🇿🇲',name:'Zambia'},{flag:'🇿🇼',name:'Zimbabwe'},
+];
+let flagScore = 0, flagRound = 0, flagTotal = 20, flagOrder = [];
+function initFlag() {
+  flagScore = 0; flagRound = 0;
+  flagOrder = [...Array(FLAGS.length).keys()];
+  for (let i = flagOrder.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [flagOrder[i],flagOrder[j]] = [flagOrder[j],flagOrder[i]]; }
+  flagOrder = flagOrder.slice(0, flagTotal); renderFlag();
+}
+function renderFlag() {
+  const g = document.getElementById('flag-game');
+  if (flagRound >= flagTotal) {
+    g.innerHTML = `<div class="guess-final">Klaar!</div><div class="guess-final-score" style="color:#FDCB6E">${flagScore}/${flagTotal}</div><div class="guess-final-label">vlaggen goed geraden</div><button class="guess-next" style="border-color:#FDCB6E;color:#FDCB6E" onclick="initFlag()">Opnieuw Spelen</button>`; return;
+  }
+  const correct = FLAGS[flagOrder[flagRound]];
+  const wrongPool = FLAGS.filter(f => f.name !== correct.name);
+  const wrongs = [];
+  while (wrongs.length < 3) { const w = wrongPool[Math.floor(Math.random()*wrongPool.length)]; if (!wrongs.find(x=>x.name===w.name)) wrongs.push(w); }
+  const opts = [correct, ...wrongs];
+  for (let i = opts.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [opts[i],opts[j]] = [opts[j],opts[i]]; }
+  g.innerHTML = `<div class="flag-score-bar"><div class="color-score-item"><div class="color-score-val">${flagRound+1}/${flagTotal}</div><div class="color-score-label">Vraag</div></div><div class="color-score-item"><div class="color-score-val">${flagScore}</div><div class="color-score-label">Score</div></div></div><div class="flag-display">${correct.flag}</div><div class="flag-options">${opts.map(o => `<button class="flag-opt" onclick="pickFlag(this,'${correct.name}','${o.name}')">${o.name}</button>`).join('')}</div>`;
+}
+function pickFlag(el, correct, picked) {
+  document.querySelectorAll('.flag-opt').forEach(b => { b.onclick = null; if (b.textContent === correct) b.classList.add('correct'); else b.classList.add('wrong'); });
+  if (picked === correct) flagScore++;
+  setTimeout(() => { flagRound++; renderFlag(); }, 1000);
+}
+
+// ===== HOGER OF LAGER =====
+const HL_ITEMS = [
+  {item:'Inwoners Amsterdam', val: 921000, unit:'mensen'}, {item:'Hoogte Mount Everest', val: 8849, unit:'meter'},
+  {item:'Afstand Aarde-Maan', val: 384400, unit:'km'}, {item:'Leeftijd Aarde', val: 4500000000, unit:'jaar'},
+  {item:'Snelheid licht', val: 300000, unit:'km/s'}, {item:'Inwoners Nederland', val: 17800000, unit:'mensen'},
+  {item:'Lengte Amazonerivier', val: 6400, unit:'km'}, {item:'Temperatuur zon', val: 5500, unit:'°C'},
+  {item:'Gewicht blauwe vinvis', val: 150000, unit:'kg'}, {item:'Aantal sterren Melkweg', val: 200000000000, unit:'sterren'},
+  {item:'Diepte Marianentrog', val: 10994, unit:'meter'}, {item:'Inwoners Tokyo', val: 14000000, unit:'mensen'},
+  {item:'Snelheid geluid', val: 343, unit:'m/s'}, {item:'Aantal eilanden Indonesië', val: 17508, unit:'eilanden'},
+  {item:'Oppervlakte Rusland', val: 17100000, unit:'km²'}, {item:'Leeftijd universum', val: 13800000000, unit:'jaar'},
+  {item:'Hoogte Burj Khalifa', val: 828, unit:'meter'}, {item:'Inwoners IJsland', val: 376000, unit:'mensen'},
+  {item:'Aantal botten baby', val: 270, unit:'botten'}, {item:'Hartslag olifant per min', val: 30, unit:'slagen'},
+];
+let hlCurrent = null, hlNext = null, hlStreak = 0, hlBest = 0, hlUsed = [];
+function hlPick() { let idx; do { idx = Math.floor(Math.random()*HL_ITEMS.length); } while (hlUsed.includes(idx) && hlUsed.length < HL_ITEMS.length); hlUsed.push(idx); if (hlUsed.length >= HL_ITEMS.length) hlUsed = [idx]; return HL_ITEMS[idx]; }
+function fmtVal(n) { if (n >= 1e9) return (n/1e9).toFixed(1).replace('.0','') + ' miljard'; if (n >= 1e6) return (n/1e6).toFixed(1).replace('.0','') + ' miljoen'; return n.toLocaleString('nl-NL'); }
+function initHighLow() { hlStreak = 0; hlUsed = []; hlCurrent = hlPick(); hlNext = hlPick(); renderHL(); }
+function renderHL() {
+  const g = document.getElementById('hl-game');
+  g.innerHTML = `<div class="hl-streak"><div class="hl-streak-val">${hlStreak}</div><div class="hl-streak-label">Streak${hlBest > 0 ? ' (Best: '+hlBest+')' : ''}</div></div>
+  <div class="hl-card"><div class="hl-label">Dit item</div><div class="hl-item">${hlCurrent.item}</div><div class="hl-number">${fmtVal(hlCurrent.val)}</div><div class="hl-unit">${hlCurrent.unit}</div></div>
+  <div class="hl-vs">VS</div>
+  <div class="hl-card"><div class="hl-label">Heeft dit meer of minder?</div><div class="hl-item">${hlNext.item}</div><div class="hl-number" style="color:var(--text-dim)">???</div><div class="hl-unit">${hlNext.unit}</div></div>
+  <div class="hl-buttons"><button class="hl-btn higher" onclick="pickHL('higher')">📈 Hoger</button><button class="hl-btn lower" onclick="pickHL('lower')">📉 Lager</button></div>`;
+}
+function pickHL(choice) {
+  const correct = (hlNext.val >= hlCurrent.val) ? 'higher' : 'lower';
+  const isCorrect = choice === correct || hlNext.val === hlCurrent.val;
+  const g = document.getElementById('hl-game');
+  if (isCorrect) {
+    hlStreak++; if (hlStreak > hlBest) hlBest = hlStreak;
+    g.innerHTML = `<div class="hl-streak"><div class="hl-streak-val">${hlStreak}</div><div class="hl-streak-label">Streak${hlBest > 0 ? ' (Best: '+hlBest+')' : ''}</div></div>
+    <div class="hl-card"><div class="hl-label">Dit item</div><div class="hl-item">${hlCurrent.item}</div><div class="hl-number">${fmtVal(hlCurrent.val)}</div><div class="hl-unit">${hlCurrent.unit}</div></div>
+    <div class="hl-vs">VS</div>
+    <div class="hl-card" style="border-color:rgba(85,230,193,0.3)"><div class="hl-label">✅ Goed!</div><div class="hl-item">${hlNext.item}</div><div class="hl-number">${fmtVal(hlNext.val)}</div><div class="hl-unit">${hlNext.unit}</div></div>`;
+    hlCurrent = hlNext; hlNext = hlPick();
+    setTimeout(renderHL, 1200);
+  } else {
+    if (hlStreak > hlBest) hlBest = hlStreak;
+    g.innerHTML = `<div class="hl-result" style="color:#FF3366">❌ Fout!</div>
+    <div class="hl-card"><div class="hl-item">${hlNext.item}</div><div class="hl-number">${fmtVal(hlNext.val)}</div><div class="hl-unit">${hlNext.unit}</div></div>
+    <div style="margin-top:16px;color:var(--text-dim)">Je streak: <strong style="color:#55E6C1">${hlStreak}</strong></div>
+    <button class="guess-next" style="border-color:#55E6C1;color:#55E6C1;margin-top:20px" onclick="initHighLow()">Opnieuw Spelen</button>`;
+  }
 }
 </script>
 </body>
