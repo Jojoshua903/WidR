@@ -4416,6 +4416,7 @@
 
       if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
+        btn.style.opacity = '';
         if (rankMode === 'blind') {
           btn.textContent = 'Start Blind Ranking (' + rankerItems.length + ' items)';
         } else if (rankMode === 'tierlist') {
@@ -4427,8 +4428,31 @@
           var totalBattles = rankerItems.length * (rankerItems.length - 1) / 2;
           btn.textContent = 'Start Ranking (' + totalBattles + ' rondes)';
         }
+        // Check cooldown for preset categories
+        if (activePresetCategory && currentUser && !isGuest) {
+          var meta = getPresetMeta(activePresetCategory);
+          var catLimit = (meta && meta.voteLimit) || 'unlimited';
+          if (catLimit !== 'unlimited') {
+            btn.textContent = 'Cooldown checken...';
+            btn.disabled = true;
+            checkVoteCooldown(activePresetCategory, function(canVote, reason) {
+              if (!canVote) {
+                btn.disabled = true;
+                btn.style.opacity = '0.4';
+                btn.textContent = '🚫 ' + reason;
+                btn.onclick = function() { showBoosterOverlay(); };
+              } else {
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.onclick = function() { startBattle(); };
+                renderRankerItems();
+              }
+            });
+          }
+        }
       } else {
         btn.disabled = true;
+        btn.style.opacity = '';
         if (rankerItems.length < 3) {
           btn.textContent = 'Start Ranking (minimaal 3 items)';
         } else {
@@ -4459,7 +4483,71 @@
       renderRankerItems();
     }
 
+    var voteCooldowns = {};
+
+    function checkVoteCooldown(category, callback) {
+      if (!currentUser || isGuest) { callback(false, ''); return; }
+      var meta = getPresetMeta(category);
+      var limit = (meta && meta.voteLimit) || 'unlimited';
+      if (limit === 'unlimited') { callback(true, ''); return; }
+
+      var uid = currentUser.uid;
+      var cooldownMs = 0;
+      var cooldownLabel = '';
+      if (limit === 'hour') { cooldownMs = 3600000; cooldownLabel = 'uur'; }
+      else if (limit === 'day') { cooldownMs = 86400000; cooldownLabel = 'dag'; }
+      else if (limit === 'once') { cooldownMs = Infinity; cooldownLabel = ''; }
+
+      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).orderBy('timestamp', 'desc').limit(1).get().then(function(snapshot) {
+        if (!snapshot.empty) {
+          var lastVote = snapshot.docs[0].data();
+          if (lastVote.timestamp) {
+            var lastTime = lastVote.timestamp.toDate().getTime();
+            if (limit === 'once') { callback(false, 'Je hebt al gestemd'); return; }
+            if (Date.now() - lastTime < cooldownMs) {
+              var left = cooldownMs - (Date.now() - lastTime);
+              var minutesLeft = Math.ceil(left / 60000);
+              var display = minutesLeft >= 60 ? Math.ceil(minutesLeft / 60) + ' uur' : minutesLeft + ' min';
+              callback(false, 'Wacht nog ' + display);
+              return;
+            }
+          }
+        }
+        callback(true, '');
+      }).catch(function() { callback(true, ''); });
+    }
+
+    function showBoosterOverlay() {
+      document.body.classList.add('shaking');
+      setTimeout(function() { document.body.classList.remove('shaking'); }, 500);
+      var overlay = document.createElement('div');
+      overlay.className = 'chopped-overlay';
+      overlay.innerHTML = '<div class="chopped-text" style="color:var(--gold);">BOOSTER 🚀</div><div class="chopped-sub">Je probeert te boosten! Wacht tot je cooldown voorbij is.</div>';
+      overlay.onclick = function() { overlay.remove(); };
+      document.body.appendChild(overlay);
+    }
+
     function startBattle() {
+      if (!activePresetCategory) {
+        startBattleNow();
+        return;
+      }
+      var meta = getPresetMeta(activePresetCategory);
+      var limit = (meta && meta.voteLimit) || 'unlimited';
+      if (limit === 'unlimited' || !currentUser || isGuest) {
+        startBattleNow();
+        return;
+      }
+      checkVoteCooldown(activePresetCategory, function(canVote, reason) {
+        if (canVote) {
+          startBattleNow();
+        } else {
+          showBoosterOverlay();
+        }
+      });
+    }
+
+    function startBattleNow() {
       wins = {};
       rankerItems.forEach(function(item) { wins[item] = 0; });
 
