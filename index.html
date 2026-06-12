@@ -4373,6 +4373,7 @@
     function loadPreset(name) {
       rankerItems = presets[name].slice();
       activePresetCategory = name;
+      delete voteCooldowns[name];
       renderRankerItems();
     }
 
@@ -4417,6 +4418,7 @@
       if (rankerItems.length >= 3 && voterName.length > 0) {
         btn.disabled = false;
         btn.style.opacity = '';
+        btn.onclick = function() { startBattle(); };
         if (rankMode === 'blind') {
           btn.textContent = 'Start Blind Ranking (' + rankerItems.length + ' items)';
         } else if (rankMode === 'tierlist') {
@@ -4428,26 +4430,25 @@
           var totalBattles = rankerItems.length * (rankerItems.length - 1) / 2;
           btn.textContent = 'Start Ranking (' + totalBattles + ' rondes)';
         }
-        // Check cooldown for preset categories
         if (activePresetCategory && currentUser && !isGuest) {
           var meta = getPresetMeta(activePresetCategory);
           var catLimit = (meta && meta.voteLimit) || 'unlimited';
-          if (catLimit !== 'unlimited') {
-            btn.textContent = 'Cooldown checken...';
-            btn.disabled = true;
+          if (catLimit !== 'unlimited' && !voteCooldowns[activePresetCategory]) {
+            voteCooldowns[activePresetCategory] = 'checking';
             checkVoteCooldown(activePresetCategory, function(canVote, reason) {
+              voteCooldowns[activePresetCategory] = canVote ? 'ok' : reason;
               if (!canVote) {
                 btn.disabled = true;
                 btn.style.opacity = '0.4';
                 btn.textContent = '🚫 ' + reason;
                 btn.onclick = function() { showBoosterOverlay(); };
-              } else {
-                btn.disabled = false;
-                btn.style.opacity = '';
-                btn.onclick = function() { startBattle(); };
-                renderRankerItems();
               }
             });
+          } else if (voteCooldowns[activePresetCategory] && voteCooldowns[activePresetCategory] !== 'ok' && voteCooldowns[activePresetCategory] !== 'checking') {
+            btn.disabled = true;
+            btn.style.opacity = '0.4';
+            btn.textContent = '🚫 ' + voteCooldowns[activePresetCategory];
+            btn.onclick = function() { showBoosterOverlay(); };
           }
         }
       } else {
