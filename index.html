@@ -7455,7 +7455,7 @@
     var _origNavigate = window.navigate;
     window.navigate = function(page) {
       _origNavigate(page);
-      if (Math.random() < 0.01) {
+      if (Math.random() < 0.10) {
         var msgs = [
           'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
           'Ik heb berekend dat Nathananiel gemiddeld 3.7 keer per dag geïrriteerd is.',
@@ -7463,7 +7463,7 @@
           'Reshman is 42% random. De andere 58% is nog randomner.',
           'Fionn zei "boeiend" maar zijn hartslag steeg met 12%. Ik heb data.',
           'Denize zei tot morgen 847 dagen geleden. We wachten nog steeds.',
-          'Josh probeert orde te houden. Mijn algoritme geeft hem een slagingskans van 2.3%.'
+          'Josh probeert orde te houden. Mijn algoritme geeft hem een slagingskans van 6.7%.'
         ];
         setTimeout(function() {
           showMetaAIPopup(msgs[Math.floor(Math.random() * msgs.length)]);
