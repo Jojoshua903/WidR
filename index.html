@@ -4253,43 +4253,33 @@
       else if (limit === 'day') { cooldownMs = 86400000; cooldownLabel = 'dag'; }
       else if (limit === 'once') { cooldownMs = Infinity; cooldownLabel = ''; }
 
-      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).orderBy('timestamp', 'desc').limit(1).get().then(function(snapshot) {
-        if (!snapshot.empty) {
-          var lastVote = snapshot.docs[0].data();
-          if (lastVote.timestamp) {
-            var lastTime = lastVote.timestamp.toDate().getTime();
-            if (limit === 'once') {
-              alert('Je kunt maar 1x stemmen in deze categorie.');
-              return;
-            }
-            if (Date.now() - lastTime < cooldownMs) {
-              var left = cooldownMs - (Date.now() - lastTime);
-              var minutesLeft = Math.ceil(left / 60000);
-              var display = minutesLeft >= 60 ? Math.ceil(minutesLeft / 60) + ' uur' : minutesLeft + ' minuten';
-              alert('Je kunt maar 1x per ' + cooldownLabel + ' stemmen in deze categorie. Probeer het over ' + display + ' opnieuw.');
-              return;
-            }
+      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).get().then(function(snapshot) {
+        var lastTime = 0;
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          if (d.timestamp && d.timestamp.toDate().getTime() > lastTime) {
+            lastTime = d.timestamp.toDate().getTime();
+          }
+        });
+
+        if (lastTime > 0) {
+          if (limit === 'once') {
+            showBoosterOverlay();
+            return;
+          }
+          if (Date.now() - lastTime < cooldownMs) {
+            showBoosterOverlay();
+            return;
           }
         }
+
         return db.collection('rankings').add({
           category: category, items: winsData,
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           voter: voterName, uid: uid
         });
       }).catch(function(err) {
-        if (err.code === 'failed-precondition') {
-          db.collection('rankings').add({
-            category: category, items: winsData,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            voter: voterName, uid: uid
-          });
-          return;
-        }
-        console.error(err);
-      }).then(function() {
-        console.log('Ranking saved!');
-      }).catch(function(err) {
-        console.error('Save failed:', err);
+        console.error('Ranking save error:', err);
       });
     }
 
@@ -4499,19 +4489,23 @@
       else if (limit === 'day') { cooldownMs = 86400000; cooldownLabel = 'dag'; }
       else if (limit === 'once') { cooldownMs = Infinity; cooldownLabel = ''; }
 
-      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).orderBy('timestamp', 'desc').limit(1).get().then(function(snapshot) {
-        if (!snapshot.empty) {
-          var lastVote = snapshot.docs[0].data();
-          if (lastVote.timestamp) {
-            var lastTime = lastVote.timestamp.toDate().getTime();
-            if (limit === 'once') { callback(false, 'Je hebt al gestemd'); return; }
-            if (Date.now() - lastTime < cooldownMs) {
-              var left = cooldownMs - (Date.now() - lastTime);
-              var minutesLeft = Math.ceil(left / 60000);
-              var display = minutesLeft >= 60 ? Math.ceil(minutesLeft / 60) + ' uur' : minutesLeft + ' min';
-              callback(false, 'Wacht nog ' + display);
-              return;
-            }
+      db.collection('rankings').where('category', '==', category).where('uid', '==', uid).get().then(function(snapshot) {
+        var lastTime = 0;
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          if (d.timestamp && d.timestamp.toDate().getTime() > lastTime) {
+            lastTime = d.timestamp.toDate().getTime();
+          }
+        });
+
+        if (lastTime > 0) {
+          if (limit === 'once') { callback(false, 'Je hebt al gestemd'); return; }
+          if (Date.now() - lastTime < cooldownMs) {
+            var left = cooldownMs - (Date.now() - lastTime);
+            var minutesLeft = Math.ceil(left / 60000);
+            var display = minutesLeft >= 60 ? Math.ceil(minutesLeft / 60) + ' uur' : minutesLeft + ' min';
+            callback(false, 'Wacht nog ' + display);
+            return;
           }
         }
         callback(true, '');
