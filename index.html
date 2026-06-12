@@ -3149,6 +3149,7 @@
         <div class="nav-dropdown-menu" id="dropRanking">
           <a href="#apps" onclick="navigate('apps');closeNavDrops()">🔥 Rank It</a>
           <a href="#rankings" onclick="navigate('rankings');closeNavDrops()">📊 Rankings</a>
+          <a href="#polls" onclick="navigate('polls');closeNavDrops()">🗳️ Polls</a>
         </div>
       </div>
 
@@ -3232,11 +3233,11 @@
           <div class="card-title">Live Rankings</div>
           <div class="card-desc">Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.</div>
         </div>
-        <div class="featured-card" onclick="navigate('about')">
+        <div class="featured-card" onclick="navigate('polls')">
           <div class="card-rank">#3</div>
-          <div class="card-icon">👥</div>
-          <div class="card-title">Community</div>
-          <div class="card-desc">Sluit je aan bij een groeiende community van rankers die overal een mening over hebben.</div>
+          <div class="card-icon">🗳️</div>
+          <div class="card-title">Polls</div>
+          <div class="card-desc">Maak polls, stem op je favorieten, en bekijk wat de groep vindt. Stem elke dag opnieuw!</div>
         </div>
       </div>
     </div>
@@ -3587,6 +3588,47 @@
         <button class="modal-save" id="sndSaveBtn" onclick="saveSound()">Opslaan</button>
       </div>
     </div>
+  </div>
+
+  <!-- POLLS PAGE -->
+  <div class="page" id="page-polls">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #845EC2 0%, var(--blue) 50%, var(--primary) 100%);">
+      <h1>Polls 🗳️</h1>
+      <p>Maak polls, stem, en bekijk wat de groep vindt</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;padding:48px 40px 100px;">
+
+      <div id="pollCreateArea" style="display:none;margin-bottom:32px;">
+        <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+          <div style="font-size:1rem;font-weight:800;margin-bottom:12px;">Nieuwe Poll</div>
+          <input type="text" class="ranker-input" id="pollQuestion" placeholder="Stel een vraag..." style="margin-bottom:10px;">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <input type="text" class="ranker-input" id="pollOptionInput" placeholder="Voeg een optie toe..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')addPollOption()">
+            <button onclick="addPollOption()" class="ranker-add-btn" style="padding:10px 18px;">+</button>
+          </div>
+          <div id="pollOptionsList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;min-height:20px;"></div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="submitPoll()" class="ranker-start-btn" style="flex:1;margin-top:0;padding:12px;" id="pollSubmitBtn" disabled>Poll Plaatsen (min. 2 opties)</button>
+            <button onclick="cancelPoll()" class="ranker-reset-btn" style="flex:0 0 auto;padding:12px 20px;margin-top:0;">Annuleren</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:24px;">
+        <button onclick="showPollCreate()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;" id="pollCreateBtn">🗳️ Nieuwe Poll</button>
+      </div>
+
+      <div id="pollsList"></div>
+      <div id="pollsEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">🗳️</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen polls</div>
+        <div style="font-size:0.85rem;">Maak de eerste poll!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
   </div>
 
   <!-- MERCH PAGE -->
@@ -4063,6 +4105,7 @@
       if (page === 'rankings') loadRankings(currentCategory);
       if (page === 'soundboard') { try { loadSounds(); } catch(e) {} }
       if (page === 'merch') { try { loadMerch(); } catch(e) {} }
+      if (page === 'polls') { try { loadPolls(); } catch(e) {} }
       if (page === 'lore' && !loreLoaded) { try { loadStories(); loadMemes(); loreLoaded = true; } catch(e) {} }
       if (page === 'members' && !membersLoaded) { try { loadMembers(); loadSections(); membersLoaded = true; } catch(e) {} }
       if (page === 'stats') {}
@@ -6242,6 +6285,167 @@
       db.collection('merch').doc(id).delete().then(function() { loadMerch(); }).catch(function() {});
     }
 
+    // ===== POLLS =====
+    var pollOptions = [];
+
+    function showPollCreate() {
+      if (!currentUser || isGuest) { alert('Log in om een poll te maken.'); showLoginPopup(); return; }
+      document.getElementById('pollCreateArea').style.display = 'block';
+      document.getElementById('pollCreateBtn').style.display = 'none';
+      pollOptions = [];
+      document.getElementById('pollQuestion').value = '';
+      document.getElementById('pollOptionInput').value = '';
+      renderPollOptions();
+    }
+
+    function cancelPoll() {
+      document.getElementById('pollCreateArea').style.display = 'none';
+      document.getElementById('pollCreateBtn').style.display = 'inline-block';
+      pollOptions = [];
+    }
+
+    function addPollOption() {
+      var input = document.getElementById('pollOptionInput');
+      var val = input.value.trim();
+      if (!val || pollOptions.indexOf(val) !== -1) { input.value = ''; return; }
+      pollOptions.push(val);
+      input.value = '';
+      input.focus();
+      renderPollOptions();
+    }
+
+    function removePollOption(idx) {
+      pollOptions.splice(idx, 1);
+      renderPollOptions();
+    }
+
+    function renderPollOptions() {
+      var list = document.getElementById('pollOptionsList');
+      var btn = document.getElementById('pollSubmitBtn');
+      list.innerHTML = pollOptions.map(function(opt, i) {
+        return '<div class="ranker-chip">' + opt + '<button class="ranker-chip-remove" onclick="removePollOption(' + i + ')">×</button></div>';
+      }).join('');
+      btn.disabled = pollOptions.length < 2 || !document.getElementById('pollQuestion').value.trim();
+    }
+
+    document.getElementById('pollQuestion').addEventListener('input', renderPollOptions);
+
+    function submitPoll() {
+      var question = document.getElementById('pollQuestion').value.trim();
+      if (!question || pollOptions.length < 2) return;
+      if (!currentUser || isGuest) { alert('Log in om een poll te maken.'); return; }
+
+      var votes = {};
+      pollOptions.forEach(function(opt) { votes[opt] = 0; });
+
+      db.collection('polls').add({
+        question: question,
+        options: pollOptions.slice(),
+        votes: votes,
+        voters: {},
+        author: currentUser.displayName || currentUser.email.split('@')[0],
+        authorUid: currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        cancelPoll();
+        loadPolls();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function loadPolls() {
+      db.collection('polls').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        var polls = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; polls.push(d); });
+        renderPolls(polls);
+      }).catch(function() { renderPolls([]); });
+    }
+
+    function renderPolls(polls) {
+      var list = document.getElementById('pollsList');
+      var empty = document.getElementById('pollsEmpty');
+      if (!list) return;
+
+      if (polls.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      var uid = currentUser ? currentUser.uid : null;
+
+      list.innerHTML = polls.map(function(poll) {
+        var totalVotes = 0;
+        Object.keys(poll.votes).forEach(function(k) { totalVotes += poll.votes[k]; });
+
+        var voters = poll.voters || {};
+        var lastVoteTime = voters[uid] ? voters[uid] : 0;
+        var canVote = uid && !isGuest && (Date.now() - lastVoteTime > 86400000);
+        var hasVoted = uid && voters[uid];
+
+        var time = poll.timestamp ? new Date(poll.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
+
+        var optionsHtml = poll.options.map(function(opt) {
+          var count = poll.votes[opt] || 0;
+          var pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+          var barColor = ['var(--accent)', 'var(--gold)', 'var(--mint)', 'var(--purple)', 'var(--orange)', 'var(--blue)', 'var(--coral)'][poll.options.indexOf(opt) % 7];
+
+          if (hasVoted || !canVote) {
+            return '<div style="margin-bottom:8px;">' +
+              '<div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span>' + opt + '</span><span>' + pct + '% (' + count + ')</span></div>' +
+              '<div style="height:8px;background:rgba(26,26,46,0.06);border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;transition:width 0.5s;"></div></div>' +
+            '</div>';
+          } else {
+            return '<button onclick="votePoll(\'' + poll.id + '\',\'' + opt.replace(/'/g, "\\'") + '\')" style="width:100%;padding:12px 16px;margin-bottom:8px;background:white;border:2px solid rgba(26,26,46,0.08);border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;text-align:left;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.borderColor=\'var(--accent)\';this.style.background=\'rgba(233,69,96,0.03)\'" onmouseout="this.style.borderColor=\'rgba(26,26,46,0.08)\';this.style.background=\'white\'">' + opt + '</button>';
+          }
+        }).join('');
+
+        var deleteBtn = '';
+        if (hasPermission('ranking') || (uid && poll.authorUid === uid)) {
+          deleteBtn = '<button onclick="deletePoll(\'' + poll.id + '\')" style="margin-top:8px;padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--accent);">🗑 Verwijderen</button>';
+        }
+
+        return '<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:16px;">' +
+          '<div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">' + poll.question + '</div>' +
+          '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:16px;">Door ' + poll.author + ' · ' + time + ' · ' + totalVotes + ' stemmen</div>' +
+          optionsHtml +
+          (canVote ? '' : (uid && !isGuest ? '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-top:8px;text-align:center;">Je kunt 1x per dag stemmen op deze poll</div>' : '')) +
+          deleteBtn +
+        '</div>';
+      }).join('');
+    }
+
+    function votePoll(pollId, option) {
+      if (!currentUser || isGuest) { alert('Log in om te stemmen.'); showLoginPopup(); return; }
+      var uid = currentUser.uid;
+
+      db.collection('polls').doc(pollId).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
+        var voters = data.voters || {};
+        var lastVoteTime = voters[uid] || 0;
+
+        if (Date.now() - lastVoteTime < 86400000) {
+          alert('Je kunt maar 1x per dag stemmen op deze poll.');
+          return;
+        }
+
+        var votes = data.votes || {};
+        if (!votes[option]) votes[option] = 0;
+        votes[option]++;
+        voters[uid] = Date.now();
+
+        return db.collection('polls').doc(pollId).update({ votes: votes, voters: voters });
+      }).then(function() {
+        loadPolls();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function deletePoll(pollId) {
+      if (!confirm('Poll verwijderen?')) return;
+      db.collection('polls').doc(pollId).delete().then(function() { loadPolls(); }).catch(function() {});
+    }
+
     // sounds, members, sections lazy-loaded when visiting their pages
     loadCustomCategories();
   </script>
@@ -6866,7 +7070,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Stats','Stickers':'Stickers',
         'Home':'Home','Leden':'Members','Over Ons':'About Us','Contact':'Contact',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Community ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Stats',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','🗳️ Polls':'🗳️ Polls','👥 Leden':'👥 Members','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Stickers','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Stats',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Tank','🕹️ Mini Games':'🕹️ Mini Games','📖 Over Ons':'📖 About Us','✉️ Contact':'✉️ Contact',
         'Voeg items toe, kies steeds je favoriet uit twee opties, en ontdek jouw definitieve ranking':'Add items, pick your favorite from two options, and discover your final ranking',
         'items toegevoegd':'items added',
@@ -6936,7 +7140,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Lore','Stats':'Statistiken','Stickers':'Sticker',
         'Home':'Startseite','Leden':'Mitglieder','Over Ons':'Über Uns','Contact':'Kontakt',
         '🏆 Ranking ▾':'🏆 Ranking ▾','👥 Community ▾':'👥 Gemeinschaft ▾','🎮 Games ▾':'🎮 Spiele ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Statistiken',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Rankings','🗳️ Polls':'🗳️ Umfragen','👥 Leden':'👥 Mitglieder','📜 Lore':'📜 Lore','🎨 Stickers':'🎨 Sticker','🔊 Soundboard':'🔊 Soundboard','📊 Chat Stats':'📊 Chat Statistiken',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Panzer','🕹️ Mini Games':'🕹️ Minispiele','📖 Over Ons':'📖 Über Uns','✉️ Contact':'✉️ Kontakt',
         'Zoals alle goede dingen begon het met een verhitte discussie over iets onbelangrijks. Wie is het meest chopped? We kwamen er niet uit — dus bouwden we een app waar iedereen kan stemmen.':'Wie alle guten Dinge begann es mit einer hitzigen Diskussion über etwas Unwichtiges. Wer ist am meisten chopped? Wir kamen nicht raus — also bauten wir eine App, in der jeder abstimmen kann.',
         'Opent in WhatsApp':'Öffnet in WhatsApp',
@@ -6991,7 +7195,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'Tales','Stats':'Ship Log','Stickers':'Flags',
         'Home':'Port','Leden':'Crew','Over Ons':'About the Crew','Contact':'Send a Bottle',
         '🏆 Ranking ▾':'🏆 Plunder ▾','👥 Community ▾':'👥 Crew ▾','🎮 Games ▾':'🎮 Games ▾','ℹ️ Info ▾':'ℹ️ Info ▾',
-        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','🔊 Soundboard':'🔊 Cannon Sounds','📊 Chat Stats':'📊 Ship Log',
+        '🔥 Rank It':'🔥 Rank It','📊 Rankings':'📊 Plunder Board','🗳️ Polls':'🗳️ Votes','👥 Leden':'👥 Crew','📜 Lore':'📜 Tales','🎨 Stickers':'🎨 Jolly Rogers','🔊 Soundboard':'🔊 Cannon Sounds','📊 Chat Stats':'📊 Ship Log',
         '🏎️ Kart':'🏎️ Kart','⚔️ RPG':'⚔️ RPG','🔫 Tank':'🔫 Cannon','🕹️ Mini Games':'🕹️ Mini Games','📖 Over Ons':'📖 About the Crew','✉️ Contact':'✉️ Send a Bottle',
         'Kies een tier':'Choose yer tier, matey'
       },
@@ -7033,7 +7237,7 @@
         'Rank It 🔥':'Rank It 🔥','Lore':'lore','Stats':'stats','Stickers':'stickers',
         'Home':'home','Leden':'the gang','Over Ons':'about us','Contact':'hit us up',
         '🏆 Ranking ▾':'🏆 ranking ▾','👥 Community ▾':'👥 the squad ▾','🎮 Games ▾':'🎮 games ▾','ℹ️ Info ▾':'ℹ️ info ▾',
-        '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','🔊 Soundboard':'🔊 soundboard','📊 Chat Stats':'📊 chat stats',
+        '🔥 Rank It':'🔥 rank it','📊 Rankings':'📊 rankings','🗳️ Polls':'🗳️ polls','👥 Leden':'👥 the gang','📜 Lore':'📜 lore','🎨 Stickers':'🎨 stickers','🔊 Soundboard':'🔊 soundboard','📊 Chat Stats':'📊 chat stats',
         '🏎️ Kart':'🏎️ kart','⚔️ RPG':'⚔️ rpg','🔫 Tank':'🔫 tank','🕹️ Mini Games':'🕹️ mini games','📖 Over Ons':'📖 about us','✉️ Contact':'✉️ hit us up',
         'Kies een tier':'pick a tier'
       }
@@ -7182,6 +7386,20 @@
 
     loadTranslationsFromFirebase();
   </script>
+
+  <!-- POLLS NOTIFICATION POPUP -->
+  <div id="pollsNotify" style="display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:9998;animation:fadeIn 0.4s ease;">
+    <div style="background:var(--primary);color:white;border-radius:14px;padding:12px 20px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;cursor:pointer;max-width:400px;" onclick="navigate('polls');closePollsNotify()">
+      <div style="font-size:1.5rem;">🗳️</div>
+      <div>
+        <div style="font-weight:800;font-size:0.85rem;">Nieuw: Polls!</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);">Maak polls en stem — klik hier om te bekijken</div>
+      </div>
+      <div style="font-size:1.2rem;margin-left:4px;">→</div>
+      <button onclick="event.stopPropagation();closePollsNotify()" style="background:rgba(255,255,255,0.15);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.7rem;margin-left:4px;">✕</button>
+    </div>
+    <div style="width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:10px solid var(--primary);position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(180deg);"></div>
+  </div>
 
   <!-- TRANSLATE BAR -->
   <div class="translate-bar" id="translateBar">
@@ -7455,7 +7673,7 @@
     var _origNavigate = window.navigate;
     window.navigate = function(page) {
       _origNavigate(page);
-      if (Math.random() < 0.10) {
+      if (Math.random() < 0.01) {
         var msgs = [
           'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
           'Ik heb berekend dat Nathananiel gemiddeld 3.7 keer per dag geïrriteerd is.',
@@ -7463,7 +7681,7 @@
           'Reshman is 42% random. De andere 58% is nog randomner.',
           'Fionn zei "boeiend" maar zijn hartslag steeg met 12%. Ik heb data.',
           'Denize zei tot morgen 847 dagen geleden. We wachten nog steeds.',
-          'Josh probeert orde te houden. Mijn algoritme geeft hem een slagingskans van 6.7%.'
+          'Josh probeert orde te houden. Mijn algoritme geeft hem een slagingskans van 2.3%.'
         ];
         setTimeout(function() {
           showMetaAIPopup(msgs[Math.floor(Math.random() * msgs.length)]);
@@ -7479,6 +7697,25 @@
       if (hash && document.getElementById('page-' + hash)) {
         navigate(hash);
       }
+    })();
+
+    // Polls notification popup
+    function closePollsNotify() {
+      document.getElementById('pollsNotify').style.display = 'none';
+      try { localStorage.setItem('widr_polls_notify_seen', '1'); } catch(e) {}
+    }
+    (function() {
+      try {
+        if (!localStorage.getItem('widr_polls_notify_seen')) {
+          setTimeout(function() {
+            document.getElementById('pollsNotify').style.display = 'block';
+            setTimeout(function() {
+              var el = document.getElementById('pollsNotify');
+              if (el) el.style.display = 'none';
+            }, 15000);
+          }, 2000);
+        }
+      } catch(e) {}
     })();
   </script>
 </body>
