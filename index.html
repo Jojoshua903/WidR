@@ -6453,6 +6453,7 @@
         return db.collection('polls').doc(pollId).update({ votes: votes, voters: voters });
       }).then(function() {
         loadPolls();
+        try { loadNotifications(); } catch(e) {}
       }).catch(function(err) { console.error(err); });
     }
 
@@ -6460,6 +6461,163 @@
       if (!confirm('Poll verwijderen?')) return;
       db.collection('polls').doc(pollId).delete().then(function() { loadPolls(); }).catch(function() {});
     }
+
+    // ===== DAILY AUTO POLL =====
+    var dailyPollQuestions = [
+      { q: 'Wie is de grappigste in de groep?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wat is beter?', opts: ['Pizza','Sushi','Kebab','Friet'] },
+      { q: 'Beste muziek genre?', opts: ['Hip-hop','Pop','Rock','Electronic','R&B','Klassiek'] },
+      { q: 'Wie zou het langst overleven in een zombie apocalypse?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Beste streaming service?', opts: ['Netflix','Disney+','YouTube','Spotify','Twitch'] },
+      { q: 'Wie is het meest chopped?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Hond of kat?', opts: ['Hond 🐕','Kat 🐈','Allebei','Geen van beide'] },
+      { q: 'Beste game ooit?', opts: ['Minecraft','GTA V','Fortnite','FIFA','Roblox','Call of Duty'] },
+      { q: 'Ochtendmens of nachtmens?', opts: ['Ochtend 🌅','Nacht 🌙','Geen van beide'] },
+      { q: 'Wie stuurt de meeste stickers?', opts: ['Josh','Lors','Adam','Reshman','Daniël'] },
+      { q: 'Beste seizoen?', opts: ['Lente 🌸','Zomer ☀️','Herfst 🍂','Winter ❄️'] },
+      { q: 'Wie heeft de beste humor?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Cola of Pepsi?', opts: ['Cola','Pepsi','Geen van beide','Fanta'] },
+      { q: 'Beste social media?', opts: ['Instagram','TikTok','Snapchat','YouTube','X/Twitter','BeReal'] },
+      { q: 'Wie zou de beste leraar zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Welk superpower zou je kiezen?', opts: ['Vliegen','Onzichtbaar','Teleportatie','Gedachten lezen','Tijdreizen'] },
+      { q: 'Beste fast food?', opts: ['McDonald\'s','Burger King','KFC','Subway','Domino\'s'] },
+      { q: 'Wie is de meest random persoon?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'iPhone of Android?', opts: ['iPhone 🍎','Android 🤖','Maakt niet uit'] },
+      { q: 'Wie heeft de beste muziek smaak?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wat is erger: te laat komen of te vroeg?', opts: ['Te laat','Te vroeg','Allebei even erg'] },
+      { q: 'Wie is de meest sarcastic?', opts: ['Fionn','Lors','Nath','Josh','Daniël'] },
+      { q: 'Beste vakantiebestemming?', opts: ['Spanje','Italië','Griekenland','Japan','Amerika','Turkije'] },
+      { q: 'Wie zou de beste president zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Meta AI'] },
+      { q: 'Liever rijk en alleen of arm en gelukkig?', opts: ['Rijk en alleen 💰','Arm en gelukkig ❤️'] },
+      { q: 'Beste snack?', opts: ['Chips','Chocolade','Popcorn','Koekjes','Fruit','Noten'] },
+      { q: 'Wie is het meest irritant (op een grappige manier)?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Vroeger was alles beter — eens of oneens?', opts: ['Eens','Oneens','Hangt ervan af'] },
+      { q: 'Beste sport om te kijken?', opts: ['Voetbal ⚽','Basketball 🏀','F1 🏎️','Tennis 🎾','MMA 🥊','Esports 🎮'] },
+      { q: 'Wie heeft de beste stijl?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wie zou de slechtste crimineel zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wie komt altijd te laat?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Met wie zou je het langst opgesloten willen zitten?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wie heeft de beste catchphrase?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Wie zou winnen in een rap battle?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Wie is de beste gamer?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wie zou een reality show winnen?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wie maakt de beste memes?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Wie zou de beste YouTuber zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Beste ontbijt?', opts: ['Brood','Cruesli','Pannenkoeken','Niets','Eieren'] },
+      { q: 'Ananas op pizza?', opts: ['Ja, lekker!','Nee, nooit!','Maakt niet uit'] },
+      { q: 'Beste ijs smaak?', opts: ['Vanille','Chocolade','Aardbei','Cookie dough','Pistache','Mango'] },
+      { q: 'Thee of koffie?', opts: ['Thee','Koffie','Geen van beide','Chocomel'] },
+      { q: 'Beste cuisine?', opts: ['Italiaans','Japans','Mexicaans','Turks','Chinees','Amerikaans'] },
+      { q: 'Beste fruit?', opts: ['Appel','Banaan','Mango','Druiven','Watermeloen','Aardbei'] },
+      { q: 'Zomer of winter?', opts: ['Zomer','Winter'] },
+      { q: 'Berg of strand?', opts: ['Bergen','Strand'] },
+      { q: 'Boek of film?', opts: ['Boek','Film','Serie'] },
+      { q: 'Online of fysiek winkelen?', opts: ['Online','Fysiek'] },
+      { q: 'Bellen of appen?', opts: ['Bellen','Appen','Voice notes'] },
+      { q: 'Sweet of savory?', opts: ['Zoet','Hartig'] },
+      { q: 'Liever nooit meer muziek of nooit meer films?', opts: ['Nooit meer muziek','Nooit meer films'] },
+      { q: 'Beste film genre?', opts: ['Actie','Comedy','Horror','Sci-Fi','Thriller','Animatie'] },
+      { q: 'Marvel of DC?', opts: ['Marvel','DC','Geen van beide','Allebei'] },
+      { q: 'Beste console?', opts: ['PlayStation','Xbox','Nintendo Switch','PC Master Race'] },
+      { q: 'Welk spel is het meest overrated?', opts: ['Fortnite','FIFA','Roblox','Among Us','Minecraft'] },
+      { q: 'Liever 1 miljoen nu of 10 miljoen over 10 jaar?', opts: ['1 miljoen nu','10 miljoen over 10 jaar'] },
+      { q: 'Liever nooit meer slapen of nooit meer eten?', opts: ['Nooit meer slapen','Nooit meer eten'] },
+      { q: 'Je krijgt 1 wens. Wat kies je?', opts: ['Oneindig geld','Wereldvrede','Onsterfelijkheid','Teleportatie','Tijdreizen'] },
+      { q: 'Liever altijd de waarheid zeggen of altijd liegen?', opts: ['Altijd waarheid','Altijd liegen'] },
+      { q: 'In welk tijdperk zou je willen leven?', opts: ['Middeleeuwen','1980s','2000s','3000','Prehistorie'] },
+      { q: 'Je mag 1 dier als huisdier. Welk?', opts: ['Leeuw','Dolfijn','Uil','Draak','Aap'] },
+      { q: 'Liever onzichtbaar of kunnen vliegen?', opts: ['Onzichtbaar','Vliegen'] },
+      { q: 'Beste dag van de week?', opts: ['Maandag','Vrijdag','Zaterdag','Zondag'] },
+      { q: 'Huiswerk: meteen doen of uitstellen?', opts: ['Meteen doen','Uitstellen tot het laatst','Gewoon niet doen'] },
+      { q: 'Beste schoolvak?', opts: ['Gym','Wiskunde','Engels','Kunst','Scheikunde','Pauze'] },
+      { q: 'Hoeveel uur slaap is ideaal?', opts: ['6 uur','7 uur','8 uur','9+ uur','Slaap is optioneel'] },
+      { q: 'Wat is de beste kleur?', opts: ['Blauw','Rood','Groen','Zwart','Paars','Goud'] },
+      { q: 'Wat maakt je het meest blij?', opts: ['Eten','Muziek','Gaming','Vrienden','Slapen','Reizen'] },
+      { q: 'Liever 100 eenden of 1 paardgrote eend?', opts: ['100 eenden','1 paardgrote eend'] },
+      { q: 'Liever nooit meer douchen of nooit meer tanden poetsen?', opts: ['Nooit douchen','Nooit tanden poetsen'] },
+      { q: 'Liever alles hardop zeggen of nooit meer praten?', opts: ['Alles hardop zeggen','Nooit meer praten'] },
+      { q: 'Liever 1 jaar gevangenis of 5 jaar zonder internet?', opts: ['1 jaar gevangenis','5 jaar zonder internet'] },
+      { q: 'Liever praten met dieren of alle talen spreken?', opts: ['Praten met dieren','Alle talen spreken'] },
+      { q: 'Liever in een film of in een game leven?', opts: ['Film','Game'] },
+      { q: 'Liever 10 goede vrienden of 1000 volgers?', opts: ['10 goede vrienden','1000 volgers'] },
+      { q: 'Liever een week zonder telefoon of een week zonder eten?', opts: ['Zonder telefoon','Zonder eten'] },
+      { q: 'Wat is je favoriete pagina op deze site?', opts: ['Rank It','Rankings','Polls','Lore','Soundboard','Games','Merch'] },
+      { q: 'Welke game op de site is het leukst?', opts: ['Kart','RPG','Tank','Mini Games'] },
+      { q: 'Welke ranking modus is het beste?', opts: ['Pair Ranking','Bracket','Tierlist','Blind Ranking'] },
+      { q: 'Moet Meta AI terug in de groep?', opts: ['Ja absoluut!','Nee nooit meer','Alleen als ere-lid'] },
+      { q: 'Beste meme uit de gc?', opts: ['1885','chopped','dih','Can I have one drug please','boeiend','tot morgen'] },
+      { q: 'Je vindt 100 euro op straat. Wat doe je?', opts: ['Houden','Inleveren bij politie','Delen met vrienden','Uitgeven'] },
+      { q: 'Je mag 1 app houden op je telefoon. Welke?', opts: ['WhatsApp','Instagram','YouTube','Spotify','TikTok'] },
+      { q: 'Je wordt morgen beroemd. Waarvoor?', opts: ['Muziek','Sport','YouTube','Memes','Politiek','Iets stoms'] },
+      { q: 'Wat is de beste uitvinding ooit?', opts: ['Internet','Smartphone','Elektriciteit','Vliegtuig','Pizza'] },
+      { q: 'Liever altijd warm of altijd koud?', opts: ['Altijd warm','Altijd koud'] },
+      { q: 'Regen of sneeuw?', opts: ['Regen','Sneeuw'] },
+      { q: 'Vroeg opstaan of uitslapen?', opts: ['Vroeg opstaan','Uitslapen'] },
+      { q: 'Wie verdient een standbeeld?', opts: ['Josh','Lors','Fionn','Meta AI','Niemand','Iedereen'] },
+      { q: 'Je mag 1 maaltijd eten voor de rest van je leven. Welke?', opts: ['Pizza','Sushi','Pasta','Kebab','Rijst met kip'] },
+      { q: 'Liever altijd plakkerige handen of altijd natte sokken?', opts: ['Plakkerige handen','Natte sokken'] },
+      { q: 'Beste YouTube content?', opts: ['Gaming','Vlogs','Muziek','Educatie','Comedy','Shorts'] },
+      { q: 'Liever heel snel rennen of heel hoog springen?', opts: ['Snel rennen','Hoog springen'] },
+      { q: 'Je zit vast op een eiland. Wat neem je mee?', opts: ['Mes','Aansteker','Telefoon met wifi','Boek','Vriend'] },
+      { q: 'Wie zou de beste coach zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo'] },
+      { q: 'Welk land wil je het meest bezoeken?', opts: ['Japan','Amerika','Australie','Brazilie','IJsland','Dubai'] },
+      { q: 'Liever in de toekomst of het verleden leven?', opts: ['Toekomst','Verleden'] },
+      { q: 'Wie heeft het slechtste handschrift?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Welk dier lijkt het meest op jou?', opts: ['Hond','Kat','Luiaard','Aap','Uil','Dolfijn'] },
+      { q: 'Liever altijd schreeuwen of altijd fluisteren?', opts: ['Altijd schreeuwen','Altijd fluisteren'] },
+      { q: 'Wat doe je als eerste als je wakker wordt?', opts: ['Telefoon checken','Douchen','Eten','Weer slapen','Niets'] },
+      { q: 'Wie stuurt de langste berichten?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Beste emoji?', opts: ['💀','😭','🗿','😤','🔥','👑','🃏'] },
+      { q: 'Hoeveel schermen heb je open nu?', opts: ['1','2-3','4-5','6+','Te veel'] },
+      { q: 'Liever 1000 spinnen of 1 slang in je kamer?', opts: ['1000 spinnen','1 slang','Verhuizen'] },
+      { q: 'Wat is je guilty pleasure?', opts: ['Reality TV','Slechte muziek','Fast food','TikTok scrollen','Niets, ik ben perfect'] },
+      { q: 'Welke docent was de beste?', opts: ['Burgmans','De Groot','Prins','Riep','Sahin','Wijnants'] },
+      { q: 'Wie zou het eerste opgeven bij een marathon?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Beste Netflix serie?', opts: ['Stranger Things','Squid Game','Wednesday','One Piece','Breaking Bad','Andere'] },
+      { q: 'Liever stoppen met gaming of stoppen met social media?', opts: ['Stoppen met gaming','Stoppen met social media'] },
+      { q: 'Wat voor auto wil je later?', opts: ['BMW','Mercedes','Tesla','Lamborghini','Gewone auto','Fiets'] },
+      { q: 'Wie is het meest competitief?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Wat is je grootste pet peeve?', opts: ['Smakken','Te laat komen','Telefoon tijdens gesprek','Luidruchtig zijn','Liegen'] },
+      { q: 'Liever heel groot of heel klein zijn?', opts: ['Heel groot (2m+)','Heel klein (1m)'] },
+      { q: 'Wat is de beste dag om jarig te zijn?', opts: ['Zomer','Kerst','Valentijnsdag','Halloween','Maakt niet uit'] },
+      { q: 'Wie is de meest loyale vriend?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Milo','Adam'] },
+      { q: 'Liever nooit meer lachen of nooit meer huilen?', opts: ['Nooit meer lachen','Nooit meer huilen'] },
+      { q: 'Beste kaas?', opts: ['Gouda','Mozzarella','Cheddar','Brie','Geen kaas'] },
+      { q: 'Wie zou de beste DJ zijn?', opts: ['Josh','Lors','Fionn','Nath','Reshman','Daniël','Adam'] },
+      { q: 'Hoeveel procent telefoon heb je nu?', opts: ['0-20%','21-50%','51-80%','81-100%','Aan de lader'] },
+    ];
+
+    function checkDailyPoll() {
+      var today = new Date().toISOString().slice(0, 10);
+      var dailyId = 'daily_' + today;
+
+      db.collection('polls').doc(dailyId).get().then(function(doc) {
+        if (!doc.exists) {
+          var dayNum = Math.floor(Date.now() / 86400000);
+          var idx = dayNum % dailyPollQuestions.length;
+          var poll = dailyPollQuestions[idx];
+
+          var votes = {};
+          poll.opts.forEach(function(opt) { votes[opt] = 0; });
+
+          db.collection('polls').doc(dailyId).set({
+            question: '📅 Dagelijkse Poll: ' + poll.q,
+            options: poll.opts,
+            votes: votes,
+            voters: {},
+            author: '🤖 Auto Poll',
+            authorUid: 'system',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            isDaily: true
+          }).then(function() {
+            try { loadPolls(); } catch(e) {}
+          }).catch(function() {});
+        }
+      }).catch(function() {});
+    }
+
+    // Check for daily poll on page load
+    try { checkDailyPoll(); } catch(e) {}
 
     // ===== NOTIFICATION CENTER =====
     var notifPanelOpen = false;
