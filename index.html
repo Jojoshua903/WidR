@@ -3127,6 +3127,7 @@
       <button id="navLoginBtn" onclick="showLoginPopup()" style="background:var(--gold);color:var(--primary);border:none;padding:8px 18px;border-radius:8px;font-weight:800;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.3s;display:none;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(245,197,24,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Inloggen</button>
       <button id="navLogoutBtn" onclick="logoutGroup()" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;transition:all 0.3s;display:none;" onmouseover="this.style.background='rgba(233,69,96,0.2)';this.style.color='var(--accent)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">Uitloggen</button>
     </div>
+    <button id="notifBell" onclick="toggleNotifPanel()" style="position:relative;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:1.1rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;" title="Notificaties">🔔<span id="notifBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--accent);color:white;font-size:0.55rem;font-weight:800;min-width:16px;height:16px;border-radius:50%;line-height:16px;text-align:center;">0</span></button>
     <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">🌙</button>
     <div class="lang-switcher">
       <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">🇳🇱 NL</button>
@@ -3990,23 +3991,28 @@
       var nameEl = document.getElementById('navUserName');
       var loginBtn = document.getElementById('navLoginBtn');
       var logoutBtn = document.getElementById('navLogoutBtn');
+      var bellBtn = document.getElementById('notifBell');
       if (currentUser) {
         var name = currentUser.displayName || currentUser.email.split('@')[0];
         nameEl.textContent = '👤 ' + name;
         nameEl.style.display = 'inline';
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
+        bellBtn.style.display = 'inline-block';
+        try { loadNotifications(); } catch(e) {}
       } else if (isGuest) {
         nameEl.textContent = '👤 Gast';
         nameEl.style.display = 'inline';
         loginBtn.style.display = 'inline-block';
         loginBtn.textContent = 'ACCOUNT MAKEN';
         logoutBtn.style.display = 'inline-block';
+        bellBtn.style.display = 'none';
       } else {
         nameEl.style.display = 'none';
         loginBtn.style.display = 'inline-block';
         loginBtn.textContent = 'INLOGGEN';
         logoutBtn.style.display = 'none';
+        bellBtn.style.display = 'none';
       }
     }
 
@@ -4068,6 +4074,14 @@
             try { if (typeof renderSoundboard === 'function') renderSoundboard(); } catch(e) {}
             try { if (typeof allMemes !== 'undefined') renderMemes(allMemes); } catch(e) {}
             try { if (typeof renderMerch === 'function') renderMerch(); } catch(e) {}
+            // Show notification permission prompt after 3 seconds
+            try {
+              var notifPromptTime = localStorage.getItem('widr_notif_prompted');
+              var shouldAsk = !notifPromptTime || (Date.now() - parseInt(notifPromptTime)) > 86400000;
+              if (shouldAsk && Notification.permission !== 'granted' && typeof requestNotifPermission === 'function') {
+                setTimeout(function() { requestNotifPermission(); }, 3000);
+              }
+            } catch(e) {}
           }).catch(function() { userRoles = []; });
         } else {
           currentUser = null;
@@ -4106,6 +4120,7 @@
       if (page === 'soundboard') { try { loadSounds(); } catch(e) {} }
       if (page === 'merch') { try { loadMerch(); } catch(e) {} }
       if (page === 'polls') { try { loadPolls(); } catch(e) {} }
+      if (page === 'inbox') { try { loadInbox(); } catch(e) {} }
       if (page === 'lore' && !loreLoaded) { try { loadStories(); loadMemes(); loreLoaded = true; } catch(e) {} }
       if (page === 'members' && !membersLoaded) { try { loadMembers(); loadSections(); membersLoaded = true; } catch(e) {} }
       if (page === 'stats') {}
@@ -6446,6 +6461,274 @@
       db.collection('polls').doc(pollId).delete().then(function() { loadPolls(); }).catch(function() {});
     }
 
+    // ===== NOTIFICATION CENTER =====
+    var notifPanelOpen = false;
+
+    function toggleNotifPanel() {
+      notifPanelOpen = !notifPanelOpen;
+      document.getElementById('notifPanel').style.display = notifPanelOpen ? 'block' : 'none';
+      if (notifPanelOpen) loadNotifications();
+    }
+
+    document.addEventListener('click', function(e) {
+      if (notifPanelOpen && !e.target.closest('#notifPanel') && !e.target.closest('#notifBell')) {
+        notifPanelOpen = false;
+        document.getElementById('notifPanel').style.display = 'none';
+      }
+    });
+
+    function loadNotifications() {
+      if (!currentUser) return;
+      var uid = currentUser.uid;
+      var notifs = [];
+
+      // Check unvoted polls
+      db.collection('polls').get().then(function(snapshot) {
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          var voters = d.voters || {};
+          var lastVote = voters[uid] || 0;
+          if (Date.now() - lastVote > 86400000) {
+            notifs.push({ type: 'poll', text: '🗳️ Nieuwe poll: "' + d.question + '"', action: 'polls', time: d.timestamp ? d.timestamp.seconds * 1000 : Date.now(), id: doc.id });
+          }
+        });
+
+        // Load messages
+        return db.collection('messages').where('to', '==', uid).orderBy('timestamp', 'desc').get().catch(function() {
+          return db.collection('messages').where('to', '==', uid).get();
+        });
+      }).then(function(snapshot) {
+        if (snapshot) {
+          snapshot.forEach(function(doc) {
+            var d = doc.data();
+            notifs.push({ type: d.read ? 'msg-read' : 'msg', text: '✉️ ' + (d.fromName || 'Iemand') + ': ' + (d.text || '').substring(0, 50), action: 'inbox', time: d.timestamp ? d.timestamp.seconds * 1000 : Date.now(), id: doc.id });
+          });
+        }
+        renderNotifications(notifs);
+      }).catch(function() { renderNotifications(notifs); });
+    }
+
+    function renderNotifications(notifs) {
+      var list = document.getElementById('notifList');
+      var empty = document.getElementById('notifEmpty');
+      var badge = document.getElementById('notifBadge');
+
+      var unread = notifs.filter(function(n) { return n.type === 'poll' || n.type === 'msg'; }).length;
+      if (unread > 0) {
+        badge.textContent = unread > 99 ? '99+' : unread;
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      if (notifs.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      notifs.sort(function(a, b) { return (b.time || 0) - (a.time || 0); });
+
+      list.innerHTML = notifs.slice(0, 20).map(function(n) {
+        var timeAgo = getTimeAgo(n.time);
+        var bg = n.type === 'msg' ? 'rgba(15,52,96,0.06)' : n.type === 'poll' ? 'rgba(132,94,194,0.06)' : 'white';
+        return '<div onclick="navigate(\'' + n.action + '\');toggleNotifPanel();' + (n.type === 'msg' ? 'markMsgRead(\'' + n.id + '\')' : '') + '" style="padding:12px 14px;border-radius:10px;margin-bottom:4px;cursor:pointer;background:' + bg + ';transition:all 0.2s;border-left:3px solid ' + (n.type === 'msg' ? 'var(--blue)' : n.type === 'poll' ? 'var(--purple)' : 'transparent') + ';" onmouseover="this.style.background=\'rgba(26,26,46,0.04)\'" onmouseout="this.style.background=\'' + bg + '\'">' +
+          '<div style="font-size:0.8rem;font-weight:600;line-height:1.4;">' + n.text + '</div>' +
+          '<div style="font-size:0.65rem;color:rgba(26,26,46,0.35);margin-top:4px;">' + timeAgo + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function getTimeAgo(ts) {
+      var diff = Date.now() - ts;
+      if (diff < 60000) return 'Zojuist';
+      if (diff < 3600000) return Math.floor(diff / 60000) + ' min geleden';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + ' uur geleden';
+      return Math.floor(diff / 86400000) + ' dagen geleden';
+    }
+
+    function clearAllNotifs() {
+      if (!currentUser) return;
+      db.collection('messages').where('to', '==', currentUser.uid).get().then(function(snapshot) {
+        snapshot.forEach(function(doc) {
+          db.collection('messages').doc(doc.id).update({ read: true });
+        });
+        loadNotifications();
+      }).catch(function() {});
+    }
+
+    function markMsgRead(msgId) {
+      db.collection('messages').doc(msgId).update({ read: true }).catch(function() {});
+    }
+
+    // ===== INBOX / MESSAGING =====
+    function loadInbox() {
+      if (!currentUser) return;
+      var uid = currentUser.uid;
+      db.collection('messages').where('to', '==', uid).get().then(function(snapshot) {
+        var msgs = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; msgs.push(d); });
+        msgs.sort(function(a, b) { return (b.timestamp ? b.timestamp.seconds : 0) - (a.timestamp ? a.timestamp.seconds : 0); });
+        renderInbox(msgs);
+      }).catch(function() { renderInbox([]); });
+    }
+
+    function renderInbox(msgs) {
+      var list = document.getElementById('inboxList');
+      var empty = document.getElementById('inboxEmpty');
+      if (!list) return;
+
+      if (msgs.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      list.innerHTML = msgs.map(function(m) {
+        var time = m.timestamp ? new Date(m.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
+        var isUnread = !m.read;
+        return '<div style="background:white;border-radius:14px;padding:18px 20px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border-left:4px solid ' + (isUnread ? 'var(--blue)' : 'rgba(26,26,46,0.08)') + ';">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+            '<div style="font-weight:700;font-size:0.9rem;">' + (m.fromName || 'Onbekend') + (isUnread ? ' <span style="background:var(--blue);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;">NIEUW</span>' : '') + '</div>' +
+            '<div style="font-size:0.65rem;color:rgba(26,26,46,0.35);">' + time + '</div>' +
+          '</div>' +
+          '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.5;white-space:pre-line;">' + (m.text || '') + '</div>' +
+          '<div style="margin-top:10px;display:flex;gap:6px;">' +
+            '<button onclick="replyToMsg(\'' + (m.fromUid || '') + '\',\'' + (m.fromName || '').replace(/'/g, "\\'") + '\')" style="padding:4px 12px;background:var(--blue);color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;">↩ Beantwoorden</button>' +
+            '<button onclick="deleteMsg(\'' + m.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--accent);">🗑</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // Mark all as read
+      msgs.forEach(function(m) {
+        if (!m.read) db.collection('messages').doc(m.id).update({ read: true }).catch(function() {});
+      });
+    }
+
+    function openSendMsgModal(toUid, toName) {
+      if (!currentUser || isGuest) { alert('Log in om berichten te sturen.'); showLoginPopup(); return; }
+      document.getElementById('msgText').value = '';
+      // Load users for recipient dropdown
+      db.collection('users').get().then(function(snapshot) {
+        var sel = document.getElementById('msgRecipient');
+        var opts = '';
+        snapshot.forEach(function(doc) {
+          var u = doc.data();
+          if (doc.id !== currentUser.uid) {
+            var selected = (toUid && doc.id === toUid) ? ' selected' : '';
+            opts += '<option value="' + doc.id + '"' + selected + '>' + (u.name || u.email || 'Onbekend') + '</option>';
+          }
+        });
+        sel.innerHTML = opts || '<option disabled>Geen gebruikers gevonden</option>';
+      }).catch(function() {});
+      document.getElementById('sendMsgModal').classList.add('active');
+    }
+
+    function closeSendMsgModal() {
+      document.getElementById('sendMsgModal').classList.remove('active');
+    }
+
+    function replyToMsg(uid, name) {
+      openSendMsgModal(uid, name);
+    }
+
+    function sendMessage() {
+      if (!currentUser || isGuest) return;
+      var toUid = document.getElementById('msgRecipient').value;
+      var text = document.getElementById('msgText').value.trim();
+      if (!toUid || !text) { alert('Kies een ontvanger en typ een bericht.'); return; }
+
+      var btn = document.getElementById('msgSendBtn');
+      btn.textContent = 'Versturen...';
+      btn.disabled = true;
+
+      db.collection('messages').add({
+        to: toUid,
+        fromUid: currentUser.uid,
+        fromName: currentUser.displayName || currentUser.email.split('@')[0],
+        text: text,
+        read: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        closeSendMsgModal();
+        btn.textContent = 'Versturen';
+        btn.disabled = false;
+        alert('Bericht verstuurd!');
+      }).catch(function(err) {
+        console.error(err);
+        btn.textContent = 'Versturen';
+        btn.disabled = false;
+      });
+    }
+
+    function deleteMsg(msgId) {
+      if (!confirm('Bericht verwijderen?')) return;
+      db.collection('messages').doc(msgId).delete().then(function() { loadInbox(); }).catch(function() {});
+    }
+
+    // ===== BROWSER NOTIFICATIONS =====
+    var notifPermission = 'default';
+    var lastKnownMsgCount = 0;
+    var lastKnownPollCount = 0;
+
+    function requestNotifPermission() {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'granted') { notifPermission = 'granted'; return; }
+      if (Notification.permission === 'denied') { notifPermission = 'denied'; return; }
+
+      var prompt = document.createElement('div');
+      prompt.id = 'notifPrompt';
+      prompt.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:16px 24px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:10001;display:flex;align-items:center;gap:14px;animation:fadeIn 0.4s ease;max-width:440px;';
+      prompt.innerHTML = '<div style="font-size:1.5rem;">🔔</div>' +
+        '<div style="flex:1;"><div style="font-weight:800;font-size:0.85rem;margin-bottom:2px;">Meldingen aanzetten?</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);">Krijg een melding bij nieuwe berichten en polls</div></div>' +
+        '<button onclick="enableNotifs()" style="padding:8px 16px;background:var(--gold);color:var(--primary);border:none;border-radius:8px;font-weight:800;font-size:0.75rem;cursor:pointer;">Ja!</button>' +
+        '<button onclick="dismissNotifPrompt()" style="padding:8px 12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);border:none;border-radius:8px;font-size:0.75rem;cursor:pointer;">Nee</button>';
+      document.body.appendChild(prompt);
+    }
+
+    function enableNotifs() {
+      Notification.requestPermission().then(function(perm) {
+        notifPermission = perm;
+        dismissNotifPrompt();
+        if (perm === 'granted') {
+          new Notification('Wat in de Ranking', { body: 'Meldingen zijn ingeschakeld! 🔔', icon: '🏆' });
+        }
+      });
+    }
+
+    function dismissNotifPrompt() {
+      var el = document.getElementById('notifPrompt');
+      if (el) el.remove();
+      try { localStorage.setItem('widr_notif_prompted', Date.now().toString()); } catch(e) {}
+    }
+
+    function sendBrowserNotif(title, body) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      if (document.hasFocus()) return;
+      try { new Notification(title, { body: body }); } catch(e) {}
+    }
+
+    // Auto-check notifications every 30 seconds + send browser notifs
+    setInterval(function() {
+      if (currentUser && !isGuest) {
+        try {
+          var uid = currentUser.uid;
+          db.collection('messages').where('to', '==', uid).where('read', '==', false).get().then(function(snapshot) {
+            var newCount = snapshot.size;
+            if (newCount > lastKnownMsgCount && lastKnownMsgCount >= 0) {
+              sendBrowserNotif('✉️ Nieuw bericht', 'Je hebt ' + newCount + ' ongelezen bericht' + (newCount > 1 ? 'en' : ''));
+            }
+            lastKnownMsgCount = newCount;
+          }).catch(function() {});
+
+          loadNotifications();
+        } catch(e) {}
+      }
+    }, 30000);
+
     // sounds, members, sections lazy-loaded when visiting their pages
     loadCustomCategories();
   </script>
@@ -7386,6 +7669,60 @@
 
     loadTranslationsFromFirebase();
   </script>
+
+  <!-- NOTIFICATION PANEL -->
+  <div id="notifPanel" style="display:none;position:fixed;top:64px;right:20px;width:360px;max-height:500px;background:white;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,0.2);z-index:10001;overflow:hidden;animation:fadeIn 0.3s ease;">
+    <div style="padding:16px 20px;border-bottom:1px solid rgba(26,26,46,0.06);display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-weight:800;font-size:1rem;">🔔 Notificaties</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="navigate('inbox');toggleNotifPanel()" style="padding:4px 10px;background:var(--blue);color:white;border:none;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">📨 Inbox</button>
+        <button onclick="clearAllNotifs()" style="padding:4px 10px;background:rgba(26,26,46,0.06);border:none;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;color:rgba(26,26,46,0.4);">Wis alles</button>
+      </div>
+    </div>
+    <div id="notifList" style="overflow-y:auto;max-height:400px;padding:8px;"></div>
+    <div id="notifEmpty" style="text-align:center;padding:40px 20px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Geen notificaties</div>
+  </div>
+
+  <!-- INBOX PAGE -->
+  <div class="page" id="page-inbox">
+    <div class="apps-hero" style="background:linear-gradient(135deg, var(--blue) 0%, var(--primary) 100%);">
+      <h1>Inbox 📨</h1>
+      <p>Berichten van andere leden</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;padding:48px 40px 100px;">
+      <button onclick="openSendMsgModal()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;margin-bottom:24px;">✉️ Bericht Sturen</button>
+      <div id="inboxList"></div>
+      <div id="inboxEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">📭</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Geen berichten</div>
+        <div style="font-size:0.85rem;">Stuur een bericht naar iemand!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
+  <!-- SEND MESSAGE MODAL -->
+  <div class="modal-overlay" id="sendMsgModal">
+    <div class="modal" style="position:relative;">
+      <button onclick="closeSendMsgModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
+      <h2>✉️ Bericht Sturen</h2>
+      <div class="modal-sub">Stuur een bericht naar een ander lid</div>
+
+      <label class="modal-label">Aan (kies een lid)</label>
+      <select class="modal-input" id="msgRecipient" style="padding:12px 16px;"></select>
+
+      <label class="modal-label">Bericht</label>
+      <textarea class="modal-input" id="msgText" placeholder="Typ je bericht..." style="min-height:100px;resize:vertical;font-family:inherit;"></textarea>
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeSendMsgModal()">Annuleren</button>
+        <button class="modal-save" id="msgSendBtn" onclick="sendMessage()">Versturen</button>
+      </div>
+    </div>
+  </div>
 
   <!-- POLLS NOTIFICATION POPUP -->
   <div id="pollsNotify" style="display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:9998;animation:fadeIn 0.4s ease;">
