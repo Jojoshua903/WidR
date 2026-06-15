@@ -3815,8 +3815,9 @@
     </div>
     <div style="max-width:800px;margin:0 auto;padding:48px 40px 100px;">
 
-      <div style="text-align:center;margin-bottom:24px;">
+      <div style="text-align:center;margin-bottom:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
         <button onclick="openReviewModal()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;">📝 Review Schrijven</button>
+        <button onclick="openDocentenManager()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;display:none;" id="docentenMgrBtn">🎓 Docenten Beheren</button>
       </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;" id="reviewFilterTabs">
@@ -3836,6 +3837,20 @@
     </footer>
   </div>
 
+  <!-- DOCENTEN MANAGER MODAL -->
+  <div class="modal-overlay" id="docentenModal">
+    <div class="modal" style="position:relative;">
+      <button onclick="closeDocentenManager()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
+      <h2>🎓 Docenten Beheren</h2>
+      <div class="modal-sub">Voeg docenten toe of verwijder ze uit de lijst</div>
+      <div id="docentenListManager" style="max-height:300px;overflow-y:auto;margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" class="modal-input" id="docentenAddInput" placeholder="Nieuwe docent naam..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')addDocent()">
+        <button onclick="addDocent()" style="padding:10px 18px;background:var(--mint);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;">+ Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- REVIEW MODAL -->
   <div class="modal-overlay" id="reviewModal">
     <div class="modal" style="position:relative;">
@@ -3844,9 +3859,10 @@
       <div class="modal-sub">Beoordeel een docent of vak. Reviews zijn anoniem tenzij je je naam invult.</div>
 
       <label class="modal-label">Docent</label>
-      <select class="modal-input" id="reviewTeacher" style="padding:12px 16px;" onchange="updateReviewSubjects()">
+      <select class="modal-input" id="reviewTeacher" style="padding:12px 16px;" onchange="onReviewTeacherChange()">
         <option value="">Kies een docent...</option>
       </select>
+      <input type="text" class="modal-input" id="reviewTeacherCustom" placeholder="Typ de naam van de docent..." style="display:none;">
 
       <label class="modal-label">Vak</label>
       <input type="text" class="modal-input" id="reviewSubject" placeholder="bijv. Wiskunde, Engels, Scheikunde...">
@@ -6656,6 +6672,72 @@
     var reviewFilter = 'all';
     var docentenList = ['Burgmans','Doremalen','Gelder','De Groot','Ploeg','Prins','Riep','De Roode','Sahin','De Vos','Wijnants','Zilfhout','Keeren','Hugens','De Jong','Goff','Otten','Blokland','Salemink','Profoost','Peters','Verlee','Steltman','Roshdi','Rijnenberg','Koobs','Abdullah','Van der Meer','Groenland','Seghedi','De Boer','Duiven'];
 
+    function loadDocentenList() {
+      db.collection('docenten').get().then(function(snapshot) {
+        snapshot.forEach(function(doc) {
+          var name = doc.data().name || doc.id;
+          if (docentenList.indexOf(name) === -1) docentenList.push(name);
+        });
+        docentenList.sort();
+      }).catch(function() {});
+    }
+    try { loadDocentenList(); } catch(e) {}
+
+    function buildTeacherSelect(selectedValue) {
+      return '<option value="">Kies een docent...</option>' +
+        docentenList.map(function(d) { return '<option value="' + d + '"' + (d === selectedValue ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
+        '<option value="__custom__">+ Andere docent...</option>';
+    }
+
+    function onReviewTeacherChange() {
+      var sel = document.getElementById('reviewTeacher');
+      var custom = document.getElementById('reviewTeacherCustom');
+      if (sel.value === '__custom__') {
+        custom.style.display = 'block';
+        custom.focus();
+      } else {
+        custom.style.display = 'none';
+        custom.value = '';
+      }
+    }
+
+    function openDocentenManager() {
+      renderDocentenList();
+      document.getElementById('docentenModal').classList.add('active');
+    }
+
+    function closeDocentenManager() {
+      document.getElementById('docentenModal').classList.remove('active');
+    }
+
+    function renderDocentenList() {
+      var list = document.getElementById('docentenListManager');
+      list.innerHTML = docentenList.map(function(d) {
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:4px;">' +
+          '<span style="font-weight:600;font-size:0.85rem;">' + d + '</span>' +
+          '<button onclick="removeDocent(\'' + d.replace(/'/g, "\\'") + '\')" style="padding:3px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--accent);">🗑</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addDocent() {
+      var input = document.getElementById('docentenAddInput');
+      var name = input.value.trim();
+      if (!name || docentenList.indexOf(name) !== -1) { input.value = ''; return; }
+      docentenList.push(name);
+      docentenList.sort();
+      db.collection('docenten').doc(name.toLowerCase().replace(/[^a-z0-9]/g, '_')).set({ name: name }).catch(function() {});
+      input.value = '';
+      renderDocentenList();
+    }
+
+    function removeDocent(name) {
+      if (!confirm('Docent "' + name + '" verwijderen uit de lijst?')) return;
+      docentenList = docentenList.filter(function(d) { return d !== name; });
+      db.collection('docenten').doc(name.toLowerCase().replace(/[^a-z0-9]/g, '_')).delete().catch(function() {});
+      renderDocentenList();
+    }
+
     function setReviewRating(n) {
       reviewRating = n;
       for (var i = 1; i <= 5; i++) {
@@ -6669,8 +6751,9 @@
       if (!isVerified) { alert('Je moet een geverifieerd lid zijn om reviews te schrijven. Vraag een admin om je te verifiëren.'); return; }
       reviewRating = 0;
       setReviewRating(0);
-      document.getElementById('reviewTeacher').innerHTML = '<option value="">Kies een docent...</option>' +
-        docentenList.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+      document.getElementById('reviewTeacher').innerHTML = buildTeacherSelect('');
+      document.getElementById('reviewTeacherCustom').style.display = 'none';
+      document.getElementById('reviewTeacherCustom').value = '';
       document.getElementById('reviewSubject').value = '';
       document.getElementById('reviewText').value = '';
       document.getElementById('reviewAuthor').value = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
@@ -6690,10 +6773,12 @@
       editingReviewId = null;
     }
 
-    function updateReviewSubjects() {}
+    function updateReviewSubjects() { onReviewTeacherChange(); }
 
     function submitReview() {
-      var teacher = document.getElementById('reviewTeacher').value;
+      var teacherSel = document.getElementById('reviewTeacher').value;
+      var teacherCustom = document.getElementById('reviewTeacherCustom').value.trim();
+      var teacher = teacherSel === '__custom__' ? teacherCustom : teacherSel;
       var subject = document.getElementById('reviewSubject').value.trim();
       var text = document.getElementById('reviewText').value.trim();
       var author = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : 'Onbekend';
@@ -6725,6 +6810,11 @@
         : db.collection('reviews').add(reviewData);
 
       p.then(function() {
+        if (teacherSel === '__custom__' && teacherCustom && docentenList.indexOf(teacherCustom) === -1) {
+          docentenList.push(teacherCustom);
+          docentenList.sort();
+          db.collection('docenten').doc(teacherCustom.toLowerCase().replace(/[^a-z0-9]/g, '_')).set({ name: teacherCustom }).catch(function() {});
+        }
         closeReviewModal();
         editingReviewId = null;
         btn.textContent = 'Plaatsen';
@@ -6763,6 +6853,8 @@
     }
 
     function loadReviewsContent() {
+      var mgrBtn = document.getElementById('docentenMgrBtn');
+      if (mgrBtn) mgrBtn.style.display = hasPermission('ranking') ? 'inline-block' : 'none';
       db.collection('reviews').orderBy('timestamp', 'desc').get().then(function(snapshot) {
         allReviews = [];
         snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
@@ -6855,8 +6947,9 @@
       var r = allReviews.find(function(x) { return x.id === id; });
       if (!r) return;
       editingReviewId = id;
-      document.getElementById('reviewTeacher').innerHTML = '<option value="">Kies een docent...</option>' +
-        docentenList.map(function(d) { return '<option value="' + d + '"' + (d === r.teacher ? ' selected' : '') + '>' + d + '</option>'; }).join('');
+      document.getElementById('reviewTeacher').innerHTML = buildTeacherSelect(r.teacher);
+      document.getElementById('reviewTeacherCustom').style.display = 'none';
+      document.getElementById('reviewTeacherCustom').value = '';
       document.getElementById('reviewSubject').value = r.subject || '';
       document.getElementById('reviewDay').value = r.day || '';
       document.getElementById('reviewPeriod').value = r.period || '';
