@@ -3820,8 +3820,13 @@
         <button onclick="openDocentenManager()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;display:none;" id="docentenMgrBtn">🎓 Docenten Beheren</button>
       </div>
 
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;" id="reviewFilterTabs">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center;" id="reviewFilterTabs">
         <button class="ranking-tab active" onclick="filterReviews('all',this)">Alles</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+        <span style="font-size:0.7rem;color:rgba(26,26,46,0.4);font-weight:600;">Sorteer:</span>
+        <button class="ranking-tab active" id="sortPosting" onclick="setReviewSort('posting',this)" style="font-size:0.7rem;padding:4px 12px;">🕐 Posting</button>
+        <button class="ranking-tab" id="sortSchedule" onclick="setReviewSort('schedule',this)" style="font-size:0.7rem;padding:4px 12px;">📅 Lesuur</button>
       </div>
 
       <div id="reviewsList"></div>
@@ -3869,27 +3874,20 @@
       <label class="modal-label">Vak</label>
       <input type="text" class="modal-input" id="reviewSubject" placeholder="bijv. Wiskunde, Engels, Scheikunde...">
 
-      <label class="modal-label">Dag & Lesuur (optioneel)</label>
+      <label class="modal-label">Datum & Lesuur <span id="reviewScheduleAuto" style="font-size:0.65rem;color:var(--mint);font-weight:600;"></span></label>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <select class="modal-input" id="reviewDay" style="padding:12px 16px;margin-bottom:0;flex:1;">
-          <option value="">Dag...</option>
-          <option value="Maandag">Maandag</option>
-          <option value="Dinsdag">Dinsdag</option>
-          <option value="Woensdag">Woensdag</option>
-          <option value="Donderdag">Donderdag</option>
-          <option value="Vrijdag">Vrijdag</option>
-        </select>
+        <input type="date" class="modal-input" id="reviewDate" style="padding:12px 16px;margin-bottom:0;flex:1;">
         <select class="modal-input" id="reviewPeriod" style="padding:12px 16px;margin-bottom:0;flex:1;">
           <option value="">Lesuur...</option>
-          <option value="1e uur (09:00-09:45)">1e uur (09:00-09:45)</option>
-          <option value="2e uur (09:45-10:30)">2e uur (09:45-10:30)</option>
-          <option value="3e uur (10:50-11:35)">3e uur (10:50-11:35)</option>
-          <option value="4e uur (11:35-12:20)">4e uur (11:35-12:20)</option>
-          <option value="5e uur (13:10-13:55)">5e uur (13:10-13:55)</option>
-          <option value="6e uur (13:55-14:40)">6e uur (13:55-14:40)</option>
-          <option value="7e uur (14:45-15:30)">7e uur (14:45-15:30)</option>
-          <option value="8e uur (15:30-16:15)">8e uur (15:30-16:15)</option>
-          <option value="9e uur (16:15-17:00)">9e uur (16:15-17:00)</option>
+          <option value="1e uur (08:15-09:00)">1e uur (08:15-09:00)</option>
+          <option value="2e uur (09:00-09:45)">2e uur (09:00-09:45)</option>
+          <option value="3e uur (09:45-10:30)">3e uur (09:45-10:30)</option>
+          <option value="4e uur (10:50-11:55)">4e uur (10:50-11:55)</option>
+          <option value="5e uur (11:55-12:40)">5e uur (11:55-12:40)</option>
+          <option value="6e uur (13:10-13:55)">6e uur (13:10-13:55)</option>
+          <option value="7e uur (13:55-14:40)">7e uur (13:55-14:40)</option>
+          <option value="8e uur (14:45-15:30)">8e uur (14:45-15:30)</option>
+          <option value="9e uur (15:30-16:15)">9e uur (15:30-16:15)</option>
           <option value="Anders">Anders (typ hieronder)</option>
         </select>
       </div>
@@ -4414,6 +4412,8 @@
                 setTimeout(function() { requestNotifPermission(); }, 3000);
               }
             } catch(e) {}
+            // Reload stats after auth
+            try { loadLiveStats(); } catch(e) {}
           }).catch(function() { userRoles = []; });
         } else {
           currentUser = null;
@@ -5228,45 +5228,47 @@
 
     // ===== LIVE HOMEPAGE STATS =====
     function loadLiveStats() {
+      // Show cached stats immediately
       try {
         var cached = localStorage.getItem('widr_cache_stats');
         if (cached) {
           var parsed = JSON.parse(cached);
-          if (Date.now() - parsed.ts < 600000) {
-            document.getElementById('liveStatLeden').textContent = parsed.leden;
-            document.getElementById('liveStatRankings').textContent = parsed.rankings;
-            document.getElementById('liveStatCategories').textContent = parsed.categories;
-            return;
-          }
+          document.getElementById('liveStatLeden').textContent = parsed.leden || '...';
+          document.getElementById('liveStatRankings').textContent = parsed.rankings || '...';
+          document.getElementById('liveStatCategories').textContent = parsed.categories || '...';
+          if (Date.now() - parsed.ts < 600000) return;
         }
       } catch(e) {}
 
       var statsData = { leden: 12, rankings: '0', categories: 2, ts: Date.now() };
 
-      cachedGet('members_count', db.collection('members'), 10).then(function(data) {
+      // Count members
+      db.collection('members').get().then(function(snapshot) {
         var total = 12;
-        data.forEach(function(d) {
-          var isDefault = ['josh','lors','fionn','nath','reshman','daniel','milo','adam','metaai','maciek','denize','sichen'].indexOf(d._id) !== -1;
+        snapshot.forEach(function(doc) {
+          var isDefault = ['josh','lors','fionn','nath','reshman','daniel','milo','adam','metaai','maciek','denize','sichen'].indexOf(doc.id) !== -1;
           if (!isDefault) total++;
         });
         statsData.leden = total;
         document.getElementById('liveStatLeden').textContent = total;
-      }).catch(function() {});
+      }).catch(function() { document.getElementById('liveStatLeden').textContent = statsData.leden; });
 
-      cachedGet('categories_count', db.collection('categories'), 10).then(function(data) {
-        var count = 2 + data.length;
+      // Count categories
+      db.collection('categories').get().then(function(snapshot) {
+        var count = 2 + snapshot.size;
         statsData.categories = count;
         document.getElementById('liveStatCategories').textContent = count;
-      }).catch(function() {});
+      }).catch(function() { document.getElementById('liveStatCategories').textContent = statsData.categories; });
 
-      cachedGet('rankings_count', db.collection('rankings'), 10).then(function(data) {
-        var count = data.length;
+      // Count rankings
+      db.collection('rankings').get().then(function(snapshot) {
+        var count = snapshot.size;
         var display = count >= 1000 ? Math.floor(count / 1000) + 'K+' : count.toString();
         statsData.rankings = display;
         document.getElementById('liveStatRankings').textContent = display;
         statsData.ts = Date.now();
         try { localStorage.setItem('widr_cache_stats', JSON.stringify(statsData)); } catch(e) {}
-      }).catch(function() {});
+      }).catch(function() { document.getElementById('liveStatRankings').textContent = statsData.rankings; });
     }
     loadLiveStats();
 
@@ -6680,6 +6682,7 @@
     var reviewRating = 0;
     var allReviews = [];
     var reviewFilter = 'all';
+    var reviewSort = 'posting';
     var docentenList = ['Burgmans','Doremalen','Gelder','De Groot','Ploeg','Prins','Riep','De Roode','Sahin','De Vos','Wijnants','Zilfhout','Keeren','Hugens','De Jong','Goff','Otten','Blokland','Salemink','Profoost','Peters','Verlee','Steltman','Roshdi','Rijnenberg','Koobs','Abdullah','Van der Meer','Groenland','Seghedi','De Boer','Duiven'];
 
     function loadDocentenList() {
@@ -6767,11 +6770,46 @@
       document.getElementById('reviewSubject').value = '';
       document.getElementById('reviewText').value = '';
       document.getElementById('reviewAuthor').value = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
-      document.getElementById('reviewDay').value = '';
-      document.getElementById('reviewPeriod').value = '';
+      document.getElementById('reviewDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('reviewPeriod').value = getCurrentPeriod();
       document.getElementById('reviewPeriodCustom').value = '';
       document.getElementById('reviewPeriodCustom').style.display = 'none';
+      document.getElementById('reviewScheduleAuto').textContent = '(automatisch ingevuld)';
       document.getElementById('reviewModal').classList.add('active');
+    }
+
+    var periodSchedule = [
+      { label: '1e uur (08:15-09:00)', start: 815, end: 900 },
+      { label: '2e uur (09:00-09:45)', start: 900, end: 945 },
+      { label: '3e uur (09:45-10:30)', start: 945, end: 1030 },
+      { label: '4e uur (10:50-11:55)', start: 1050, end: 1155 },
+      { label: '5e uur (11:55-12:40)', start: 1155, end: 1240 },
+      { label: '6e uur (13:10-13:55)', start: 1310, end: 1355 },
+      { label: '7e uur (13:55-14:40)', start: 1355, end: 1440 },
+      { label: '8e uur (14:45-15:30)', start: 1445, end: 1530 },
+      { label: '9e uur (15:30-16:15)', start: 1530, end: 1615 }
+    ];
+
+    function getCurrentDay() {
+      var days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+      var d = days[new Date().getDay()];
+      if (d === 'Zaterdag' || d === 'Zondag') return '';
+      return d;
+    }
+
+    function getCurrentPeriod() {
+      var now = new Date();
+      var time = now.getHours() * 100 + now.getMinutes();
+      for (var i = 0; i < periodSchedule.length; i++) {
+        if (time >= periodSchedule[i].start && time < periodSchedule[i].end) {
+          return periodSchedule[i].label;
+        }
+      }
+      // Find closest next period
+      for (var j = 0; j < periodSchedule.length; j++) {
+        if (time < periodSchedule[j].start) return periodSchedule[j].label;
+      }
+      return '';
     }
 
     document.getElementById('reviewPeriod').addEventListener('change', function() {
@@ -6792,7 +6830,13 @@
       var subject = document.getElementById('reviewSubject').value.trim();
       var text = document.getElementById('reviewText').value.trim();
       var author = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : 'Onbekend';
-      var day = document.getElementById('reviewDay').value;
+      var reviewDate = document.getElementById('reviewDate').value;
+      var day = '';
+      if (reviewDate) {
+        var d = new Date(reviewDate);
+        var days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+        day = days[d.getDay()] + ' ' + d.toLocaleDateString('nl-NL');
+      }
       var period = document.getElementById('reviewPeriod').value;
       if (period === 'Anders') period = document.getElementById('reviewPeriodCustom').value.trim();
       if (!teacher) { alert('Kies een docent'); return; }
@@ -6807,6 +6851,7 @@
         teacher: teacher,
         subject: subject,
         day: day,
+        reviewDate: reviewDate,
         period: period,
         rating: reviewRating,
         text: text,
@@ -6903,12 +6948,46 @@
       renderReviews();
     }
 
+    function setReviewSort(sort, btn) {
+      reviewSort = sort;
+      document.getElementById('sortPosting').classList.remove('active');
+      document.getElementById('sortSchedule').classList.remove('active');
+      if (btn) btn.classList.add('active');
+      renderReviews();
+    }
+
+    function getPeriodOrder(period) {
+      if (!period) return 99;
+      var match = period.match(/(\d+)e uur/);
+      return match ? parseInt(match[1]) : 99;
+    }
+
+    function getDayOrder(day) {
+      var days = { 'Maandag': 1, 'Dinsdag': 2, 'Woensdag': 3, 'Donderdag': 4, 'Vrijdag': 5 };
+      return days[day] || 99;
+    }
+
     function renderReviews() {
       var list = document.getElementById('reviewsList');
       var empty = document.getElementById('reviewsEmpty');
       if (!list) return;
 
-      var filtered = reviewFilter === 'all' ? allReviews : allReviews.filter(function(r) { return r.teacher === reviewFilter; });
+      var filtered = reviewFilter === 'all' ? allReviews.slice() : allReviews.filter(function(r) { return r.teacher === reviewFilter; });
+
+      if (reviewSort === 'schedule') {
+        filtered.sort(function(a, b) {
+          var dateA = a.reviewDate || '9999';
+          var dateB = b.reviewDate || '9999';
+          if (dateA !== dateB) return dateA.localeCompare(dateB);
+          return getPeriodOrder(a.period) - getPeriodOrder(b.period);
+        });
+      } else {
+        filtered.sort(function(a, b) {
+          var ta = a.timestamp ? a.timestamp.seconds : 0;
+          var tb = b.timestamp ? b.timestamp.seconds : 0;
+          return tb - ta;
+        });
+      }
 
       if (filtered.length === 0) {
         list.innerHTML = '';
@@ -6961,7 +7040,7 @@
       document.getElementById('reviewTeacherCustom').style.display = 'none';
       document.getElementById('reviewTeacherCustom').value = '';
       document.getElementById('reviewSubject').value = r.subject || '';
-      document.getElementById('reviewDay').value = r.day || '';
+      document.getElementById('reviewDate').value = r.reviewDate || '';
       document.getElementById('reviewPeriod').value = r.period || '';
       document.getElementById('reviewText').value = r.text || '';
       document.getElementById('reviewAuthor').value = r.author || '';
