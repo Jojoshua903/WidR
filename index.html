@@ -3861,6 +3861,8 @@
       <label class="modal-label">Docent</label>
       <select class="modal-input" id="reviewTeacher" style="padding:12px 16px;" onchange="onReviewTeacherChange()">
         <option value="">Kies een docent...</option>
+        <option value="Burgmans">Burgmans</option><option value="Doremalen">Doremalen</option><option value="Gelder">Gelder</option><option value="De Groot">De Groot</option><option value="Ploeg">Ploeg</option><option value="Prins">Prins</option><option value="Riep">Riep</option><option value="De Roode">De Roode</option><option value="Sahin">Sahin</option><option value="De Vos">De Vos</option><option value="Wijnants">Wijnants</option><option value="Zilfhout">Zilfhout</option><option value="Keeren">Keeren</option><option value="Hugens">Hugens</option><option value="De Jong">De Jong</option><option value="Goff">Goff</option><option value="Otten">Otten</option><option value="Blokland">Blokland</option><option value="Salemink">Salemink</option><option value="Profoost">Profoost</option><option value="Peters">Peters</option><option value="Verlee">Verlee</option><option value="Steltman">Steltman</option><option value="Roshdi">Roshdi</option><option value="Rijnenberg">Rijnenberg</option><option value="Koobs">Koobs</option><option value="Abdullah">Abdullah</option><option value="Van der Meer">Van der Meer</option><option value="Groenland">Groenland</option><option value="Seghedi">Seghedi</option><option value="De Boer">De Boer</option><option value="Duiven">Duiven</option>
+        <option value="__custom__">+ Andere docent...</option>
       </select>
       <input type="text" class="modal-input" id="reviewTeacherCustom" placeholder="Typ de naam van de docent..." style="display:none;">
 
@@ -5540,8 +5542,12 @@
 
       allIds.forEach(function(id) {
         var meta = getPresetMeta(id);
-        if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) return;
-        html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' + meta.emoji + ' ' + meta.name + (meta.access === 'verified' ? ' ✅' : '');
+        var locked = meta.access === 'verified' && !isVerified && !hasPermission('ranking');
+        if (locked) {
+          html += '<button class="preset-btn" style="opacity:0.4;cursor:not-allowed;" onclick="alert(\'🔒 Deze categorie is alleen voor geverifieerde leden.\')">' + meta.emoji + ' ' + meta.name + ' 🔒';
+        } else {
+          html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' + meta.emoji + ' ' + meta.name + (meta.access === 'verified' ? ' ✅' : '');
+        }
         if (hasPermission('ranking')) {
           html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
           html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
@@ -5566,8 +5572,12 @@
       var html = '';
       allIds.forEach(function(id) {
         var meta = getPresetMeta(id);
-        if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) return;
-        html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + meta.emoji + ' ' + meta.name + '</button>';
+        var locked = meta.access === 'verified' && !isVerified && !hasPermission('ranking');
+        if (locked) {
+          html += '<button class="ranking-tab" style="opacity:0.4;cursor:not-allowed;" onclick="alert(\'🔒 Alleen voor geverifieerde leden\')">' + meta.emoji + ' ' + meta.name + ' 🔒</button>';
+        } else {
+          html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + meta.emoji + ' ' + meta.name + '</button>';
+        }
       });
 
       tabs.innerHTML = html;
