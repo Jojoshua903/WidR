@@ -3257,6 +3257,7 @@
       <button id="navLogoutBtn" onclick="logoutGroup()" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;transition:all 0.3s;display:none;" onmouseover="this.style.background='rgba(233,69,96,0.2)';this.style.color='var(--accent)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">Uitloggen</button>
     </div>
     <button id="notifBell" onclick="toggleNotifPanel()" style="position:relative;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:1.1rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;" title="Notificaties">🔔<span id="notifBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--accent);color:white;font-size:0.55rem;font-weight:800;min-width:16px;height:16px;border-radius:50%;line-height:16px;text-align:center;">0</span></button>
+    <button id="onlineBtn" onclick="navigate('users')" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:0.7rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;font-weight:700;" title="Online gebruikers">🟢 <span id="onlineCountNav">0</span></button>
     <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">🌙</button>
     <div class="lang-switcher">
       <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">🇳🇱 NL</button>
@@ -3314,6 +3315,7 @@
       </div>
 
       <a href="#merch" onclick="navigate('merch')" style="display:flex;align-items:center;gap:4px;">🛍️ Merch</a>
+      <a href="#users" onclick="navigate('users')" style="display:flex;align-items:center;gap:4px;">👤 Users</a>
     </ul>
   </nav>
 
@@ -4306,7 +4308,9 @@
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
         bellBtn.style.display = 'inline-block';
+        document.getElementById('onlineBtn').style.display = 'inline-block';
         try { loadNotifications(); } catch(e) {}
+        try { updateOnlineCount(); } catch(e) {}
       } else if (isGuest) {
         nameEl.textContent = '👤 Gast';
         nameEl.style.display = 'inline';
@@ -4314,12 +4318,14 @@
         loginBtn.textContent = 'ACCOUNT MAKEN';
         logoutBtn.style.display = 'inline-block';
         bellBtn.style.display = 'none';
+        document.getElementById('onlineBtn').style.display = 'none';
       } else {
         nameEl.style.display = 'none';
         loginBtn.style.display = 'inline-block';
         loginBtn.textContent = 'INLOGGEN';
         logoutBtn.style.display = 'none';
         bellBtn.style.display = 'none';
+        document.getElementById('onlineBtn').style.display = 'none';
       }
     }
 
@@ -4364,7 +4370,7 @@
             } else {
               userRoles = [];
             }
-            isVerified = (doc.exists && doc.data().verified) || isSiteOwner || userRoles.indexOf('master') !== -1;
+            isVerified = (doc.exists && doc.data().verified) || isSiteOwner || userRoles.indexOf('master') !== -1 || userRoles.length > 0;
             if (isSiteOwner && userRoles.indexOf('master') === -1) {
               userRoles.push('master');
               db.collection('users').doc(user.uid).update({ roles: userRoles }).catch(function() {});
@@ -4424,8 +4430,14 @@
 
       window.location.hash = page;
 
+      // Track presence
+      if (currentUser && !isGuest) {
+        try { db.collection('users').doc(currentUser.uid).update({ currentPage: page, lastSeen: Date.now() }).catch(function(){}); } catch(e) {}
+      }
+
       if (page === 'rankings') loadRankings(currentCategory);
       if (page === 'soundboard') { try { loadSounds(); } catch(e) {} }
+      if (page === 'users') { try { loadUsersPage(); } catch(e) {} }
       if (page === 'merch') { try { loadMerch(); } catch(e) {} }
       if (page === 'polls') { try { loadPolls(); } catch(e) {} }
       if (page === 'reviews') { try { loadReviews(); } catch(e) {} }
@@ -4468,6 +4480,16 @@
       var empty = document.getElementById('rankingEmpty');
       var voteCount = document.getElementById('voteCount');
       var adminList = document.getElementById('adminVotesList');
+
+      var meta = getPresetMeta(category);
+      if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) {
+        list.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:3rem;margin-bottom:12px;">🔒</div><div style="font-weight:800;color:rgba(26,26,46,0.5);">Alleen voor geverifieerde leden</div></div>';
+        status.style.display = 'none';
+        empty.style.display = 'none';
+        voteCount.textContent = '';
+        if (adminList) adminList.innerHTML = '';
+        return;
+      }
       list.innerHTML = '';
       if (adminList) adminList.innerHTML = '';
       status.style.display = 'block';
@@ -4728,6 +4750,11 @@
     var activePresetCategory = null;
 
     function loadPreset(name) {
+      var meta = getPresetMeta(name);
+      if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) {
+        alert('🔒 Deze categorie is alleen voor geverifieerde leden.');
+        return;
+      }
       rankerItems = presets[name].slice();
       activePresetCategory = name;
       delete voteCooldowns[name];
@@ -6660,6 +6687,7 @@
 
     function closeReviewModal() {
       document.getElementById('reviewModal').classList.remove('active');
+      editingReviewId = null;
     }
 
     function updateReviewSubjects() {}
@@ -6680,7 +6708,7 @@
       btn.textContent = 'Plaatsen...';
       btn.disabled = true;
 
-      db.collection('reviews').add({
+      var reviewData = {
         teacher: teacher,
         subject: subject,
         day: day,
@@ -6690,8 +6718,15 @@
         author: author,
         uid: currentUser ? currentUser.uid : 'anon',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function() {
+      };
+
+      var p = editingReviewId
+        ? db.collection('reviews').doc(editingReviewId).update(reviewData)
+        : db.collection('reviews').add(reviewData);
+
+      p.then(function() {
         closeReviewModal();
+        editingReviewId = null;
         btn.textContent = 'Plaatsen';
         btn.disabled = false;
         loadReviews();
@@ -6703,14 +6738,31 @@
     }
 
     function loadReviews() {
-      if (!isVerified && !hasPermission('ranking')) {
-        var list = document.getElementById('reviewsList');
-        var empty = document.getElementById('reviewsEmpty');
-        var reqBtnHtml = currentUser && !isGuest ? '<button onclick="requestVerification()" style="margin-top:16px;padding:12px 28px;background:var(--mint);color:white;border:none;border-radius:100px;font-weight:800;font-size:0.85rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'\'">✅ Verificatie Aanvragen</button>' : '';
-        if (list) list.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:3rem;margin-bottom:16px;">🔒</div><div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;color:rgba(26,26,46,0.6);">Alleen voor geverifieerde leden</div><div style="font-size:0.85rem;color:rgba(26,26,46,0.35);">Je moet geverifieerd zijn om reviews te zien en schrijven.</div>' + reqBtnHtml + '</div>';
-        if (empty) empty.style.display = 'none';
+      var userIsVerified = isVerified || hasPermission('ranking') || hasPermission('master');
+      if (!userIsVerified && currentUser && !isGuest) {
+        db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+          if (doc.exists && doc.data().verified) {
+            isVerified = true;
+            loadReviewsContent();
+          } else {
+            showReviewsLocked();
+          }
+        }).catch(function() { showReviewsLocked(); });
         return;
       }
+      if (!userIsVerified) { showReviewsLocked(); return; }
+      loadReviewsContent();
+    }
+
+    function showReviewsLocked() {
+      var list = document.getElementById('reviewsList');
+      var empty = document.getElementById('reviewsEmpty');
+      var reqBtnHtml = currentUser && !isGuest ? '<button onclick="requestVerification()" style="margin-top:16px;padding:12px 28px;background:var(--mint);color:white;border:none;border-radius:100px;font-weight:800;font-size:0.85rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'\'">✅ Verificatie Aanvragen</button>' : '';
+      if (list) list.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:3rem;margin-bottom:16px;">🔒</div><div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;color:rgba(26,26,46,0.6);">Alleen voor geverifieerde leden</div><div style="font-size:0.85rem;color:rgba(26,26,46,0.35);">Je moet geverifieerd zijn om reviews te zien en schrijven.</div>' + reqBtnHtml + '</div>';
+      if (empty) empty.style.display = 'none';
+    }
+
+    function loadReviewsContent() {
       db.collection('reviews').orderBy('timestamp', 'desc').get().then(function(snapshot) {
         allReviews = [];
         snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
@@ -6769,6 +6821,10 @@
         var time = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
         var starColor = r.rating >= 4 ? 'var(--mint)' : r.rating >= 3 ? 'var(--gold)' : 'var(--accent)';
         var canDelete = hasPermission('ranking') || (currentUser && r.uid === currentUser.uid);
+        var canEdit = hasPermission('ranking');
+        var adminBtns = '';
+        if (canEdit) adminBtns += '<button onclick="editReview(\'' + r.id + '\')" style="padding:3px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--blue);">✏️</button>';
+        if (canDelete) adminBtns += '<button onclick="deleteReview(\'' + r.id + '\')" style="padding:3px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--accent);">🗑</button>';
 
         return '<div style="background:white;border-radius:16px;padding:20px 24px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border-left:4px solid ' + starColor + ';">' +
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
@@ -6782,7 +6838,7 @@
           '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.6;margin-bottom:8px;white-space:pre-line;">' + r.text + '</div>' +
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
             '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);">Door ' + r.author + ' · ' + time + '</div>' +
-            (canDelete ? '<button onclick="deleteReview(\'' + r.id + '\')" style="padding:3px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--accent);">🗑</button>' : '') +
+            '<div style="display:flex;gap:4px;">' + adminBtns + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -6791,6 +6847,23 @@
     function deleteReview(id) {
       if (!confirm('Review verwijderen?')) return;
       db.collection('reviews').doc(id).delete().then(function() { loadReviews(); }).catch(function() {});
+    }
+
+    var editingReviewId = null;
+
+    function editReview(id) {
+      var r = allReviews.find(function(x) { return x.id === id; });
+      if (!r) return;
+      editingReviewId = id;
+      document.getElementById('reviewTeacher').innerHTML = '<option value="">Kies een docent...</option>' +
+        docentenList.map(function(d) { return '<option value="' + d + '"' + (d === r.teacher ? ' selected' : '') + '>' + d + '</option>'; }).join('');
+      document.getElementById('reviewSubject').value = r.subject || '';
+      document.getElementById('reviewDay').value = r.day || '';
+      document.getElementById('reviewPeriod').value = r.period || '';
+      document.getElementById('reviewText').value = r.text || '';
+      document.getElementById('reviewAuthor').value = r.author || '';
+      setReviewRating(r.rating || 0);
+      document.getElementById('reviewModal').classList.add('active');
     }
 
     // ===== POLLS =====
@@ -7379,6 +7452,86 @@
         } catch(e) {}
       }
     }, 30000);
+
+    // ===== USERS PAGE =====
+    var pageNames = { home:'🏠 Home', apps:'🔥 Rank It', rankings:'📊 Rankings', polls:'🗳️ Polls', reviews:'📝 Reviews', members:'👥 Leden', lore:'📜 Lore', soundboard:'🔊 Soundboard', stickers:'🎨 Stickers', stats:'📊 Stats', merch:'🛍️ Merch', about:'📖 Over Ons', contact:'✉️ Contact', users:'👤 Users', inbox:'📨 Inbox' };
+
+    // Heartbeat: update lastSeen every 30 seconds
+    setInterval(function() {
+      if (currentUser && !isGuest) {
+        var hash = window.location.hash.replace('#', '') || 'home';
+        try { db.collection('users').doc(currentUser.uid).update({ lastSeen: Date.now(), currentPage: hash }).catch(function(){}); } catch(e) {}
+      }
+    }, 30000);
+
+    function updateOnlineCount() {
+      db.collection('users').get().then(function(snapshot) {
+        var now = Date.now();
+        var count = 0;
+        snapshot.forEach(function(doc) {
+          var d = doc.data();
+          if (d.lastSeen && now - d.lastSeen < 120000) count++;
+        });
+        var el = document.getElementById('onlineCountNav');
+        if (el) el.textContent = count;
+      }).catch(function() {});
+    }
+
+    function loadUsersPage() {
+      db.collection('users').get().then(function(snapshot) {
+        var users = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; users.push(d); });
+
+        var now = Date.now();
+        var onlineThreshold = 120000;
+
+        users.sort(function(a, b) {
+          var aOnline = (a.lastSeen && now - a.lastSeen < onlineThreshold) ? 1 : 0;
+          var bOnline = (b.lastSeen && now - b.lastSeen < onlineThreshold) ? 1 : 0;
+          if (bOnline !== aOnline) return bOnline - aOnline;
+          return (b.lastSeen || 0) - (a.lastSeen || 0);
+        });
+
+        var onlineCount = users.filter(function(u) { return u.lastSeen && now - u.lastSeen < onlineThreshold; }).length;
+        document.getElementById('usersOnlineCount').textContent = '🟢 ' + onlineCount + ' online';
+        document.getElementById('usersTotalCount').textContent = users.length + ' leden totaal';
+
+        var list = document.getElementById('usersPageList');
+        var empty = document.getElementById('usersPageEmpty');
+
+        if (users.length === 0) {
+          list.innerHTML = '';
+          empty.style.display = 'block';
+          return;
+        }
+        empty.style.display = 'none';
+
+        var allRolesMap = { master:'👑', lore:'📜', leden:'👥', ranking:'🏆', berichten:'📬', soundboard:'🔊', merch:'🛍️' };
+
+        list.innerHTML = users.map(function(u) {
+          var online = u.lastSeen && now - u.lastSeen < onlineThreshold;
+          var statusDot = online ? '🟢' : '⚫';
+          var statusText = online ? 'Online' : (u.lastSeen ? getTimeAgo(u.lastSeen) : 'Onbekend');
+          var page = online && u.currentPage ? (pageNames[u.currentPage] || u.currentPage) : '';
+          var verBadge = u.verified ? '<span style="background:var(--mint);color:white;padding:1px 6px;border-radius:100px;font-size:0.5rem;font-weight:700;margin-left:4px;">✅</span>' : '';
+          var roles = u.roles || [];
+          var roleBadges = roles.map(function(r) {
+            return '<span style="font-size:0.6rem;margin-right:2px;">' + (allRolesMap[r] || '') + '</span>';
+          }).join('');
+
+          return '<div style="background:white;border-radius:14px;padding:16px 20px;margin-bottom:8px;box-shadow:0 2px 12px rgba(0,0,0,0.04);display:flex;align-items:center;gap:14px;border-left:3px solid ' + (online ? 'var(--mint)' : 'rgba(26,26,46,0.08)') + ';">' +
+            '<div style="font-size:1.2rem;">' + statusDot + '</div>' +
+            '<div style="flex:1;">' +
+              '<div style="font-weight:700;font-size:0.9rem;">' + (u.name || 'Onbekend') + verBadge + ' ' + roleBadges + '</div>' +
+              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + statusText + (page ? ' · ' + page : '') + '</div>' +
+            '</div>' +
+            (currentUser && u.id !== currentUser.uid && !isGuest ? '<button onclick="openSendMsgModal(\'' + u.id + '\',\'' + (u.name || '').replace(/'/g, "\\'") + '\')" style="padding:4px 10px;background:var(--blue);color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;">✉️</button>' : '') +
+          '</div>';
+        }).join('');
+      }).catch(function() {
+        document.getElementById('usersPageEmpty').innerHTML = '<div style="font-size:1.1rem;font-weight:800;">Kon gebruikers niet laden</div>';
+      });
+    }
 
     // sounds, members, sections lazy-loaded when visiting their pages
     loadCustomCategories();
@@ -8380,6 +8533,29 @@
     </div>
     <div id="notifList" style="overflow-y:auto;max-height:400px;padding:8px;"></div>
     <div id="notifEmpty" style="text-align:center;padding:40px 20px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Geen notificaties</div>
+  </div>
+
+  <!-- USERS PAGE -->
+  <div class="page" id="page-users">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #0F3460 0%, var(--primary) 100%);">
+      <h1>Users 👤</h1>
+      <p>Bekijk wie er online is en wie welke rollen heeft</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;padding:48px 40px 100px;">
+      <div style="display:flex;gap:12px;margin-bottom:24px;align-items:center;">
+        <div id="usersOnlineCount" style="font-size:0.75rem;font-weight:700;color:var(--mint);text-transform:uppercase;letter-spacing:1px;"></div>
+        <div id="usersTotalCount" style="font-size:0.75rem;color:rgba(26,26,46,0.4);"></div>
+      </div>
+      <div id="usersPageList"></div>
+      <div id="usersPageEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">👤</div>
+        <div style="font-size:1.1rem;font-weight:800;">Laden...</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
   </div>
 
   <!-- INBOX PAGE -->
