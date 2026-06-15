@@ -2998,15 +2998,23 @@
 
     /* DARK MODE */
     body.dark-mode {
-      --bg: #121220;
-      --primary: #FAF3E0;
-      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --bg: #0e0e1a;
+      --primary: #f0efe8;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      color: #e8e6df;
     }
 
     body.dark-mode nav {
-      background: #0a0a18;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      background: #0a0a14;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.6);
     }
+
+    body.dark-mode .hero { background: #0a0a14; }
+
+    body.dark-mode .stats-bar { background: #0a0a14; }
+    body.dark-mode .stat-number { color: var(--gold); }
+    body.dark-mode .stat-label { color: rgba(255,255,255,0.35); }
+    body.dark-mode .stat-item { border-right-color: rgba(255,255,255,0.06); }
 
     body.dark-mode .featured-card,
     body.dark-mode .ranker-setup,
@@ -3029,46 +3037,49 @@
     body.dark-mode .vote-entry,
     body.dark-mode .msg-entry,
     body.dark-mode .sound-btn,
-    body.dark-mode #merchGrid > div {
-      background: #1a1a2e;
-      color: #FAF3E0;
+    body.dark-mode .contact-card,
+    body.dark-mode #merchGrid > div,
+    body.dark-mode #notifPanel,
+    body.dark-mode #pollsList > div,
+    body.dark-mode #reviewsList > div,
+    body.dark-mode #inboxList > div {
+      background: #16162a !important;
+      color: #e8e6df;
+      border-color: rgba(255,255,255,0.06) !important;
     }
 
-    body.dark-mode .stats-bar,
-    body.dark-mode .contact-card {
-      background: #1a1a2e;
-      color: #FAF3E0;
-    }
+    body.dark-mode .section { background: transparent; }
+    body.dark-mode .section-title { color: #e8e6df; }
+    body.dark-mode .section-tag { color: var(--accent); }
 
-    body.dark-mode .stat-number { color: var(--accent); }
-    body.dark-mode .stat-label { color: rgba(250,243,224,0.5); }
-
-    body.dark-mode .ranker-input,
-    body.dark-mode .modal-input,
-    body.dark-mode .modal-add-input,
-    body.dark-mode .meme-add-input,
-    body.dark-mode .voter-name-input,
-    body.dark-mode .form-group input,
-    body.dark-mode .form-group textarea,
-    body.dark-mode .form-group select {
-      background: #0f0f1e;
-      color: #FAF3E0;
-      border-color: rgba(255,255,255,0.1);
-    }
-
-    body.dark-mode .ranker-chip,
-    body.dark-mode .modal-item-chip,
-    body.dark-mode .tier-pool-chip,
-    body.dark-mode .emoji-cell {
-      background: #0f0f1e;
-      color: #FAF3E0;
-      border-color: rgba(255,255,255,0.08);
-    }
-
-    body.dark-mode .preset-btn,
-    body.dark-mode .ranking-tab {
-      color: #FAF3E0;
-      border-color: rgba(255,255,255,0.12);
+    body.dark-mode .card-title,
+    body.dark-mode .card-desc,
+    body.dark-mode .ranking-name,
+    body.dark-mode .member-card-name,
+    body.dark-mode .member-card-desc,
+    body.dark-mode .team-name,
+    body.dark-mode .team-bio,
+    body.dark-mode .about-block-text h2,
+    body.dark-mode .about-block-text p,
+    body.dark-mode .results-header h2,
+    body.dark-mode .lore-stories-header h2,
+    body.dark-mode .meme-wall-header h2,
+    body.dark-mode .meme-add-form h3,
+    body.dark-mode .contact-form h2,
+    body.dark-mode .lore-entry h3,
+    body.dark-mode .story-card h3,
+    body.dark-mode .ranker-setup-sub,
+    body.dark-mode .modal-sub,
+    body.dark-mode .lore-entry p,
+    body.dark-mode .story-card p,
+    body.dark-mode .contact-card p,
+    body.dark-mode .contact-card h3,
+    body.dark-mode .msg-entry-text,
+    body.dark-mode .msg-entry-name,
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode label {
+      color: #e8e6df !important;
     }
 
     body.dark-mode .card-desc,
@@ -3081,42 +3092,100 @@
     body.dark-mode .story-card p,
     body.dark-mode .contact-card p,
     body.dark-mode .msg-entry-text {
-      color: rgba(250,243,224,0.55);
+      color: rgba(232,230,223,0.6) !important;
     }
 
-    body.dark-mode .section-title,
-    body.dark-mode .card-title,
-    body.dark-mode .about-block-text h2,
-    body.dark-mode .results-header h2,
-    body.dark-mode .lore-stories-header h2,
-    body.dark-mode .meme-wall-header h2,
-    body.dark-mode .meme-add-form h3,
-    body.dark-mode .contact-form h2 {
-      color: #FAF3E0;
+    body.dark-mode .ranking-detail,
+    body.dark-mode .ranking-score-label,
+    body.dark-mode .member-card-title,
+    body.dark-mode .team-role {
+      color: rgba(232,230,223,0.5) !important;
+    }
+
+    body.dark-mode .ranker-input,
+    body.dark-mode .modal-input,
+    body.dark-mode .modal-add-input,
+    body.dark-mode .meme-add-input,
+    body.dark-mode .voter-name-input,
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group textarea,
+    body.dark-mode .form-group select {
+      background: #0e0e1a !important;
+      color: #e8e6df !important;
+      border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    body.dark-mode .ranker-chip,
+    body.dark-mode .modal-item-chip,
+    body.dark-mode .tier-pool-chip,
+    body.dark-mode .emoji-cell {
+      background: #0e0e1a !important;
+      color: #e8e6df !important;
+      border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    body.dark-mode .preset-btn,
+    body.dark-mode .ranking-tab {
+      color: #e8e6df;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .preset-btn:hover,
+    body.dark-mode .ranking-tab:hover {
+      background: rgba(255,255,255,0.06);
     }
 
     body.dark-mode .ranker-reset-btn {
-      background: #1a1a2e;
-      color: #FAF3E0;
+      background: #16162a;
+      color: #e8e6df;
       border-color: rgba(255,255,255,0.1);
     }
 
     body.dark-mode .mode-card {
-      background: #0f0f1e;
-      color: #FAF3E0;
+      background: #0e0e1a !important;
+      color: #e8e6df !important;
+      border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    body.dark-mode .mode-card.selected {
+      border-color: var(--gold) !important;
     }
 
     body.dark-mode .tier-items {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.04);
     }
 
     body.dark-mode .tier-chip {
-      background: #1a1a2e;
-      color: #FAF3E0;
+      background: #16162a;
+      color: #e8e6df;
     }
 
     body.dark-mode footer {
-      background: #0a0a18;
+      background: #060610;
+    }
+
+    body.dark-mode .apps-hero,
+    body.dark-mode .rankings-hero,
+    body.dark-mode .members-hero,
+    body.dark-mode .lore-hero {
+      opacity: 0.95;
+    }
+
+    body.dark-mode .modal-label {
+      color: rgba(232,230,223,0.6) !important;
+    }
+
+    body.dark-mode .modal-cancel {
+      color: #e8e6df;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode #notifPanel {
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.dark-mode #notifPanel > div:first-child {
+      border-bottom-color: rgba(255,255,255,0.06) !important;
     }
 
     .theme-btn {
@@ -3818,8 +3887,8 @@
       <label class="modal-label">Review</label>
       <textarea class="modal-input" id="reviewText" placeholder="Wat vind je van deze docent/dit vak?" style="min-height:100px;resize:vertical;font-family:inherit;"></textarea>
 
-      <label class="modal-label">Jouw naam (optioneel — laat leeg voor anoniem)</label>
-      <input type="text" class="modal-input" id="reviewAuthor" placeholder="Anoniem">
+      <label class="modal-label">Geplaatst als</label>
+      <input type="text" class="modal-input" id="reviewAuthor" readonly style="opacity:0.7;cursor:default;">
 
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeReviewModal()">Annuleren</button>
@@ -4085,6 +4154,7 @@
     var isAdmin = false;
     var adminRole = null;
     var userRoles = [];
+    var isVerified = false;
     function hasPermission(perm) {
       if (userRoles.indexOf(perm) !== -1 || userRoles.indexOf('master') !== -1) return true;
       if (!isAdmin || !adminRole) return false;
@@ -4294,6 +4364,7 @@
             } else {
               userRoles = [];
             }
+            isVerified = (doc.exists && doc.data().verified) || isSiteOwner || userRoles.indexOf('master') !== -1;
             if (isSiteOwner && userRoles.indexOf('master') === -1) {
               userRoles.push('master');
               db.collection('users').doc(user.uid).update({ roles: userRoles }).catch(function() {});
@@ -5216,6 +5287,7 @@
 
     function addMeme() {
       if (isGuest) { alert('Log in met een account om memes toe te voegen.'); showLoginPopup(); return; }
+      if (!isVerified) { alert('Je moet geverifieerd zijn om memes toe te voegen.'); return; }
       var input = document.getElementById('memeInput');
       var text = input.value.trim();
       if (!text) return;
@@ -5278,6 +5350,12 @@
         <option value="once">🔒 1x totaal</option>
       </select>
 
+      <label class="modal-label">Toegang</label>
+      <select class="modal-input" id="catAccess" style="padding:12px 16px;">
+        <option value="everyone">🌐 Iedereen</option>
+        <option value="verified">✅ Alleen geverifieerde leden</option>
+      </select>
+
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeCategoryModal()">Annuleren</button>
         <button class="modal-save" id="catSaveBtn" onclick="saveCategory()" disabled>Opslaan</button>
@@ -5299,12 +5377,14 @@
         document.getElementById('catName').value = meta.name;
         document.getElementById('catEmoji').value = meta.emoji || '';
         document.getElementById('catVoteLimit').value = meta.voteLimit || 'unlimited';
+        document.getElementById('catAccess').value = meta.access || 'everyone';
         catItems = presets[editId] ? presets[editId].slice() : [];
         document.getElementById('catSaveBtn').textContent = 'Wijzigingen Opslaan';
       } else {
         document.getElementById('catName').value = '';
         document.getElementById('catEmoji').value = '';
         document.getElementById('catVoteLimit').value = 'unlimited';
+        document.getElementById('catAccess').value = 'everyone';
         document.getElementById('catSaveBtn').textContent = 'Opslaan';
       }
       document.getElementById('catItemInput').value = '';
@@ -5347,6 +5427,7 @@
       var name = document.getElementById('catName').value.trim();
       var emoji = document.getElementById('catEmoji').value.trim() || '🏷️';
       var voteLimit = document.getElementById('catVoteLimit').value;
+      var access = document.getElementById('catAccess').value;
       if (!name || catItems.length < 3) return;
 
       var btn = document.getElementById('catSaveBtn');
@@ -5359,12 +5440,13 @@
         name: name,
         emoji: emoji,
         voteLimit: voteLimit,
+        access: access,
         items: catItems.slice(),
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(function() {
         presets[catId] = catItems.slice();
-        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
-        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
+        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit, access: access };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit, access: access };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -5373,8 +5455,8 @@
         editingCategoryId = null;
       }).catch(function() {
         presets[catId] = catItems.slice();
-        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
-        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit };
+        customCategories[catId] = { name: name, emoji: emoji, voteLimit: voteLimit, access: access };
+        if (builtinMeta[catId]) builtinMeta[catId] = { name: name, emoji: emoji, voteLimit: voteLimit, access: access };
         renderPresetButtons();
         closeCategoryModal();
         btn.textContent = 'Opslaan';
@@ -5415,7 +5497,8 @@
 
       allIds.forEach(function(id) {
         var meta = getPresetMeta(id);
-        html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' + meta.emoji + ' ' + meta.name;
+        if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) return;
+        html += '<button class="preset-btn" onclick="loadPreset(\'' + id + '\')">' + meta.emoji + ' ' + meta.name + (meta.access === 'verified' ? ' ✅' : '');
         if (hasPermission('ranking')) {
           html += '<button class="preset-btn-delete" style="display:inline;color:var(--blue);" onclick="event.stopPropagation();openCategoryModal(\'' + id + '\')" title="Bewerken">✏️</button>';
           html += '<button class="preset-btn-delete" style="display:inline" onclick="event.stopPropagation();deleteCategory(\'' + id + '\')" title="Verwijder">x</button>';
@@ -5440,6 +5523,7 @@
       var html = '';
       allIds.forEach(function(id) {
         var meta = getPresetMeta(id);
+        if (meta.access === 'verified' && !isVerified && !hasPermission('ranking')) return;
         html += '<button class="ranking-tab' + (currentCategory === id ? ' active' : '') + '" onclick="switchTab(this, \'' + id + '\')">' + meta.emoji + ' ' + meta.name + '</button>';
       });
 
@@ -5450,7 +5534,7 @@
       cachedGet('categories', db.collection('categories'), 10).then(function(data) {
         data.forEach(function(d) {
           presets[d._id] = d.items;
-          customCategories[d._id] = { name: d.name, emoji: d.emoji || '🏷️', voteLimit: d.voteLimit || 'unlimited' };
+          customCategories[d._id] = { name: d.name, emoji: d.emoji || '🏷️', voteLimit: d.voteLimit || 'unlimited', access: d.access || 'everyone' };
         });
         renderPresetButtons();
       }).catch(function() {});
@@ -5629,6 +5713,7 @@
 
     function saveStory() {
       if (isGuest) { alert('Log in met een account om verhalen toe te voegen.'); showLoginPopup(); return; }
+      if (!isVerified) { alert('Je moet geverifieerd zijn om verhalen toe te voegen.'); return; }
       var title = document.getElementById('storyTitle').value.trim();
       var text = document.getElementById('storyText').value.trim();
       if (!title || !text) { alert('Vul minimaal een titel en verhaal in'); return; }
@@ -6554,13 +6639,14 @@
 
     function openReviewModal() {
       if (!currentUser || isGuest) { alert('Log in om een review te schrijven.'); showLoginPopup(); return; }
+      if (!isVerified) { alert('Je moet een geverifieerd lid zijn om reviews te schrijven. Vraag een admin om je te verifiëren.'); return; }
       reviewRating = 0;
       setReviewRating(0);
       document.getElementById('reviewTeacher').innerHTML = '<option value="">Kies een docent...</option>' +
         docentenList.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
       document.getElementById('reviewSubject').value = '';
       document.getElementById('reviewText').value = '';
-      document.getElementById('reviewAuthor').value = '';
+      document.getElementById('reviewAuthor').value = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
       document.getElementById('reviewDay').value = '';
       document.getElementById('reviewPeriod').value = '';
       document.getElementById('reviewPeriodCustom').value = '';
@@ -6582,7 +6668,7 @@
       var teacher = document.getElementById('reviewTeacher').value;
       var subject = document.getElementById('reviewSubject').value.trim();
       var text = document.getElementById('reviewText').value.trim();
-      var author = document.getElementById('reviewAuthor').value.trim() || 'Anoniem';
+      var author = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : 'Onbekend';
       var day = document.getElementById('reviewDay').value;
       var period = document.getElementById('reviewPeriod').value;
       if (period === 'Anders') period = document.getElementById('reviewPeriodCustom').value.trim();
@@ -6617,6 +6703,14 @@
     }
 
     function loadReviews() {
+      if (!isVerified && !hasPermission('ranking')) {
+        var list = document.getElementById('reviewsList');
+        var empty = document.getElementById('reviewsEmpty');
+        var reqBtnHtml = currentUser && !isGuest ? '<button onclick="requestVerification()" style="margin-top:16px;padding:12px 28px;background:var(--mint);color:white;border:none;border-radius:100px;font-weight:800;font-size:0.85rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'\'">✅ Verificatie Aanvragen</button>' : '';
+        if (list) list.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:3rem;margin-bottom:16px;">🔒</div><div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;color:rgba(26,26,46,0.6);">Alleen voor geverifieerde leden</div><div style="font-size:0.85rem;color:rgba(26,26,46,0.35);">Je moet geverifieerd zijn om reviews te zien en schrijven.</div>' + reqBtnHtml + '</div>';
+        if (empty) empty.style.display = 'none';
+        return;
+      }
       db.collection('reviews').orderBy('timestamp', 'desc').get().then(function(snapshot) {
         allReviews = [];
         snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
@@ -7775,12 +7869,15 @@
 
           var isBanned = u.banned || false;
           var isOwner = (u.email === 'joshibrahim903@gmail.com');
+          var userVerified = u.verified || isOwner;
+          var verReq = u.verificationRequested && !userVerified;
 
           usersHtml += '<div style="padding:12px 14px;background:' + (isBanned ? 'rgba(233,69,96,0.06)' : 'var(--bg)') + ';border-radius:12px;margin-bottom:8px;border:1px solid ' + (isBanned ? 'rgba(233,69,96,0.2)' : 'rgba(26,26,46,0.06)') + ';">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-              '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + (isBanned ? ' <span style="background:var(--accent);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;margin-left:6px;">BANNED</span>' : '') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
+              '<div><div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + (isBanned ? ' <span style="background:var(--accent);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;margin-left:6px;">BANNED</span>' : '') + (userVerified ? ' <span style="background:var(--mint);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;margin-left:4px;">✅</span>' : '') + (verReq ? ' <span style="background:var(--orange);color:white;padding:1px 8px;border-radius:100px;font-size:0.55rem;font-weight:700;margin-left:4px;">⏳ WACHT</span>' : '') + '</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">' + (u.email || '') + '</div></div>' +
               '<div style="display:flex;align-items:center;gap:6px;">' +
                 '<div style="font-size:0.6rem;color:rgba(26,26,46,0.3);">' + time + '</div>' +
+                (isOwner ? '' : '<button onclick="toggleVerified(\'' + uid + '\',' + !userVerified + ')" style="padding:4px 10px;background:' + (userVerified ? 'rgba(26,26,46,0.06)' : 'var(--mint)') + ';color:' + (userVerified ? 'rgba(26,26,46,0.4)' : 'white') + ';border:none;border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;">' + (userVerified ? 'Unverify' : '✅ Verify') + '</button>') +
                 (isOwner ? '' : '<button onclick="toggleBan(\'' + uid + '\',' + !isBanned + ')" style="padding:4px 10px;background:' + (isBanned ? 'var(--mint)' : 'var(--accent)') + ';color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;">' + (isBanned ? 'Unban' : 'Ban') + '</button>') +
               '</div>' +
             '</div>' +
@@ -7812,6 +7909,51 @@
       db.collection('users').doc(uid).update({ banned: ban }).then(function() {
         loadUsersList();
       }).catch(function(err) { console.error(err); });
+    }
+
+    function toggleVerified(uid, verified) {
+      db.collection('users').doc(uid).update({ verified: verified }).then(function() {
+        loadUsersList();
+        if (verified) {
+          db.collection('messages').add({
+            to: uid,
+            fromUid: 'system',
+            fromName: '🤖 Systeem',
+            text: 'Je bent geverifieerd! ✅ Je hebt nu toegang tot reviews en geverifieerde categorieën.',
+            read: false,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          }).catch(function() {});
+        }
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function requestVerification() {
+      if (!currentUser) return;
+      var userName = currentUser.displayName || currentUser.email.split('@')[0];
+      db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+        if (doc.exists && doc.data().verificationRequested) {
+          alert('Je hebt al een verificatie aanvraag ingediend. De admin bekijkt het zo snel mogelijk.');
+          return;
+        }
+        db.collection('users').doc(currentUser.uid).update({ verificationRequested: true }).catch(function() {});
+        db.collection('users').get().then(function(snapshot) {
+          snapshot.forEach(function(userDoc) {
+            var u = userDoc.data();
+            var roles = u.roles || [];
+            if (roles.indexOf('master') !== -1 || u.email === 'joshibrahim903@gmail.com') {
+              db.collection('messages').add({
+                to: userDoc.id,
+                fromUid: currentUser.uid,
+                fromName: userName,
+                text: '✅ Verificatie aanvraag!\n\n' + userName + ' (' + currentUser.email + ') wil geverifieerd worden.\n\nGa naar het admin panel → Gebruikers & Rollen → klik op "✅ Verify" om deze gebruiker te verifiëren.',
+                read: false,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+              }).catch(function() {});
+            }
+          });
+          alert('Verificatie aanvraag verstuurd! De admin krijgt een bericht en zal je zo snel mogelijk verifiëren.');
+        });
+      }).catch(function() {});
     }
 
     function loadAdminMessages() {
