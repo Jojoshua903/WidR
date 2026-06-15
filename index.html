@@ -29,8 +29,8 @@
       --coral: #FF6B6B;
       --purple: #845EC2;
       --orange: #FF9A3C;
-      --bg: #FAF3E0;
-      --card-shadow: 0 8px 32px rgba(26, 26, 46, 0.12);
+      --bg: #F5F0E8;
+      --card-shadow: 0 4px 20px rgba(26, 26, 46, 0.08);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -287,44 +287,52 @@
       padding: 60px 24px;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--blue) 50%, #16213E 100%);
+      background: var(--primary);
     }
 
     .hero::before {
       content: '';
       position: absolute;
-      top: -200px;
-      right: -200px;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(233,69,96,0.2) 0%, transparent 70%);
+      top: -30%;
+      right: -10%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(233,69,96,0.15) 0%, transparent 60%);
       border-radius: 50%;
+      animation: heroPulse 8s ease-in-out infinite alternate;
     }
 
     .hero::after {
       content: '';
       position: absolute;
-      bottom: -150px;
-      left: -150px;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(245,197,24,0.15) 0%, transparent 70%);
+      bottom: -20%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(245,197,24,0.12) 0%, transparent 60%);
       border-radius: 50%;
+      animation: heroPulse 10s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes heroPulse {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.15) translate(20px, -20px); }
     }
 
     .hero-badge {
       display: inline-block;
-      background: var(--accent);
-      color: white;
-      font-size: 0.75rem;
-      font-weight: 700;
+      background: rgba(233,69,96,0.15);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      padding: 8px 24px;
+      letter-spacing: 4px;
+      padding: 10px 28px;
       border-radius: 100px;
       margin-bottom: 32px;
       position: relative;
       z-index: 1;
+      border: 1px solid rgba(233,69,96,0.2);
     }
 
     .hero h1 {
@@ -341,11 +349,12 @@
     .hero h1 .highlight {
       color: var(--gold);
       display: block;
+      text-shadow: 0 0 80px rgba(245,197,24,0.3);
     }
 
     .hero p {
-      font-size: 1.2rem;
-      color: rgba(255,255,255,0.6);
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.5);
       max-width: 520px;
       line-height: 1.7;
       margin-bottom: 40px;
@@ -360,21 +369,21 @@
       background: var(--gold);
       color: var(--primary);
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.9rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 16px 40px;
-      border-radius: 12px;
+      letter-spacing: 2px;
+      padding: 16px 36px;
+      border-radius: 100px;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.4s;
       position: relative;
       z-index: 1;
       border: none;
     }
 
     .hero-cta:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) scale(1.02);
       box-shadow: 0 12px 40px rgba(245, 197, 24, 0.35);
     }
 
@@ -394,7 +403,7 @@
       border-right: 3px solid var(--gold);
       border-bottom: 3px solid var(--gold);
       transform: rotate(45deg);
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
     @keyframes bounce {
@@ -406,14 +415,14 @@
     .stats-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      background: white;
-      border-bottom: 3px solid var(--gold);
+      background: var(--primary);
+      border-bottom: none;
     }
 
     .stat-item {
-      padding: 40px 24px;
+      padding: 36px 24px;
       text-align: center;
-      border-right: 1px solid rgba(0,0,0,0.06);
+      border-right: 1px solid rgba(255,255,255,0.06);
     }
 
     .stat-item:last-child { border-right: none; }
@@ -421,15 +430,16 @@
     .stat-number {
       font-size: 2.5rem;
       font-weight: 900;
-      color: var(--accent);
+      color: var(--gold);
       line-height: 1;
       margin-bottom: 6px;
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.35);
       color: rgba(26,26,46,0.5);
       font-weight: 600;
     }
@@ -441,20 +451,20 @@
 
     .section-header {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 48px;
     }
 
     .section-tag {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
     }
 
     .section-title {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 900;
       letter-spacing: -1.5px;
       color: var(--primary);
@@ -462,21 +472,22 @@
 
     .featured-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
     .featured-card {
       background: white;
-      border-radius: 16px;
-      padding: 36px;
-      box-shadow: var(--card-shadow);
-      transition: all 0.4s;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(26,26,46,0.06);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
       overflow: hidden;
       cursor: pointer;
+      border: 1px solid rgba(26,26,46,0.04);
     }
 
     .featured-card::before {
@@ -485,22 +496,24 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
     }
 
-    .featured-card:nth-child(1)::before { background: var(--gold); }
-    .featured-card:nth-child(2)::before { background: var(--accent); }
-    .featured-card:nth-child(3)::before { background: var(--mint); }
+    .featured-card:nth-child(1)::before { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+    .featured-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent), var(--purple)); }
+    .featured-card:nth-child(3)::before { background: linear-gradient(90deg, var(--mint), var(--blue)); }
 
     .featured-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 60px rgba(26, 26, 46, 0.18);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(26, 26, 46, 0.14);
+      border-color: rgba(26,26,46,0.08);
     }
 
     .card-rank {
       font-size: 4rem;
       font-weight: 900;
-      opacity: 0.08;
+      opacity: 0.05;
       position: absolute;
       top: 12px;
       right: 20px;
@@ -508,14 +521,14 @@
     }
 
     .card-icon {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .featured-card:nth-child(1) .card-icon { background: rgba(245,197,24,0.15); }
@@ -2934,6 +2947,53 @@
       .stats-container { padding: 40px 20px 80px; }
 
       .stats-bar-name { min-width: 80px; font-size: 0.75rem; }
+
+      /* Mobile homepage */
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 0.9rem; padding: 0 10px; }
+      .hero-badge { font-size: 0.6rem; }
+      .hero-cta { font-size: 0.8rem; padding: 14px 28px; }
+
+      /* Mobile notification panel */
+      #notifPanel { left: 10px; right: 10px; width: auto; }
+
+      /* Mobile modals */
+      .modal { margin: 10px; max-height: 90vh; overflow-y: auto; }
+
+      /* Mobile login gate */
+      #loginGate > div { padding: 0 16px; }
+
+      /* Mobile merch */
+      #merchGrid { grid-template-columns: 1fr !important; }
+
+      /* Mobile polls */
+      #pollsList button { font-size: 0.85rem; }
+
+      /* Mobile reviews */
+      #reviewFilterTabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+      #reviewFilterTabs::-webkit-scrollbar { display: none; }
+
+      /* Mobile tier list */
+      .tier-row { min-height: 44px; }
+      .tier-label { width: 40px; font-size: 1rem; }
+
+      /* Mobile nav user area */
+      #navUserArea { gap: 4px; }
+      #navUserName { font-size: 0.65rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #navLoginBtn { padding: 6px 12px; font-size: 0.65rem; }
+      #navLogoutBtn { padding: 6px 10px; font-size: 0.65rem; }
+
+      /* Mobile bracket */
+      .bracket-rounds { gap: 16px; }
+      .bracket-round-col { min-width: 120px; }
+
+      /* Mobile soundboard */
+      #soundboardGrid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+
+      /* Mobile general spacing */
+      .lore-timeline { padding-left: 30px; }
+      .lore-entry { padding: 20px; }
+      .story-card { padding: 20px; }
     }
 
     /* DARK MODE */
@@ -3151,6 +3211,7 @@
           <a href="#apps" onclick="navigate('apps');closeNavDrops()">🔥 Rank It</a>
           <a href="#rankings" onclick="navigate('rankings');closeNavDrops()">📊 Rankings</a>
           <a href="#polls" onclick="navigate('polls');closeNavDrops()">🗳️ Polls</a>
+          <a href="#reviews" onclick="navigate('reviews');closeNavDrops()">📝 Reviews</a>
         </div>
       </div>
 
@@ -3159,8 +3220,8 @@
         <div class="nav-dropdown-menu" id="dropCommunity">
           <a href="#members" onclick="navigate('members');closeNavDrops()">👥 Leden</a>
           <a href="#lore" onclick="navigate('lore');closeNavDrops()">📜 Lore</a>
-          <a href="#stickers" onclick="navigate('stickers');closeNavDrops()">🎨 Stickers</a>
           <a href="#soundboard" onclick="navigate('soundboard');closeNavDrops()">🔊 Soundboard</a>
+          <a href="#stickers" onclick="navigate('stickers');closeNavDrops()">🎨 Stickers</a>
           <a href="#stats" onclick="navigate('stats');closeNavDrops()">📊 Chat Stats</a>
         </div>
       </div>
@@ -3193,7 +3254,10 @@
       <div class="hero-badge">App Groep 2026</div>
       <h1>Wat in de<br><span class="highlight">Ranking</span></h1>
       <p>De ultieme app groep waar alles wordt gerankt. Van de beste films tot de slechtste excuses — wij ranken het allemaal.</p>
-      <button class="hero-cta" onclick="navigate('apps')">Start met Ranken &rarr;</button>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+        <button class="hero-cta" onclick="navigate('apps')">Start met Ranken &rarr;</button>
+        <button class="hero-cta" onclick="navigate('polls')" style="background:transparent;border:2px solid var(--gold);color:var(--gold);">Bekijk Polls 🗳️</button>
+      </div>
       <div class="scroll-indicator"><span></span></div>
     </div>
 
@@ -3216,30 +3280,111 @@
       </div>
     </div>
 
+    <!-- QUICK ACCESS GRID -->
     <div class="section">
       <div class="section-header">
-        <div class="section-tag">Waarom Wij</div>
-        <div class="section-title">Alles Verdient een Ranking</div>
+        <div class="section-tag">Snelle Toegang</div>
+        <div class="section-title">Alles op Één Plek</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;max-width:900px;margin:0 auto;">
+        <div onclick="navigate('apps')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">🔥</div>
+          <div style="font-weight:800;font-size:0.85rem;">Rank It</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Rank alles</div>
+        </div>
+        <div onclick="navigate('rankings')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--gold)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">📊</div>
+          <div style="font-weight:800;font-size:0.85rem;">Rankings</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Live resultaten</div>
+        </div>
+        <div onclick="navigate('polls')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--purple)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">🗳️</div>
+          <div style="font-weight:800;font-size:0.85rem;">Polls</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Dagelijkse poll</div>
+        </div>
+        <div onclick="navigate('reviews')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--mint)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">📝</div>
+          <div style="font-weight:800;font-size:0.85rem;">Reviews</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Docent reviews</div>
+        </div>
+        <div onclick="navigate('lore')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--orange)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">📜</div>
+          <div style="font-weight:800;font-size:0.85rem;">Lore</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Verhalen & memes</div>
+        </div>
+        <div onclick="navigate('soundboard')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--coral)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">🔊</div>
+          <div style="font-weight:800;font-size:0.85rem;">Soundboard</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Geluiden</div>
+        </div>
+        <div onclick="navigate('members')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--blue)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">👥</div>
+          <div style="font-weight:800;font-size:0.85rem;">Leden</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">De groep</div>
+        </div>
+        <div onclick="navigate('merch')" style="background:white;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);cursor:pointer;transition:all 0.3s;border:2px solid transparent;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='';this.style.borderColor='transparent'">
+          <div style="font-size:2rem;margin-bottom:8px;">🛍️</div>
+          <div style="font-weight:800;font-size:0.85rem;">Merch</div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);margin-top:4px;">Shop</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURED SECTION -->
+    <div class="section" style="background:rgba(26,26,46,0.02);padding:60px 40px;">
+      <div class="section-header">
+        <div class="section-tag">Uitgelicht</div>
+        <div class="section-title">Wat Kun Je Hier Doen?</div>
       </div>
       <div class="featured-grid">
         <div class="featured-card" onclick="navigate('apps')">
           <div class="card-rank">#1</div>
           <div class="card-icon">🏆</div>
           <div class="card-title">Rank Alles</div>
-          <div class="card-desc">Van je favoriete snacks tot de beste vakantiebestemmingen. Als het bestaat, ranken wij het.</div>
-        </div>
-        <div class="featured-card" onclick="navigate('rankings')">
-          <div class="card-rank">#2</div>
-          <div class="card-icon">⚡</div>
-          <div class="card-title">Live Rankings</div>
-          <div class="card-desc">Bekijk real-time hoe de rankings veranderen. Elke stem telt en elke mening doet ertoe.</div>
+          <div class="card-desc">Pair Ranking, Bracket, Tierlist of Blind — kies je modus en rank alles wat je maar kunt bedenken.</div>
         </div>
         <div class="featured-card" onclick="navigate('polls')">
-          <div class="card-rank">#3</div>
+          <div class="card-rank">#2</div>
           <div class="card-icon">🗳️</div>
-          <div class="card-title">Polls</div>
-          <div class="card-desc">Maak polls, stem op je favorieten, en bekijk wat de groep vindt. Stem elke dag opnieuw!</div>
+          <div class="card-title">Dagelijkse Polls</div>
+          <div class="card-desc">Elke dag een nieuwe poll. Stem en bekijk direct wat de rest van de groep vindt.</div>
         </div>
+        <div class="featured-card" onclick="navigate('reviews')">
+          <div class="card-rank">#3</div>
+          <div class="card-icon">📝</div>
+          <div class="card-title">Docent Reviews</div>
+          <div class="card-desc">Beoordeel docenten en vakken met sterren. Bekijk gemiddelde scores per docent.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMES SECTION -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-tag">Entertainment</div>
+        <div class="section-title">Games & Fun</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;max-width:900px;margin:0 auto;">
+        <a href="kart.html" style="text-decoration:none;color:inherit;background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);transition:all 0.3s;display:block;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)'">
+          <div style="font-size:2.5rem;margin-bottom:10px;">🏎️</div>
+          <div style="font-weight:800;font-size:1rem;">Kart Racing</div>
+          <div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-top:4px;">Multiplayer kart game</div>
+        </a>
+        <a href="rpg.html" style="text-decoration:none;color:inherit;background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);transition:all 0.3s;display:block;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)'">
+          <div style="font-size:2.5rem;margin-bottom:10px;">⚔️</div>
+          <div style="font-weight:800;font-size:1rem;">RPG Battle</div>
+          <div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-top:4px;">Turn-based RPG</div>
+        </a>
+        <a href="tank.html" style="text-decoration:none;color:inherit;background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);transition:all 0.3s;display:block;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)'">
+          <div style="font-size:2.5rem;margin-bottom:10px;">🔫</div>
+          <div style="font-weight:800;font-size:1rem;">Tank Battle</div>
+          <div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-top:4px;">Arena shooter</div>
+        </a>
+        <a href="games.html" style="text-decoration:none;color:inherit;background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);transition:all 0.3s;display:block;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)'">
+          <div style="font-size:2.5rem;margin-bottom:10px;">🕹️</div>
+          <div style="font-weight:800;font-size:1rem;">Mini Games</div>
+          <div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-top:4px;">8+ browser games</div>
+        </a>
       </div>
     </div>
 
@@ -3587,6 +3732,98 @@
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeSoundModal()">Annuleren</button>
         <button class="modal-save" id="sndSaveBtn" onclick="saveSound()">Opslaan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS PAGE -->
+  <div class="page" id="page-reviews">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #16C79A 0%, var(--blue) 50%, var(--primary) 100%);">
+      <h1>Reviews 📝</h1>
+      <p>Beoordeel docenten en vakken — anoniem en eerlijk</p>
+    </div>
+    <div style="max-width:800px;margin:0 auto;padding:48px 40px 100px;">
+
+      <div style="text-align:center;margin-bottom:24px;">
+        <button onclick="openReviewModal()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;">📝 Review Schrijven</button>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;" id="reviewFilterTabs">
+        <button class="ranking-tab active" onclick="filterReviews('all',this)">Alles</button>
+      </div>
+
+      <div id="reviewsList"></div>
+      <div id="reviewsEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">📝</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen reviews</div>
+        <div style="font-size:0.85rem;">Schrijf de eerste review!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
+  <!-- REVIEW MODAL -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal" style="position:relative;">
+      <button onclick="closeReviewModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
+      <h2>📝 Review Schrijven</h2>
+      <div class="modal-sub">Beoordeel een docent of vak. Reviews zijn anoniem tenzij je je naam invult.</div>
+
+      <label class="modal-label">Docent</label>
+      <select class="modal-input" id="reviewTeacher" style="padding:12px 16px;" onchange="updateReviewSubjects()">
+        <option value="">Kies een docent...</option>
+      </select>
+
+      <label class="modal-label">Vak</label>
+      <input type="text" class="modal-input" id="reviewSubject" placeholder="bijv. Wiskunde, Engels, Scheikunde...">
+
+      <label class="modal-label">Dag & Lesuur (optioneel)</label>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <select class="modal-input" id="reviewDay" style="padding:12px 16px;margin-bottom:0;flex:1;">
+          <option value="">Dag...</option>
+          <option value="Maandag">Maandag</option>
+          <option value="Dinsdag">Dinsdag</option>
+          <option value="Woensdag">Woensdag</option>
+          <option value="Donderdag">Donderdag</option>
+          <option value="Vrijdag">Vrijdag</option>
+        </select>
+        <select class="modal-input" id="reviewPeriod" style="padding:12px 16px;margin-bottom:0;flex:1;">
+          <option value="">Lesuur...</option>
+          <option value="1e uur (09:00-09:45)">1e uur (09:00-09:45)</option>
+          <option value="2e uur (09:45-10:30)">2e uur (09:45-10:30)</option>
+          <option value="3e uur (10:50-11:35)">3e uur (10:50-11:35)</option>
+          <option value="4e uur (11:35-12:20)">4e uur (11:35-12:20)</option>
+          <option value="5e uur (13:10-13:55)">5e uur (13:10-13:55)</option>
+          <option value="6e uur (13:55-14:40)">6e uur (13:55-14:40)</option>
+          <option value="7e uur (14:45-15:30)">7e uur (14:45-15:30)</option>
+          <option value="8e uur (15:30-16:15)">8e uur (15:30-16:15)</option>
+          <option value="9e uur (16:15-17:00)">9e uur (16:15-17:00)</option>
+          <option value="Anders">Anders (typ hieronder)</option>
+        </select>
+      </div>
+      <input type="text" class="modal-input" id="reviewPeriodCustom" placeholder="Of typ zelf een dag/uur..." style="display:none;">
+
+      <label class="modal-label">Beoordeling</label>
+      <div id="reviewStars" style="display:flex;gap:6px;margin-bottom:16px;font-size:2rem;cursor:pointer;">
+        <span onclick="setReviewRating(1)" id="star1">☆</span>
+        <span onclick="setReviewRating(2)" id="star2">☆</span>
+        <span onclick="setReviewRating(3)" id="star3">☆</span>
+        <span onclick="setReviewRating(4)" id="star4">☆</span>
+        <span onclick="setReviewRating(5)" id="star5">☆</span>
+      </div>
+
+      <label class="modal-label">Review</label>
+      <textarea class="modal-input" id="reviewText" placeholder="Wat vind je van deze docent/dit vak?" style="min-height:100px;resize:vertical;font-family:inherit;"></textarea>
+
+      <label class="modal-label">Jouw naam (optioneel — laat leeg voor anoniem)</label>
+      <input type="text" class="modal-input" id="reviewAuthor" placeholder="Anoniem">
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeReviewModal()">Annuleren</button>
+        <button class="modal-save" id="reviewSaveBtn" onclick="submitReview()">Plaatsen</button>
       </div>
     </div>
   </div>
@@ -4120,6 +4357,7 @@
       if (page === 'soundboard') { try { loadSounds(); } catch(e) {} }
       if (page === 'merch') { try { loadMerch(); } catch(e) {} }
       if (page === 'polls') { try { loadPolls(); } catch(e) {} }
+      if (page === 'reviews') { try { loadReviews(); } catch(e) {} }
       if (page === 'inbox') { try { loadInbox(); } catch(e) {} }
       if (page === 'lore' && !loreLoaded) { try { loadStories(); loadMemes(); loreLoaded = true; } catch(e) {} }
       if (page === 'members' && !membersLoaded) { try { loadMembers(); loadSections(); membersLoaded = true; } catch(e) {} }
@@ -6298,6 +6536,167 @@
       var m = merchData.find(function(x) { return x.id === id; });
       if (!confirm('Product "' + (m ? m.name : id) + '" verwijderen?')) return;
       db.collection('merch').doc(id).delete().then(function() { loadMerch(); }).catch(function() {});
+    }
+
+    // ===== REVIEWS =====
+    var reviewRating = 0;
+    var allReviews = [];
+    var reviewFilter = 'all';
+    var docentenList = ['Burgmans','Doremalen','Gelder','De Groot','Ploeg','Prins','Riep','De Roode','Sahin','De Vos','Wijnants','Zilfhout','Keeren','Hugens','De Jong','Goff','Otten','Blokland','Salemink','Profoost','Peters','Verlee','Steltman','Roshdi','Rijnenberg','Koobs','Abdullah','Van der Meer','Groenland','Seghedi','De Boer','Duiven'];
+
+    function setReviewRating(n) {
+      reviewRating = n;
+      for (var i = 1; i <= 5; i++) {
+        document.getElementById('star' + i).textContent = i <= n ? '★' : '☆';
+        document.getElementById('star' + i).style.color = i <= n ? 'var(--gold)' : 'rgba(26,26,46,0.2)';
+      }
+    }
+
+    function openReviewModal() {
+      if (!currentUser || isGuest) { alert('Log in om een review te schrijven.'); showLoginPopup(); return; }
+      reviewRating = 0;
+      setReviewRating(0);
+      document.getElementById('reviewTeacher').innerHTML = '<option value="">Kies een docent...</option>' +
+        docentenList.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+      document.getElementById('reviewSubject').value = '';
+      document.getElementById('reviewText').value = '';
+      document.getElementById('reviewAuthor').value = '';
+      document.getElementById('reviewDay').value = '';
+      document.getElementById('reviewPeriod').value = '';
+      document.getElementById('reviewPeriodCustom').value = '';
+      document.getElementById('reviewPeriodCustom').style.display = 'none';
+      document.getElementById('reviewModal').classList.add('active');
+    }
+
+    document.getElementById('reviewPeriod').addEventListener('change', function() {
+      document.getElementById('reviewPeriodCustom').style.display = this.value === 'Anders' ? 'block' : 'none';
+    });
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.remove('active');
+    }
+
+    function updateReviewSubjects() {}
+
+    function submitReview() {
+      var teacher = document.getElementById('reviewTeacher').value;
+      var subject = document.getElementById('reviewSubject').value.trim();
+      var text = document.getElementById('reviewText').value.trim();
+      var author = document.getElementById('reviewAuthor').value.trim() || 'Anoniem';
+      var day = document.getElementById('reviewDay').value;
+      var period = document.getElementById('reviewPeriod').value;
+      if (period === 'Anders') period = document.getElementById('reviewPeriodCustom').value.trim();
+      if (!teacher) { alert('Kies een docent'); return; }
+      if (!text) { alert('Schrijf een review'); return; }
+      if (reviewRating === 0) { alert('Geef een beoordeling (sterren)'); return; }
+
+      var btn = document.getElementById('reviewSaveBtn');
+      btn.textContent = 'Plaatsen...';
+      btn.disabled = true;
+
+      db.collection('reviews').add({
+        teacher: teacher,
+        subject: subject,
+        day: day,
+        period: period,
+        rating: reviewRating,
+        text: text,
+        author: author,
+        uid: currentUser ? currentUser.uid : 'anon',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        closeReviewModal();
+        btn.textContent = 'Plaatsen';
+        btn.disabled = false;
+        loadReviews();
+      }).catch(function(err) {
+        console.error(err);
+        btn.textContent = 'Plaatsen';
+        btn.disabled = false;
+      });
+    }
+
+    function loadReviews() {
+      db.collection('reviews').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        allReviews = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
+        buildReviewFilters();
+        renderReviews();
+      }).catch(function() {
+        db.collection('reviews').get().then(function(snapshot) {
+          allReviews = [];
+          snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
+          buildReviewFilters();
+          renderReviews();
+        }).catch(function() { renderReviews(); });
+      });
+    }
+
+    function buildReviewFilters() {
+      var teachers = {};
+      allReviews.forEach(function(r) { teachers[r.teacher] = true; });
+      var tabs = document.getElementById('reviewFilterTabs');
+      if (!tabs) return;
+      var tabsHtml = '<button class="ranking-tab' + (reviewFilter === 'all' ? ' active' : '') + '" onclick="filterReviews(\'all\',this)">Alles (' + allReviews.length + ')</button>';
+      Object.keys(teachers).sort().forEach(function(t) {
+        var count = allReviews.filter(function(r) { return r.teacher === t; }).length;
+        var avg = allReviews.filter(function(r) { return r.teacher === t; }).reduce(function(s, r) { return s + r.rating; }, 0) / count;
+        tabsHtml += '<button class="ranking-tab' + (reviewFilter === t ? ' active' : '') + '" onclick="filterReviews(\'' + t.replace(/'/g, "\\'") + '\',this)">' + t + ' (' + avg.toFixed(1) + '★)</button>';
+      });
+      tabs.innerHTML = tabsHtml;
+    }
+
+    function filterReviews(filter, btn) {
+      reviewFilter = filter;
+      if (btn) {
+        document.querySelectorAll('#reviewFilterTabs .ranking-tab').forEach(function(t) { t.classList.remove('active'); });
+        btn.classList.add('active');
+      }
+      renderReviews();
+    }
+
+    function renderReviews() {
+      var list = document.getElementById('reviewsList');
+      var empty = document.getElementById('reviewsEmpty');
+      if (!list) return;
+
+      var filtered = reviewFilter === 'all' ? allReviews : allReviews.filter(function(r) { return r.teacher === reviewFilter; });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      list.innerHTML = filtered.map(function(r) {
+        var stars = '';
+        for (var i = 1; i <= 5; i++) stars += '<span style="color:' + (i <= r.rating ? 'var(--gold)' : 'rgba(26,26,46,0.15)') + ';">★</span>';
+        var time = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleString('nl-NL') : '';
+        var starColor = r.rating >= 4 ? 'var(--mint)' : r.rating >= 3 ? 'var(--gold)' : 'var(--accent)';
+        var canDelete = hasPermission('ranking') || (currentUser && r.uid === currentUser.uid);
+
+        return '<div style="background:white;border-radius:16px;padding:20px 24px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border-left:4px solid ' + starColor + ';">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<div>' +
+              '<span style="font-weight:800;font-size:1rem;">' + r.teacher + '</span>' +
+              (r.subject ? '<span style="font-size:0.8rem;color:rgba(26,26,46,0.4);margin-left:8px;">— ' + r.subject + '</span>' : '') +
+            '</div>' +
+            '<div style="font-size:1.1rem;">' + stars + '</div>' +
+          '</div>' +
+          (r.day || r.period ? '<div style="display:flex;gap:8px;margin-bottom:8px;">' + (r.day ? '<span style="display:inline-block;padding:3px 10px;background:rgba(15,52,96,0.08);border-radius:100px;font-size:0.7rem;font-weight:700;color:var(--blue);">📅 ' + r.day + '</span>' : '') + (r.period ? '<span style="display:inline-block;padding:3px 10px;background:rgba(245,197,24,0.12);border-radius:100px;font-size:0.7rem;font-weight:700;color:#b8960f;">🕐 ' + r.period + '</span>' : '') + '</div>' : '') +
+          '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.6;margin-bottom:8px;white-space:pre-line;">' + r.text + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);">Door ' + r.author + ' · ' + time + '</div>' +
+            (canDelete ? '<button onclick="deleteReview(\'' + r.id + '\')" style="padding:3px 10px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.6rem;font-weight:700;color:var(--accent);">🗑</button>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function deleteReview(id) {
+      if (!confirm('Review verwijderen?')) return;
+      db.collection('reviews').doc(id).delete().then(function() { loadReviews(); }).catch(function() {});
     }
 
     // ===== POLLS =====
