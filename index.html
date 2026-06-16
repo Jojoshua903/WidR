@@ -4412,8 +4412,9 @@
                 setTimeout(function() { requestNotifPermission(); }, 3000);
               }
             } catch(e) {}
-            // Reload stats after auth
+            // Reload stats and re-render buttons after auth
             try { loadLiveStats(); } catch(e) {}
+            try { renderPresetButtons(); } catch(e) {}
           }).catch(function() { userRoles = []; });
         } else {
           currentUser = null;
@@ -6996,6 +6997,8 @@
       }
       empty.style.display = 'none';
 
+      var uid = currentUser ? currentUser.uid : null;
+
       list.innerHTML = filtered.map(function(r) {
         var stars = '';
         for (var i = 1; i <= 5; i++) stars += '<span style="color:' + (i <= r.rating ? 'var(--gold)' : 'rgba(26,26,46,0.15)') + ';">★</span>';
@@ -7016,9 +7019,16 @@
             '<div style="font-size:1.1rem;">' + stars + '</div>' +
           '</div>' +
           (r.day || r.period ? '<div style="display:flex;gap:8px;margin-bottom:8px;">' + (r.day ? '<span style="display:inline-block;padding:3px 10px;background:rgba(15,52,96,0.08);border-radius:100px;font-size:0.7rem;font-weight:700;color:var(--blue);">📅 ' + r.day + '</span>' : '') + (r.period ? '<span style="display:inline-block;padding:3px 10px;background:rgba(245,197,24,0.12);border-radius:100px;font-size:0.7rem;font-weight:700;color:#b8960f;">🕐 ' + r.period + '</span>' : '') + '</div>' : '') +
-          '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.6;margin-bottom:8px;white-space:pre-line;">' + r.text + '</div>' +
+          '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.6;margin-bottom:10px;white-space:pre-line;">' + r.text + '</div>' +
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-            '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);">Door ' + r.author + ' · ' + time + '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;">' +
+              '<div style="display:inline-flex;align-items:center;background:rgba(26,26,46,0.04);border-radius:100px;overflow:hidden;">' +
+                '<button onclick="likeReview(\'' + r.id + '\',\'like\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'like' ? 'var(--blue)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'like' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👍 ' + (r.likes || 0) + '</button>' +
+                '<div style="width:1px;height:20px;background:rgba(26,26,46,0.08);"></div>' +
+                '<button onclick="likeReview(\'' + r.id + '\',\'dislike\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'var(--accent)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👎 ' + (r.dislikes || 0) + '</button>' +
+              '</div>' +
+              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;">Door ' + r.author + ' · ' + time + '</div>' +
+            '</div>' +
             '<div style="display:flex;gap:4px;">' + adminBtns + '</div>' +
           '</div>' +
         '</div>';
@@ -7028,6 +7038,52 @@
     function deleteReview(id) {
       if (!confirm('Review verwijderen?')) return;
       db.collection('reviews').doc(id).delete().then(function() { loadReviews(); }).catch(function() {});
+    }
+
+    function likeReview(id, action) {
+      if (!currentUser || isGuest) { alert('Log in om te liken.'); return; }
+      var uid = currentUser.uid;
+
+      db.collection('reviews').doc(id).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
+        var likedBy = data.likedBy || {};
+        var likes = data.likes || 0;
+        var dislikes = data.dislikes || 0;
+        var prev = likedBy[uid];
+
+        // Undo previous
+        if (prev === 'like') likes--;
+        if (prev === 'dislike') dislikes--;
+
+        if (prev === action) {
+          // Toggle off
+          delete likedBy[uid];
+        } else {
+          // Set new
+          likedBy[uid] = action;
+          if (action === 'like') likes++;
+          if (action === 'dislike') dislikes++;
+        }
+
+        return db.collection('reviews').doc(id).update({ likedBy: likedBy, likes: likes, dislikes: dislikes });
+      }).then(function() {
+        // Update local data and re-render without full reload
+        var r = allReviews.find(function(x) { return x.id === id; });
+        if (r) {
+          if (!r.likedBy) r.likedBy = {};
+          var prev = r.likedBy[uid];
+          if (prev === 'like') r.likes = (r.likes || 1) - 1;
+          if (prev === 'dislike') r.dislikes = (r.dislikes || 1) - 1;
+          if (prev === action) { delete r.likedBy[uid]; }
+          else {
+            r.likedBy[uid] = action;
+            if (action === 'like') r.likes = (r.likes || 0) + 1;
+            if (action === 'dislike') r.dislikes = (r.dislikes || 0) + 1;
+          }
+        }
+        renderReviews();
+      }).catch(function(err) { console.error(err); });
     }
 
     var editingReviewId = null;
