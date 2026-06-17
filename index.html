@@ -3240,7 +3240,11 @@
           <button onclick="signUpWithEmail()" style="flex:1;padding:14px;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.3s;">Registreren</button>
         </div>
 
-        <div style="margin-top:16px;text-align:center;">
+        <div style="margin-top:12px;text-align:center;">
+          <button onclick="resetPassword()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:0.75rem;cursor:pointer;font-family:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Wachtwoord vergeten?</button>
+        </div>
+
+        <div style="margin-top:8px;text-align:center;">
           <button onclick="loginAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Doorgaan als gast (alleen kijken)</button>
         </div>
       </div>
@@ -4269,6 +4273,26 @@
       });
     }
 
+    function resetPassword() {
+      if (!auth) return;
+      var email = document.getElementById('loginEmail').value.trim();
+      if (!email) {
+        showLoginError('Vul eerst je e-mailadres in hierboven, dan klik op "Wachtwoord vergeten?"');
+        return;
+      }
+      auth.sendPasswordResetEmail(email).then(function() {
+        var el = document.getElementById('loginError');
+        el.style.color = 'var(--mint)';
+        el.textContent = '✓ Reset link verstuurd naar ' + email + '. Check je inbox!';
+        el.style.display = 'block';
+      }).catch(function(err) {
+        var msg = 'Kon reset email niet versturen';
+        if (err.code === 'auth/user-not-found') msg = 'Geen account gevonden met dit e-mailadres';
+        else if (err.code === 'auth/invalid-email') msg = 'Ongeldig e-mailadres';
+        showLoginError(msg);
+      });
+    }
+
     function signUpWithEmail() {
       if (!auth) return;
       hideLoginError();
@@ -4304,6 +4328,7 @@
     }
 
     function logoutGroup() {
+      if (!confirm('Weet je zeker dat je wilt uitloggen?')) return;
       isGuest = false;
       if (auth) {
         auth.signOut().then(function() {
