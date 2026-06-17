@@ -3256,7 +3256,7 @@
   <nav>
     <div class="nav-logo" onclick="navigate('home')">Wat in de <span>Ranking</span></div>
     <div id="navUserArea" style="display:flex;align-items:center;gap:8px;">
-      <span id="navUserName" style="color:rgba(255,255,255,0.6);font-size:0.75rem;font-weight:600;display:none;"></span>
+      <span id="navUserName" onclick="openMyProfile()" style="color:rgba(255,255,255,0.6);font-size:0.75rem;font-weight:600;display:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'"></span>
       <button id="navLoginBtn" onclick="showLoginPopup()" style="background:var(--gold);color:var(--primary);border:none;padding:8px 18px;border-radius:8px;font-weight:800;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.3s;display:none;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(245,197,24,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Inloggen</button>
       <button id="navLogoutBtn" onclick="logoutGroup()" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;transition:all 0.3s;display:none;" onmouseover="this.style.background='rgba(233,69,96,0.2)';this.style.color='var(--accent)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">Uitloggen</button>
     </div>
@@ -7097,6 +7097,155 @@
       return getFollowing().some(function(f) { return f.uid === uid; });
     }
 
+    // Reviewer profile popup
+    function showReviewerPopup(uid, name, event) {
+      event.stopPropagation();
+      var existing = document.getElementById('reviewerPopup');
+      if (existing) existing.remove();
+
+      var popup = document.createElement('div');
+      popup.id = 'reviewerPopup';
+      popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.25);z-index:10001;max-width:340px;width:90%;animation:fadeIn 0.3s ease;';
+      popup.innerHTML = '<div style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:8px;">👤</div><div style="font-weight:800;font-size:1.1rem;">' + name + '</div><div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-bottom:16px;">Reviewer profiel laden...</div></div>';
+      document.body.appendChild(popup);
+
+      // Load reviewer data
+      if (uid) {
+        db.collection('users').doc(uid).get().then(function(doc) {
+          var u = doc.exists ? doc.data() : {};
+          var bio = u.bio || 'Geen bio ingesteld';
+          var coins = u.coins || 0;
+          var verified = u.verified ? '✅ Geverifieerd' : '';
+          var reviewCount = allReviews.filter(function(r) { return r.uid === uid; }).length;
+          var totalLikes = allReviews.filter(function(r) { return r.uid === uid; }).reduce(function(s, r) { return s + (r.likes || 0); }, 0);
+
+          popup.innerHTML = '<div style="text-align:center;">' +
+            '<button onclick="document.getElementById(\'reviewerPopup\').remove()" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:6px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:0.9rem;color:rgba(26,26,46,0.4);">✕</button>' +
+            '<div style="font-size:2.5rem;margin-bottom:8px;">👤</div>' +
+            '<div style="font-weight:800;font-size:1.1rem;">' + (u.name || name) + ' ' + verified + '</div>' +
+            '<div style="font-size:0.75rem;color:rgba(26,26,46,0.4);margin-bottom:12px;">' + (u.email || '') + '</div>' +
+            '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);margin-bottom:16px;font-style:italic;">"' + bio + '"</div>' +
+            '<div style="display:flex;justify-content:center;gap:20px;margin-bottom:16px;">' +
+              '<div style="text-align:center;"><div style="font-weight:900;font-size:1.2rem;color:var(--accent);">' + reviewCount + '</div><div style="font-size:0.6rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Reviews</div></div>' +
+              '<div style="text-align:center;"><div style="font-weight:900;font-size:1.2rem;color:var(--blue);">' + totalLikes + '</div><div style="font-size:0.6rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Likes</div></div>' +
+              '<div style="text-align:center;"><div style="font-weight:900;font-size:1.2rem;color:var(--gold);">' + coins + '</div><div style="font-size:0.6rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Coins</div></div>' +
+            '</div>' +
+            (currentUser && uid !== currentUser.uid ? '<div style="display:flex;gap:8px;justify-content:center;">' +
+              '<button onclick="toggleFollow(\'' + uid + '\',\'' + name.replace(/'/g, "\\'") + '\');document.getElementById(\'reviewerPopup\').remove();" style="padding:8px 16px;background:' + (isFollowing(uid) ? 'rgba(26,26,46,0.06)' : 'var(--gold)') + ';color:' + (isFollowing(uid) ? 'rgba(26,26,46,0.5)' : 'var(--primary)') + ';border:none;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;">' + (isFollowing(uid) ? '⭐ Ontvolgen' : '⭐ Volgen') + '</button>' +
+              '<button onclick="openSendMsgModal(\'' + uid + '\',\'' + name.replace(/'/g, "\\'") + '\');document.getElementById(\'reviewerPopup\').remove();" style="padding:8px 16px;background:var(--blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;">✉️ Bericht</button>' +
+            '</div>' : '') +
+            (currentUser && uid === currentUser.uid ? '<button onclick="editMyBio();document.getElementById(\'reviewerPopup\').remove();" style="padding:8px 16px;background:var(--blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;">✏️ Bio Bewerken</button>' : '') +
+          '</div>';
+        }).catch(function() {
+          popup.innerHTML = '<div style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:8px;">👤</div><div style="font-weight:800;font-size:1.1rem;">' + name + '</div><div style="font-size:0.75rem;color:rgba(26,26,46,0.4);">Profiel niet gevonden</div><button onclick="document.getElementById(\'reviewerPopup\').remove()" style="margin-top:12px;padding:8px 20px;background:rgba(26,26,46,0.06);border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.75rem;">Sluiten</button></div>';
+        });
+      }
+
+      // Close on click outside
+      setTimeout(function() {
+        document.addEventListener('click', function closePopup(e) {
+          if (!e.target.closest('#reviewerPopup')) {
+            var el = document.getElementById('reviewerPopup');
+            if (el) el.remove();
+            document.removeEventListener('click', closePopup);
+          }
+        });
+      }, 100);
+    }
+
+    function editMyBio() {
+      var bio = prompt('Schrijf je bio (wordt getoond op je reviewer profiel):');
+      if (bio === null) return;
+      if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({ bio: bio.trim() }).then(function() {
+          alert('Bio opgeslagen!');
+        }).catch(function() {});
+      }
+    }
+
+    function openMyProfile() {
+      if (!currentUser) return;
+      var existing = document.getElementById('myProfilePopup');
+      if (existing) existing.remove();
+
+      var overlay = document.createElement('div');
+      overlay.id = 'myProfilePopup';
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10001;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s ease;';
+
+      overlay.innerHTML = '<div style="background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:380px;width:90%;max-height:85vh;overflow-y:auto;position:relative;">' +
+        '<button onclick="document.getElementById(\'myProfilePopup\').remove()" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:6px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:0.9rem;color:rgba(26,26,46,0.4);">✕</button>' +
+        '<div style="text-align:center;margin-bottom:20px;"><div style="font-size:2.5rem;">👤</div><div style="font-weight:800;font-size:1.1rem;margin-top:4px;">Mijn Profiel</div><div style="font-size:0.7rem;color:rgba(26,26,46,0.4);">Klik op een veld om te bewerken</div></div>' +
+        '<div id="profileFieldsLoading" style="text-align:center;padding:20px;color:rgba(26,26,46,0.4);font-size:0.8rem;">Laden...</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+      });
+
+      db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+        var u = doc.exists ? doc.data() : {};
+        var fields = [
+          { key: 'name', label: 'Naam', icon: '👤', value: u.name || currentUser.displayName || '' },
+          { key: 'email', label: 'Email', icon: '📧', value: u.email || currentUser.email || '', readonly: true },
+          { key: 'bio', label: 'Bio', icon: '📝', value: u.bio || '' },
+          { key: 'phone', label: 'Telefoon', icon: '📱', value: u.phone || '' },
+          { key: 'instagram', label: 'Instagram', icon: '📸', value: u.instagram || '' },
+          { key: 'snapchat', label: 'Snapchat', icon: '👻', value: u.snapchat || '' },
+          { key: 'discord', label: 'Discord', icon: '🎮', value: u.discord || '' },
+          { key: 'tiktok', label: 'TikTok', icon: '🎵', value: u.tiktok || '' }
+        ];
+
+        var html = '';
+        fields.forEach(function(f) {
+          var displayVal = f.value || '<span style="color:rgba(26,26,46,0.3);font-style:italic;">Niet ingesteld</span>';
+          var clickAction = f.readonly ? '' : 'onclick="editProfileField(\'' + f.key + '\',\'' + f.label + '\')"';
+          var editIcon = f.readonly ? '<span style="font-size:0.6rem;color:rgba(26,26,46,0.3);">🔒</span>' : '<span style="font-size:0.6rem;color:var(--blue);">✏️</span>';
+          html += '<div ' + clickAction + ' style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:6px;' + (f.readonly ? '' : 'cursor:pointer;') + 'transition:background 0.2s;" ' + (f.readonly ? '' : 'onmouseover="this.style.background=\'rgba(26,26,46,0.04)\'" onmouseout="this.style.background=\'transparent\'"') + '>' +
+            '<div style="font-size:1.2rem;width:28px;text-align:center;">' + f.icon + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-size:0.6rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px;">' + f.label + '</div>' +
+              '<div style="font-size:0.85rem;font-weight:600;color:rgba(26,26,46,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="profileField_' + f.key + '">' + displayVal + '</div>' +
+            '</div>' +
+            editIcon +
+          '</div>';
+        });
+
+        html += '<div style="border-top:1px solid rgba(26,26,46,0.06);margin-top:12px;padding-top:16px;text-align:center;">' +
+          '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;">' +
+            '<div style="text-align:center;"><div style="font-weight:900;font-size:1.1rem;color:var(--accent);">' + (u.coins || 0) + '</div><div style="font-size:0.55rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Coins</div></div>' +
+            '<div style="text-align:center;"><div style="font-weight:900;font-size:1.1rem;color:var(--blue);">' + (u.verified ? '✅' : '❌') + '</div><div style="font-size:0.55rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Geverifieerd</div></div>' +
+            '<div style="text-align:center;"><div style="font-weight:900;font-size:1.1rem;color:var(--gold);">' + (u.roles ? u.roles.length : 0) + '</div><div style="font-size:0.55rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;">Rollen</div></div>' +
+          '</div>' +
+        '</div>';
+
+        document.getElementById('profileFieldsLoading').outerHTML = html;
+      }).catch(function() {
+        document.getElementById('profileFieldsLoading').textContent = 'Kon profiel niet laden.';
+      });
+    }
+
+    function editProfileField(key, label) {
+      if (!currentUser) return;
+      var currentEl = document.getElementById('profileField_' + key);
+      var currentVal = currentEl ? currentEl.textContent : '';
+      if (currentVal === 'Niet ingesteld') currentVal = '';
+
+      var newVal = prompt(label + ' bewerken:', currentVal);
+      if (newVal === null) return;
+
+      var update = {};
+      update[key] = newVal.trim();
+      db.collection('users').doc(currentUser.uid).update(update).then(function() {
+        var el = document.getElementById('profileField_' + key);
+        if (el) el.innerHTML = newVal.trim() || '<span style="color:rgba(26,26,46,0.3);font-style:italic;">Niet ingesteld</span>';
+        if (key === 'name' && newVal.trim()) {
+          currentUser.updateProfile({ displayName: newVal.trim() }).catch(function() {});
+          updateNavAuth();
+        }
+      }).catch(function() { alert('Opslaan mislukt.'); });
+    }
+
     function getPeriodOrder(period) {
       if (!period) return 99;
       var match = period.match(/(\d+)e uur/);
@@ -7175,7 +7324,7 @@
                 '<div style="width:1px;height:20px;background:rgba(26,26,46,0.08);"></div>' +
                 '<button onclick="likeReview(\'' + r.id + '\',\'dislike\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'var(--accent)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👎 ' + (r.dislikes || 0) + '</button>' +
               '</div>' +
-              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;display:flex;align-items:center;gap:6px;">Door ' + r.author + ' · ' + time +
+              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;display:flex;align-items:center;gap:6px;">Door <span onclick="showReviewerPopup(\'' + (r.uid || '') + '\',\'' + (r.author || '').replace(/'/g, "\\'") + '\',event)" style="color:var(--blue);cursor:pointer;font-weight:600;text-decoration:underline;">' + r.author + '</span> · ' + time +
               (r.uid && currentUser && r.uid !== currentUser.uid ? ' <button onclick="event.stopPropagation();toggleFollow(\'' + r.uid + '\',\'' + (r.author || '').replace(/'/g, "\\'") + '\')" style="background:' + (isFollowing(r.uid) ? 'var(--gold)' : 'rgba(26,26,46,0.06)') + ';color:' + (isFollowing(r.uid) ? 'var(--primary)' : 'rgba(26,26,46,0.4)') + ';border:none;padding:2px 8px;border-radius:100px;font-size:0.6rem;font-weight:700;cursor:pointer;">' + (isFollowing(r.uid) ? '⭐ Volgend' : '+ Volgen') + '</button>' : '') +
               '</div>' +
             '</div>' +
