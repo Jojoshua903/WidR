@@ -7130,7 +7130,9 @@
     function cancelPoll() {
       document.getElementById('pollCreateArea').style.display = 'none';
       document.getElementById('pollCreateBtn').style.display = 'inline-block';
+      document.getElementById('pollSubmitBtn').textContent = 'Poll Plaatsen (min. 2 opties)';
       pollOptions = [];
+      editingPollId = null;
     }
 
     function addPollOption() {
@@ -7167,6 +7169,19 @@
 
       var votes = {};
       pollOptions.forEach(function(opt) { votes[opt] = 0; });
+
+      if (editingPollId) {
+        db.collection('polls').doc(editingPollId).update({
+          question: question,
+          options: pollOptions.slice(),
+          isPublic: isPublic
+        }).then(function() {
+          editingPollId = null;
+          cancelPoll();
+          loadPolls();
+        }).catch(function(err) { console.error(err); });
+        return;
+      }
 
       db.collection('polls').add({
         question: question,
@@ -7241,9 +7256,12 @@
           }
         }).join('');
 
-        var deleteBtn = '';
+        var pollBtns = '';
         if (hasPermission('ranking') || (uid && poll.authorUid === uid)) {
-          deleteBtn = '<button onclick="deletePoll(\'' + poll.id + '\')" style="margin-top:8px;padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--accent);">🗑 Verwijderen</button>';
+          pollBtns = '<div style="margin-top:8px;display:flex;gap:6px;">' +
+            '<button onclick="editPoll(\'' + poll.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--blue);">✏️ Bewerken</button>' +
+            '<button onclick="deletePoll(\'' + poll.id + '\')" style="padding:4px 12px;background:none;border:1px solid rgba(26,26,46,0.1);border-radius:6px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--accent);">🗑 Verwijderen</button>' +
+          '</div>';
         }
 
         return '<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:16px;">' +
@@ -7251,7 +7269,7 @@
           '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:16px;">Door ' + poll.author + ' · ' + time + ' · ' + totalVotes + ' stemmen' + (poll.isPublic ? ' · <span style="color:var(--blue);font-weight:700;">👁️ Publiek</span>' : ' · <span style="color:rgba(26,26,46,0.3);">🔒 Anoniem</span>') + '</div>' +
           optionsHtml +
           (canVote ? '' : (uid && !isGuest ? '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-top:8px;text-align:center;">Je kunt 1x per dag stemmen op deze poll</div>' : '')) +
-          deleteBtn +
+          pollBtns +
         '</div>';
       }).join('');
     }
@@ -7290,6 +7308,25 @@
     function deletePoll(pollId) {
       if (!confirm('Poll verwijderen?')) return;
       db.collection('polls').doc(pollId).delete().then(function() { loadPolls(); }).catch(function() {});
+    }
+
+    var editingPollId = null;
+
+    function editPoll(pollId) {
+      db.collection('polls').doc(pollId).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
+        editingPollId = pollId;
+        document.getElementById('pollCreateArea').style.display = 'block';
+        document.getElementById('pollCreateBtn').style.display = 'none';
+        document.getElementById('pollQuestion').value = data.question.replace('📅 Dagelijkse Poll: ', '');
+        document.getElementById('pollPublic').checked = data.isPublic || false;
+        pollOptions = data.options ? data.options.slice() : [];
+        renderPollOptions();
+        document.getElementById('pollSubmitBtn').textContent = 'Poll Bijwerken';
+        document.getElementById('pollSubmitBtn').disabled = false;
+        window.scrollTo({ top: document.getElementById('pollCreateArea').offsetTop - 80, behavior: 'smooth' });
+      }).catch(function() {});
     }
 
     // ===== DAILY AUTO POLL =====
