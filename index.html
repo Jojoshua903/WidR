@@ -3286,6 +3286,7 @@
           <a href="#rankings" onclick="navigate('rankings');closeNavDrops()">📊 Rankings</a>
           <a href="#polls" onclick="navigate('polls');closeNavDrops()">🗳️ Polls</a>
           <a href="#reviews" onclick="navigate('reviews');closeNavDrops()">📝 Reviews</a>
+          <a href="#bets" onclick="navigate('bets');closeNavDrops()">🎰 Bets</a>
         </div>
       </div>
 
@@ -3827,10 +3828,13 @@
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center;" id="reviewFilterTabs">
         <button class="ranking-tab active" onclick="filterReviews('all',this)">Alles</button>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
         <span style="font-size:0.7rem;color:rgba(26,26,46,0.4);font-weight:600;">Sorteer:</span>
         <button class="ranking-tab active" id="sortPosting" onclick="setReviewSort('posting',this)" style="font-size:0.7rem;padding:4px 12px;">🕐 Posting</button>
         <button class="ranking-tab" id="sortSchedule" onclick="setReviewSort('schedule',this)" style="font-size:0.7rem;padding:4px 12px;">📅 Lesuur</button>
+        <button class="ranking-tab" id="sortPoster" onclick="setReviewSort('poster',this)" style="font-size:0.7rem;padding:4px 12px;">👤 Poster</button>
+        <span style="width:1px;height:16px;background:rgba(26,26,46,0.1);margin:0 4px;"></span>
+        <button class="ranking-tab" id="sortFollowing" onclick="setReviewSort('following',this)" style="font-size:0.7rem;padding:4px 12px;">⭐ Volgend</button>
       </div>
 
       <div id="reviewsList"></div>
@@ -3915,6 +3919,74 @@
       <div class="modal-buttons">
         <button class="modal-cancel" onclick="closeReviewModal()">Annuleren</button>
         <button class="modal-save" id="reviewSaveBtn" onclick="submitReview()">Plaatsen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BETS PAGE -->
+  <div class="page" id="page-bets">
+    <div class="apps-hero" style="background:linear-gradient(135deg, #FF9A3C 0%, #E94560 50%, var(--primary) 100%);">
+      <h1>Bets 🎰</h1>
+      <p>Zet je WidR Coins in en win groot!</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;padding:48px 40px 100px;">
+
+      <div style="background:white;border-radius:16px;padding:20px 24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:0.7rem;color:rgba(26,26,46,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:700;">Jouw Saldo</div>
+          <div style="font-size:2rem;font-weight:900;color:var(--gold);" id="betBalance">0</div>
+        </div>
+        <div style="font-size:2.5rem;">🪙</div>
+      </div>
+
+      <div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:16px;text-align:center;">Je verdient 1 🪙 per like die je krijgt op reviews. Startbonus: 10 🪙</div>
+
+      <div class="admin-controls" style="text-align:center;margin-bottom:24px;border-top:none;gap:10px;justify-content:center;">
+        <button onclick="openBetModal()" class="preset-btn-add" style="font-size:0.85rem;padding:10px 24px;">🎰 Nieuwe Bet Aanmaken</button>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:12px;">⚽ WK 2026 — Live Wedstrijden</div>
+        <div id="wkMatchesList" style="font-size:0.85rem;color:rgba(26,26,46,0.3);text-align:center;padding:20px;">Laden...</div>
+      </div>
+
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:12px;">🎰 Actieve Bets</div>
+      <div id="betsList"></div>
+      <div id="betsEmpty" style="text-align:center;padding:60px 20px;color:rgba(26,26,46,0.3);">
+        <div style="font-size:3rem;margin-bottom:16px;">🎰</div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Nog geen bets</div>
+        <div style="font-size:0.85rem;">Admins kunnen bets aanmaken!</div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+    </footer>
+  </div>
+
+  <!-- BET MODAL -->
+  <div class="modal-overlay" id="betModal">
+    <div class="modal" style="position:relative;">
+      <button onclick="closeBetModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:1rem;color:rgba(26,26,46,0.4);">✕</button>
+      <h2>🎰 Nieuwe Bet</h2>
+      <div class="modal-sub">Maak een bet waar mensen op kunnen inzetten</div>
+
+      <label class="modal-label">Vraag / Wedstrijd</label>
+      <input type="text" class="modal-input" id="betQuestion" placeholder="bijv. Wie wint Nederland vs Duitsland?">
+
+      <label class="modal-label">Opties (min. 2)</label>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <input type="text" class="modal-input" id="betOptionInput" placeholder="Voeg optie toe..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')addBetOption()">
+        <button onclick="addBetOption()" style="padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer;">+</button>
+      </div>
+      <div id="betOptionsList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+
+      <label class="modal-label">Sluit op (datum/tijd)</label>
+      <input type="datetime-local" class="modal-input" id="betCloseTime">
+
+      <div class="modal-buttons">
+        <button class="modal-cancel" onclick="closeBetModal()">Annuleren</button>
+        <button class="modal-save" id="betSaveBtn" onclick="saveBet()">Bet Aanmaken</button>
       </div>
     </div>
   </div>
@@ -4359,6 +4431,11 @@
         var name = currentUser.displayName || currentUser.email.split('@')[0];
         nameEl.textContent = '👤 ' + name;
         nameEl.style.display = 'inline';
+        // Show coins next to name
+        db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+          var coins = (doc.exists && doc.data().coins) || 0;
+          nameEl.textContent = '👤 ' + name + ' · ' + coins + ' 🪙';
+        }).catch(function() {});
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
         bellBtn.style.display = 'inline-block';
@@ -4498,6 +4575,7 @@
       if (page === 'merch') { try { loadMerch(); } catch(e) {} }
       if (page === 'polls') { try { loadPolls(); } catch(e) {} }
       if (page === 'reviews') { try { loadReviews(); } catch(e) {} }
+      if (page === 'bets') { try { loadBets(); } catch(e) {} }
       if (page === 'inbox') { try { loadInbox(); } catch(e) {} }
       if (page === 'lore' && !loreLoaded) { try { loadStories(); loadMemes(); loreLoaded = true; } catch(e) {} }
       if (page === 'members' && !membersLoaded) { try { loadMembers(); loadSections(); membersLoaded = true; } catch(e) {} }
@@ -6992,8 +7070,31 @@
       reviewSort = sort;
       document.getElementById('sortPosting').classList.remove('active');
       document.getElementById('sortSchedule').classList.remove('active');
+      document.getElementById('sortPoster').classList.remove('active');
+      document.getElementById('sortFollowing').classList.remove('active');
       if (btn) btn.classList.add('active');
       renderReviews(); try { renderAllComments(); } catch(e) {}
+    }
+
+    // Following system
+    function getFollowing() {
+      try { return JSON.parse(localStorage.getItem('widr_following') || '[]'); } catch(e) { return []; }
+    }
+
+    function toggleFollow(uid, name) {
+      var following = getFollowing();
+      var idx = following.findIndex(function(f) { return f.uid === uid; });
+      if (idx !== -1) {
+        following.splice(idx, 1);
+      } else {
+        following.push({ uid: uid, name: name });
+      }
+      try { localStorage.setItem('widr_following', JSON.stringify(following)); } catch(e) {}
+      renderReviews(); try { renderAllComments(); } catch(e) {}
+    }
+
+    function isFollowing(uid) {
+      return getFollowing().some(function(f) { return f.uid === uid; });
     }
 
     function getPeriodOrder(period) {
@@ -7014,12 +7115,20 @@
 
       var filtered = reviewFilter === 'all' ? allReviews.slice() : allReviews.filter(function(r) { return r.teacher === reviewFilter; });
 
+      if (reviewSort === 'following') {
+        filtered = filtered.filter(function(r) { return r.uid && isFollowing(r.uid); });
+      }
+
       if (reviewSort === 'schedule') {
         filtered.sort(function(a, b) {
           var dateA = a.reviewDate || '9999';
           var dateB = b.reviewDate || '9999';
           if (dateA !== dateB) return dateA.localeCompare(dateB);
           return getPeriodOrder(a.period) - getPeriodOrder(b.period);
+        });
+      } else if (reviewSort === 'poster') {
+        filtered.sort(function(a, b) {
+          return (a.author || '').localeCompare(b.author || '');
         });
       } else {
         filtered.sort(function(a, b) {
@@ -7066,7 +7175,9 @@
                 '<div style="width:1px;height:20px;background:rgba(26,26,46,0.08);"></div>' +
                 '<button onclick="likeReview(\'' + r.id + '\',\'dislike\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'var(--accent)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👎 ' + (r.dislikes || 0) + '</button>' +
               '</div>' +
-              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;">Door ' + r.author + ' · ' + time + '</div>' +
+              '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;display:flex;align-items:center;gap:6px;">Door ' + r.author + ' · ' + time +
+              (r.uid && currentUser && r.uid !== currentUser.uid ? ' <button onclick="event.stopPropagation();toggleFollow(\'' + r.uid + '\',\'' + (r.author || '').replace(/'/g, "\\'") + '\')" style="background:' + (isFollowing(r.uid) ? 'var(--gold)' : 'rgba(26,26,46,0.06)') + ';color:' + (isFollowing(r.uid) ? 'var(--primary)' : 'rgba(26,26,46,0.4)') + ';border:none;padding:2px 8px;border-radius:100px;font-size:0.6rem;font-weight:700;cursor:pointer;">' + (isFollowing(r.uid) ? '⭐ Volgend' : '+ Volgen') + '</button>' : '') +
+              '</div>' +
             '</div>' +
             '<div style="display:flex;gap:4px;">' + adminBtns + '</div>' +
           '</div>' +
@@ -7111,6 +7222,17 @@
 
         return db.collection('reviews').doc(id).update({ likedBy: likedBy, likes: likes, dislikes: dislikes });
       }).then(function() {
+        // Award coin to review author on new like
+        var r = allReviews.find(function(x) { return x.id === id; });
+        if (r && r.uid && r.uid !== uid) {
+          var likedBy = r.likedBy || {};
+          var prev = likedBy[uid];
+          if (action === 'like' && prev !== 'like') {
+            addCoins(r.uid, 1);
+          } else if (prev === 'like' && action === 'like') {
+            addCoins(r.uid, -1);
+          }
+        }
         // Update local data and re-render without full reload
         var r = allReviews.find(function(x) { return x.id === id; });
         if (r) {
@@ -7203,6 +7325,296 @@
       document.getElementById('reviewAuthor').value = r.author || '';
       setReviewRating(r.rating || 0);
       document.getElementById('reviewModal').classList.add('active');
+    }
+
+    // ===== WIDR COINS & BETS =====
+    function addCoins(uid, amount) {
+      db.collection('users').doc(uid).get().then(function(doc) {
+        var coins = (doc.exists && doc.data().coins) || 0;
+        coins = Math.max(0, coins + amount);
+        db.collection('users').doc(uid).update({ coins: coins }).catch(function() {});
+      }).catch(function() {});
+    }
+
+    function loadMyCoins() {
+      if (!currentUser) return;
+      db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+        var coins = (doc.exists && doc.data().coins) || 0;
+        if (coins === 0 && doc.exists && !doc.data().coinsBonusGiven) {
+          coins = 10;
+          db.collection('users').doc(currentUser.uid).update({ coins: 10, coinsBonusGiven: true }).catch(function() {});
+        }
+        var el = document.getElementById('betBalance');
+        if (el) el.textContent = coins;
+      }).catch(function() {});
+    }
+
+    var betOptions = [];
+
+    function openBetModal() {
+      if (!hasPermission('ranking')) { alert('Alleen admins kunnen bets aanmaken.'); return; }
+      betOptions = [];
+      document.getElementById('betQuestion').value = '';
+      document.getElementById('betOptionInput').value = '';
+      document.getElementById('betCloseTime').value = '';
+      renderBetOptions();
+      document.getElementById('betModal').classList.add('active');
+    }
+
+    function closeBetModal() {
+      document.getElementById('betModal').classList.remove('active');
+    }
+
+    function addBetOption() {
+      var input = document.getElementById('betOptionInput');
+      var val = input.value.trim();
+      if (!val || betOptions.indexOf(val) !== -1) { input.value = ''; return; }
+      betOptions.push(val);
+      input.value = '';
+      renderBetOptions();
+    }
+
+    function removeBetOption(idx) {
+      betOptions.splice(idx, 1);
+      renderBetOptions();
+    }
+
+    function renderBetOptions() {
+      document.getElementById('betOptionsList').innerHTML = betOptions.map(function(opt, i) {
+        return '<div class="ranker-chip">' + opt + '<button class="ranker-chip-remove" onclick="removeBetOption(' + i + ')">×</button></div>';
+      }).join('');
+    }
+
+    function saveBet() {
+      var question = document.getElementById('betQuestion').value.trim();
+      var closeTime = document.getElementById('betCloseTime').value;
+      if (!question || betOptions.length < 2) { alert('Vul een vraag in en voeg minimaal 2 opties toe'); return; }
+
+      var pools = {};
+      betOptions.forEach(function(opt) { pools[opt] = 0; });
+
+      db.collection('bets').add({
+        question: question,
+        options: betOptions.slice(),
+        pools: pools,
+        bettors: {},
+        closeTime: closeTime || null,
+        status: 'open',
+        winner: null,
+        author: currentUser.displayName || currentUser.email.split('@')[0],
+        authorUid: currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        closeBetModal();
+        loadBets();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    // ===== WK 2026 API (ESPN) =====
+    function loadWKMatches() {
+      fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.events || data.events.length === 0) return;
+          var wkDiv = document.getElementById('wkMatchesList');
+          if (!wkDiv) return;
+
+          var matchesHtml = data.events.map(function(ev) {
+            var comp = ev.competitions && ev.competitions[0];
+            if (!comp) return '';
+            var home = comp.competitors && comp.competitors[0];
+            var away = comp.competitors && comp.competitors[1];
+            if (!home || !away) return '';
+
+            var homeName = home.team.shortDisplayName || home.team.displayName || '?';
+            var awayName = away.team.shortDisplayName || away.team.displayName || '?';
+            var homeScore = home.score || '-';
+            var awayScore = away.score || '-';
+            var status = ev.status && ev.status.type ? ev.status.type.shortDetail : '';
+            var matchDate = ev.date ? new Date(ev.date).toLocaleString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+            var isLive = ev.status && ev.status.type && ev.status.type.state === 'in';
+            var isFinished = ev.status && ev.status.type && ev.status.type.completed;
+            var statusColor = isLive ? 'var(--accent)' : (isFinished ? 'var(--mint)' : 'rgba(26,26,46,0.4)');
+            var matchId = ev.id;
+
+            var betBtn = '';
+            if (!isFinished && currentUser && !isGuest) {
+              betBtn = '<button onclick="createWKBet(\'' + homeName.replace(/'/g, "\\'") + '\',\'' + awayName.replace(/'/g, "\\'") + '\',\'' + matchId + '\')" style="padding:4px 10px;background:var(--gold);color:var(--primary);border:none;border-radius:6px;font-size:0.6rem;font-weight:700;cursor:pointer;">🎰 Bet</button>';
+            }
+
+            return '<div style="display:flex;align-items:center;padding:12px 16px;background:white;border-radius:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);gap:12px;">' +
+              '<div style="flex:1;text-align:right;font-weight:700;font-size:0.9rem;">' + homeName + '</div>' +
+              '<div style="text-align:center;min-width:60px;">' +
+                '<div style="font-weight:900;font-size:1.1rem;">' + homeScore + ' - ' + awayScore + '</div>' +
+                '<div style="font-size:0.6rem;color:' + statusColor + ';font-weight:700;">' + (isLive ? '🔴 LIVE' : status) + '</div>' +
+              '</div>' +
+              '<div style="flex:1;font-weight:700;font-size:0.9rem;">' + awayName + '</div>' +
+              '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">' +
+                '<div style="font-size:0.65rem;color:rgba(26,26,46,0.35);">' + matchDate + '</div>' +
+                betBtn +
+              '</div>' +
+            '</div>';
+          }).join('');
+
+          wkDiv.innerHTML = matchesHtml || '<div style="text-align:center;color:rgba(26,26,46,0.3);padding:20px;">Geen wedstrijden gevonden</div>';
+        }).catch(function() {
+          var wkDiv = document.getElementById('wkMatchesList');
+          if (wkDiv) wkDiv.innerHTML = '<div style="text-align:center;color:rgba(26,26,46,0.3);padding:20px;font-size:0.8rem;">Kon WK data niet laden</div>';
+        });
+    }
+
+    function createWKBet(home, away, matchId) {
+      if (!hasPermission('ranking')) {
+        alert('Alleen admins kunnen bets aanmaken. Vraag een admin!');
+        return;
+      }
+      var question = '⚽ WK 2026: ' + home + ' vs ' + away;
+      betOptions = [home + ' wint', 'Gelijkspel', away + ' wint'];
+      document.getElementById('betQuestion').value = question;
+      renderBetOptions();
+      document.getElementById('betModal').classList.add('active');
+    }
+
+    function loadBets() {
+      loadMyCoins();
+      try { loadWKMatches(); } catch(e) {}
+      db.collection('bets').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+        var bets = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; bets.push(d); });
+        renderBets(bets);
+      }).catch(function() {
+        db.collection('bets').get().then(function(snapshot) {
+          var bets = [];
+          snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; bets.push(d); });
+          renderBets(bets);
+        }).catch(function() { renderBets([]); });
+      });
+    }
+
+    function renderBets(bets) {
+      var list = document.getElementById('betsList');
+      var empty = document.getElementById('betsEmpty');
+      if (!list) return;
+      if (bets.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+
+      var uid = currentUser ? currentUser.uid : null;
+
+      list.innerHTML = bets.map(function(bet) {
+        var totalPool = 0;
+        Object.keys(bet.pools).forEach(function(k) { totalPool += bet.pools[k]; });
+        var isClosed = bet.status === 'closed' || (bet.closeTime && new Date(bet.closeTime) < new Date());
+        var myBet = bet.bettors && bet.bettors[uid];
+        var statusLabel = bet.winner ? '🏆 Winnaar: ' + bet.winner : (isClosed ? '🔒 Gesloten' : '🟢 Open');
+        var statusColor = bet.winner ? 'var(--mint)' : (isClosed ? 'var(--accent)' : 'var(--mint)');
+
+        var optionsHtml = bet.options.map(function(opt) {
+          var pool = bet.pools[opt] || 0;
+          var pct = totalPool > 0 ? Math.round((pool / totalPool) * 100) : 0;
+          var isWinner = bet.winner === opt;
+          var barColor = isWinner ? 'var(--mint)' : 'var(--gold)';
+
+          var html = '<div style="margin-bottom:8px;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">' +
+              '<span>' + opt + (isWinner ? ' 🏆' : '') + (myBet && myBet.choice === opt ? ' (jouw bet)' : '') + '</span>' +
+              '<span>' + pool + ' 🪙 (' + pct + '%)</span>' +
+            '</div>' +
+            '<div style="height:8px;background:rgba(26,26,46,0.06);border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;"></div></div>' +
+          '</div>';
+
+          if (!isClosed && !myBet && uid && !isGuest) {
+            html += '<div style="display:flex;gap:6px;margin-bottom:8px;margin-top:-4px;">' +
+              '<button onclick="placeBet(\'' + bet.id + '\',\'' + opt.replace(/'/g, "\\'") + '\',5)" style="padding:4px 10px;background:var(--gold);color:var(--primary);border:none;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">5 🪙</button>' +
+              '<button onclick="placeBet(\'' + bet.id + '\',\'' + opt.replace(/'/g, "\\'") + '\',10)" style="padding:4px 10px;background:var(--gold);color:var(--primary);border:none;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">10 🪙</button>' +
+              '<button onclick="placeBet(\'' + bet.id + '\',\'' + opt.replace(/'/g, "\\'") + '\',25)" style="padding:4px 10px;background:var(--gold);color:var(--primary);border:none;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">25 🪙</button>' +
+            '</div>';
+          }
+          return html;
+        }).join('');
+
+        var adminBtns = '';
+        if (hasPermission('ranking') && !bet.winner) {
+          adminBtns = '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">' +
+            bet.options.map(function(opt) {
+              return '<button onclick="resolveBet(\'' + bet.id + '\',\'' + opt.replace(/'/g, "\\'") + '\')" style="padding:4px 10px;background:var(--mint);color:white;border:none;border-radius:6px;font-size:0.6rem;font-weight:700;cursor:pointer;">🏆 ' + opt + ' wint</button>';
+            }).join('') +
+            '<button onclick="deleteBet(\'' + bet.id + '\')" style="padding:4px 10px;background:var(--accent);color:white;border:none;border-radius:6px;font-size:0.6rem;font-weight:700;cursor:pointer;">🗑</button>' +
+          '</div>';
+        }
+
+        return '<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:16px;border-left:4px solid ' + statusColor + ';">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+            '<div style="font-size:1.1rem;font-weight:800;">' + bet.question + '</div>' +
+            '<div style="font-size:0.7rem;font-weight:700;color:' + statusColor + ';">' + statusLabel + '</div>' +
+          '</div>' +
+          '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:14px;">Totale pool: ' + totalPool + ' 🪙 · Door ' + bet.author + '</div>' +
+          optionsHtml +
+          (myBet ? '<div style="font-size:0.7rem;color:var(--blue);font-weight:600;margin-top:4px;">Je hebt ' + myBet.amount + ' 🪙 ingezet op: ' + myBet.choice + '</div>' : '') +
+          adminBtns +
+        '</div>';
+      }).join('');
+    }
+
+    function placeBet(betId, option, amount) {
+      if (!currentUser || isGuest) { alert('Log in om te betten.'); return; }
+      var uid = currentUser.uid;
+
+      db.collection('users').doc(uid).get().then(function(userDoc) {
+        var coins = (userDoc.exists && userDoc.data().coins) || 0;
+        if (coins < amount) { alert('Je hebt niet genoeg 🪙! Je hebt ' + coins + ' coins.'); return; }
+
+        return db.collection('bets').doc(betId).get().then(function(doc) {
+          if (!doc.exists) return;
+          var data = doc.data();
+          if (data.status === 'closed' || (data.closeTime && new Date(data.closeTime) < new Date())) {
+            alert('Deze bet is gesloten!'); return;
+          }
+          if (data.bettors && data.bettors[uid]) { alert('Je hebt al gebet op deze!'); return; }
+
+          var pools = data.pools || {};
+          pools[option] = (pools[option] || 0) + amount;
+          var bettors = data.bettors || {};
+          bettors[uid] = { choice: option, amount: amount, name: currentUser.displayName || currentUser.email.split('@')[0] };
+
+          return db.collection('bets').doc(betId).update({ pools: pools, bettors: bettors }).then(function() {
+            return db.collection('users').doc(uid).update({ coins: coins - amount });
+          });
+        });
+      }).then(function() {
+        loadBets();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function resolveBet(betId, winner) {
+      if (!confirm('Weet je zeker dat "' + winner + '" de winnaar is?')) return;
+
+      db.collection('bets').doc(betId).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
+        var bettors = data.bettors || {};
+        var pools = data.pools || {};
+        var totalPool = 0;
+        Object.keys(pools).forEach(function(k) { totalPool += pools[k]; });
+        var winnerPool = pools[winner] || 0;
+
+        // Pay out winners proportionally
+        Object.keys(bettors).forEach(function(bettorUid) {
+          var bet = bettors[bettorUid];
+          if (bet.choice === winner && winnerPool > 0) {
+            var payout = Math.round((bet.amount / winnerPool) * totalPool);
+            addCoins(bettorUid, payout);
+          }
+        });
+
+        return db.collection('bets').doc(betId).update({ status: 'closed', winner: winner });
+      }).then(function() {
+        loadBets();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    function deleteBet(betId) {
+      if (!confirm('Bet verwijderen? Coins worden niet teruggestort.')) return;
+      db.collection('bets').doc(betId).delete().then(function() { loadBets(); }).catch(function() {});
     }
 
     // ===== POLLS =====
