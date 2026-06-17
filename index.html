@@ -3941,6 +3941,13 @@
               <input type="checkbox" id="pollPublic" style="cursor:pointer;">
               👁️ Publieke poll (iedereen ziet wie wat heeft gestemd)
             </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;font-weight:600;color:rgba(26,26,46,0.6);margin-top:6px;">
+              <input type="checkbox" id="pollQuiz" style="cursor:pointer;" onchange="toggleQuizMode()">
+              🧠 Quiz modus (er is een goed antwoord)
+            </label>
+            <select class="modal-input" id="pollCorrectAnswer" style="padding:10px 14px;margin-top:8px;margin-bottom:0;display:none;font-size:0.85rem;">
+              <option value="">Kies het goede antwoord...</option>
+            </select>
           </div>
           <div style="display:flex;gap:10px;">
             <button onclick="submitPoll()" class="ranker-start-btn" style="flex:1;margin-top:0;padding:12px;" id="pollSubmitBtn" disabled>Poll Plaatsen (min. 2 opties)</button>
@@ -6947,14 +6954,14 @@
         allReviews = [];
         snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
         buildReviewFilters();
-        renderReviews();
+        renderReviews(); try { renderAllComments(); } catch(e) {}
       }).catch(function() {
         db.collection('reviews').get().then(function(snapshot) {
           allReviews = [];
           snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; allReviews.push(d); });
           buildReviewFilters();
-          renderReviews();
-        }).catch(function() { renderReviews(); });
+          renderReviews(); try { renderAllComments(); } catch(e) {}
+        }).catch(function() { renderReviews(); try { renderAllComments(); } catch(e) {} });
       });
     }
 
@@ -6978,7 +6985,7 @@
         document.querySelectorAll('#reviewFilterTabs .ranking-tab').forEach(function(t) { t.classList.remove('active'); });
         btn.classList.add('active');
       }
-      renderReviews();
+      renderReviews(); try { renderAllComments(); } catch(e) {}
     }
 
     function setReviewSort(sort, btn) {
@@ -6986,7 +6993,7 @@
       document.getElementById('sortPosting').classList.remove('active');
       document.getElementById('sortSchedule').classList.remove('active');
       if (btn) btn.classList.add('active');
-      renderReviews();
+      renderReviews(); try { renderAllComments(); } catch(e) {}
     }
 
     function getPeriodOrder(period) {
@@ -7063,6 +7070,10 @@
             '</div>' +
             '<div style="display:flex;gap:4px;">' + adminBtns + '</div>' +
           '</div>' +
+          '<div style="margin-top:10px;border-top:1px solid rgba(26,26,46,0.06);padding-top:10px;">' +
+            '<div id="review-comments-' + r.id + '" style="margin-bottom:8px;"></div>' +
+            (currentUser && !isGuest ? '<div style="display:flex;gap:6px;"><input type="text" id="comment-input-' + r.id + '" placeholder="Reageer..." style="flex:1;padding:8px 12px;border:1px solid rgba(26,26,46,0.1);border-radius:8px;font-size:0.75rem;font-family:inherit;" onkeydown="if(event.key===\'Enter\')addComment(\'' + r.id + '\')"><button onclick="addComment(\'' + r.id + '\')" style="padding:6px 12px;background:var(--blue);color:white;border:none;border-radius:8px;font-size:0.7rem;font-weight:700;cursor:pointer;">💬</button></div>' : '') +
+          '</div>' +
         '</div>';
       }).join('');
     }
@@ -7114,8 +7125,64 @@
             if (action === 'dislike') r.dislikes = (r.dislikes || 0) + 1;
           }
         }
-        renderReviews();
+        renderReviews(); try { renderAllComments(); } catch(e) {}
       }).catch(function(err) { console.error(err); });
+    }
+
+    // ===== REVIEW COMMENTS =====
+    function addComment(reviewId) {
+      if (!currentUser || isGuest) return;
+      var input = document.getElementById('comment-input-' + reviewId);
+      var text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      var r = allReviews.find(function(x) { return x.id === reviewId; });
+      if (!r) return;
+      var comments = r.comments || [];
+      comments.push({
+        text: text,
+        author: currentUser.displayName || currentUser.email.split('@')[0],
+        uid: currentUser.uid,
+        time: Date.now()
+      });
+
+      db.collection('reviews').doc(reviewId).update({ comments: comments }).then(function() {
+        r.comments = comments;
+        renderReviewComments(reviewId);
+      }).catch(function() {});
+    }
+
+    function deleteComment(reviewId, idx) {
+      var r = allReviews.find(function(x) { return x.id === reviewId; });
+      if (!r || !r.comments) return;
+      r.comments.splice(idx, 1);
+      db.collection('reviews').doc(reviewId).update({ comments: r.comments }).catch(function() {});
+      renderReviewComments(reviewId);
+    }
+
+    function renderReviewComments(reviewId) {
+      var r = allReviews.find(function(x) { return x.id === reviewId; });
+      var el = document.getElementById('review-comments-' + reviewId);
+      if (!el || !r) return;
+      var comments = r.comments || [];
+      if (comments.length === 0) { el.innerHTML = ''; return; }
+      var uid = currentUser ? currentUser.uid : null;
+      el.innerHTML = comments.map(function(c, i) {
+        var canDel = (uid && c.uid === uid) || hasPermission('ranking');
+        var timeAgo = getTimeAgo(c.time);
+        return '<div style="padding:6px 0;border-bottom:1px solid rgba(26,26,46,0.04);font-size:0.75rem;">' +
+          '<span style="font-weight:700;color:var(--primary);">' + c.author + '</span>' +
+          '<span style="color:rgba(26,26,46,0.4);margin-left:6px;">' + timeAgo + '</span>' +
+          (canDel ? '<button onclick="deleteComment(\'' + reviewId + '\',' + i + ')" style="float:right;background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.6rem;">🗑</button>' : '') +
+          '<div style="color:rgba(26,26,46,0.6);margin-top:2px;">' + c.text + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Render comments after reviews load
+    function renderAllComments() {
+      allReviews.forEach(function(r) { renderReviewComments(r.id); });
     }
 
     var editingReviewId = null;
@@ -7148,6 +7215,9 @@
       pollOptions = [];
       document.getElementById('pollQuestion').value = '';
       document.getElementById('pollPublic').checked = false;
+      document.getElementById('pollQuiz').checked = false;
+      document.getElementById('pollCorrectAnswer').style.display = 'none';
+      document.getElementById('pollCorrectAnswer').value = '';
       document.getElementById('pollOptionInput').value = '';
       renderPollOptions();
     }
@@ -7175,12 +7245,26 @@
       renderPollOptions();
     }
 
+    function toggleQuizMode() {
+      var sel = document.getElementById('pollCorrectAnswer');
+      sel.style.display = document.getElementById('pollQuiz').checked ? 'block' : 'none';
+      updateCorrectAnswerOptions();
+    }
+
+    function updateCorrectAnswerOptions() {
+      var sel = document.getElementById('pollCorrectAnswer');
+      var current = sel.value;
+      sel.innerHTML = '<option value="">Kies het goede antwoord...</option>' +
+        pollOptions.map(function(opt) { return '<option value="' + opt + '"' + (opt === current ? ' selected' : '') + '>' + opt + '</option>'; }).join('');
+    }
+
     function renderPollOptions() {
       var list = document.getElementById('pollOptionsList');
       var btn = document.getElementById('pollSubmitBtn');
       list.innerHTML = pollOptions.map(function(opt, i) {
         return '<div class="ranker-chip">' + opt + '<button class="ranker-chip-remove" onclick="removePollOption(' + i + ')">×</button></div>';
       }).join('');
+      updateCorrectAnswerOptions();
       btn.disabled = pollOptions.length < 2 || !document.getElementById('pollQuestion').value.trim();
     }
 
@@ -7191,6 +7275,9 @@
       if (!question || pollOptions.length < 2) return;
       if (!currentUser || isGuest) { alert('Log in om een poll te maken.'); return; }
       var isPublic = document.getElementById('pollPublic').checked;
+      var isQuiz = document.getElementById('pollQuiz').checked;
+      var correctAnswer = isQuiz ? document.getElementById('pollCorrectAnswer').value : '';
+      if (isQuiz && !correctAnswer) { alert('Kies het goede antwoord voor de quiz'); return; }
 
       var votes = {};
       pollOptions.forEach(function(opt) { votes[opt] = 0; });
@@ -7215,6 +7302,8 @@
         voters: {},
         voterChoices: {},
         isPublic: isPublic,
+        isQuiz: isQuiz,
+        correctAnswer: correctAnswer,
         author: currentUser.displayName || currentUser.email.split('@')[0],
         authorUid: currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -7296,10 +7385,19 @@
           pollBtns = '<div style="margin-top:8px;display:flex;gap:6px;">' + viewVotesBtn + '</div>';
         }
 
+        var quizLabel = poll.isQuiz ? ' · <span style="color:var(--purple);font-weight:700;">🧠 Quiz</span>' : '';
+        var quizResult = '';
+        if (poll.isQuiz && hasVoted && poll.voterChoices && poll.voterChoices[uid]) {
+          var userChoice = poll.voterChoices[uid].choice;
+          var isCorrect = userChoice === poll.correctAnswer;
+          quizResult = '<div style="margin-top:10px;padding:10px 14px;border-radius:10px;background:' + (isCorrect ? 'rgba(22,199,154,0.1)' : 'rgba(233,69,96,0.08)') + ';font-size:0.8rem;font-weight:700;color:' + (isCorrect ? 'var(--mint)' : 'var(--accent)') + ';">' + (isCorrect ? '✅ Goed! Het antwoord was: ' + poll.correctAnswer : '❌ Fout! Het goede antwoord was: ' + poll.correctAnswer) + '</div>';
+        }
+
         return '<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:16px;">' +
           '<div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">' + poll.question + '</div>' +
-          '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:16px;">Door ' + poll.author + ' · ' + time + ' · ' + totalVotes + ' stemmen' + (poll.isPublic ? ' · <span style="color:var(--blue);font-weight:700;">👁️ Publiek</span>' : ' · <span style="color:rgba(26,26,46,0.3);">🔒 Anoniem</span>') + '</div>' +
+          '<div style="font-size:0.7rem;color:rgba(26,26,46,0.35);margin-bottom:16px;">Door ' + poll.author + ' · ' + time + ' · ' + totalVotes + ' stemmen' + (poll.isPublic ? ' · <span style="color:var(--blue);font-weight:700;">👁️ Publiek</span>' : ' · <span style="color:rgba(26,26,46,0.3);">🔒 Anoniem</span>') + quizLabel + '</div>' +
           optionsHtml +
+          quizResult +
           (canVote ? '' : (uid && !isGuest ? '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-top:8px;text-align:center;">Je kunt 1x per dag stemmen op deze poll</div>' : '')) +
           pollBtns +
         '</div>';
@@ -7572,12 +7670,16 @@
       if (!currentUser) return;
       var uid = currentUser.uid;
       var notifs = [];
+      var clearedAt = 0;
+      try { clearedAt = parseInt(localStorage.getItem('widr_notifs_cleared') || '0'); } catch(e) {}
 
       // Check unvoted polls
       db.collection('polls').get().then(function(snapshot) {
         snapshot.forEach(function(doc) {
           var d = doc.data();
           var voters = d.voters || {};
+          var pollTime = d.timestamp ? d.timestamp.seconds * 1000 : 0;
+          if (pollTime < clearedAt) return;
           var lastVote = voters[uid] || 0;
           if (Date.now() - lastVote > 86400000) {
             notifs.push({ type: 'poll', text: '🗳️ Nieuwe poll: "' + d.question + '"', action: 'polls', time: d.timestamp ? d.timestamp.seconds * 1000 : Date.now(), id: doc.id });
@@ -7641,12 +7743,22 @@
 
     function clearAllNotifs() {
       if (!currentUser) return;
+      if (!confirm('Alle meldingen wissen?')) return;
+      // Mark all messages as read
       db.collection('messages').where('to', '==', currentUser.uid).get().then(function(snapshot) {
+        var batch = [];
         snapshot.forEach(function(doc) {
-          db.collection('messages').doc(doc.id).update({ read: true });
+          batch.push(db.collection('messages').doc(doc.id).update({ read: true }));
         });
+        return Promise.all(batch);
+      }).then(function() {
+        // Dismiss poll notifications until next new poll
+        try { localStorage.setItem('widr_notifs_cleared', Date.now().toString()); } catch(e) {}
         loadNotifications();
-      }).catch(function() {});
+      }).catch(function() {
+        try { localStorage.setItem('widr_notifs_cleared', Date.now().toString()); } catch(e) {}
+        loadNotifications();
+      });
     }
 
     function markMsgRead(msgId) {
