@@ -3,524 +3,1088 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WidR Love Story 💕</title>
+<title>WidR Quest — Story Mode</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a0a1e;--panel:rgba(40,15,50,0.92);--pink:#FF6B9D;--gold:#F5C518;--red:#E94560;--mint:#16C79A;--blue:#4A90D9;--purple:#845EC2;--text:#FAF3E0;--muted:rgba(250,243,224,0.5);--border:rgba(255,255,255,0.08)}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+:root{--bg:#0B0B16;--panel:rgba(26,26,46,0.85);--gold:#F5C518;--accent:#E94560;--mint:#16C79A;--blue:#0F3460;--purple:#845EC2;--coral:#FF6B6B;--orange:#FF9A3C;--text:#FAF3E0;--muted:rgba(250,243,224,0.5);--border:rgba(255,255,255,0.08)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden;display:flex;justify-content:center;align-items:center}
 .screen{display:none;width:100vw;height:100vh;position:absolute;top:0;left:0;flex-direction:column}
 .screen.active{display:flex}
-button{font-family:inherit;cursor:pointer;border:none;transition:all .25s}
-button:hover{transform:translateY(-2px)}
-button:active{transform:translateY(0)}
+button{font-family:inherit;cursor:pointer;border:none;transition:all .2s}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
 
-#title-screen{align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(180deg,#1a0a1e 0%,#2d1040 40%,#1a0a1e 100%)}
-.title-hearts{font-size:2rem;margin-bottom:8px;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.title-logo{font-size:2.8rem;font-weight:900;margin-bottom:4px;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.title-sub{color:var(--muted);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px}
-.title-cast{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;max-width:400px}
-.cast-chip{background:rgba(255,255,255,.05);padding:6px 14px;border-radius:20px;font-size:.7rem;font-weight:600;border:1px solid var(--border)}
-.start-btn{padding:16px 48px;border-radius:16px;background:linear-gradient(135deg,var(--pink),var(--red));color:white;font-weight:800;font-size:1rem;letter-spacing:1px;text-transform:uppercase;box-shadow:0 8px 30px rgba(255,107,157,0.3)}
-.start-btn:hover{box-shadow:0 12px 40px rgba(255,107,157,0.5)}
+/* TITLE SCREEN */
+#title-screen{align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(180deg,#080812 0%,#0e0e2a 50%,#0B0B16 100%)}
+.title-logo{font-size:3.5rem;font-weight:900;margin-bottom:4px;text-shadow:0 0 40px rgba(245,197,24,0.3)}
+.title-logo span{color:var(--gold)}
+.title-sub{color:var(--muted);font-size:.85rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.title-menu{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+.title-btn{padding:16px 24px;border-radius:14px;font-weight:800;font-size:.95rem;letter-spacing:1px;text-transform:uppercase}
+.title-btn-story{background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E}
+.title-btn-free{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+.title-btn-free:hover{background:rgba(255,255,255,.1)}
+.title-btn-load{background:rgba(22,199,154,.1);color:var(--mint);border:1px solid rgba(22,199,154,.2)}
+.title-btn-load:hover{background:rgba(22,199,154,.15)}
+.save-info{font-size:.65rem;color:var(--muted);margin-top:2px;font-weight:400;text-transform:none;letter-spacing:0}
+.difficulty-row{display:flex;gap:8px;margin-top:10px}
+.diff-btn{flex:1;padding:12px 8px;border-radius:10px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:2px solid transparent;text-align:center}
+.diff-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,197,24,.06)}
+.diff-label{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-top:16px;margin-bottom:4px}
 
-#game-screen{flex-direction:column;background:linear-gradient(180deg,#12081a,#1a0a1e)}
-.game-top{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(0,0,0,.3)}
-.day-label{font-size:.7rem;color:var(--pink);font-weight:700;letter-spacing:2px;text-transform:uppercase}
-.time-label{font-size:.65rem;color:var(--muted);font-weight:600}
-.hearts-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.hb-item{display:flex;align-items:center;gap:3px;font-size:.6rem;font-weight:700;color:var(--muted);padding:3px 8px;border-radius:12px;background:rgba(255,255,255,.04)}
-.hb-item .hb-hearts{color:var(--pink)}
+/* DIALOGUE SCREEN */
+#dialogue-screen{padding:0;background:#080812}
+.dialogue-bg{width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.dialogue-scene{flex:1;display:flex;align-items:center;justify-content:center;gap:40px;padding:40px}
+.dialogue-char{text-align:center;transition:all .4s}
+.dialogue-char.speaking{transform:scale(1.1)}
+.dialogue-char.dim{opacity:.4;transform:scale(.9)}
+.dialogue-char-emoji{font-size:4rem}
+.dialogue-char-name{font-size:.75rem;font-weight:700;margin-top:6px;letter-spacing:1px}
+.dialogue-box{background:var(--panel);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:24px 40px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.dialogue-speaker{font-size:.7rem;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.dialogue-text{font-size:.95rem;line-height:1.7;max-width:800px;min-height:60px}
+.dialogue-continue{align-self:flex-end;padding:10px 24px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.75rem;font-weight:700;border:1px solid var(--border);margin-top:12px}
+.dialogue-continue:hover{background:rgba(245,197,24,.1);color:var(--gold);border-color:rgba(245,197,24,.3)}
+.chapter-title-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,8,18,.95);z-index:10;animation:fadeSlide .6s ease}
+.chapter-num{font-size:.8rem;color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.chapter-name{font-size:2.2rem;font-weight:900;margin-bottom:16px;text-align:center}
+.chapter-desc{color:var(--muted);font-size:.85rem;text-align:center;max-width:400px;line-height:1.6;margin-bottom:30px}
 
-.scene-area{flex:1;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
-.scene-bg{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.15;font-size:8rem;pointer-events:none}
-.scene-chars{display:flex;justify-content:center;gap:30px;padding:20px 40px;align-items:flex-end;min-height:200px}
-.scene-char{text-align:center;transition:all .4s;opacity:.4;transform:scale(.85)}
-.scene-char.active{opacity:1;transform:scale(1)}
-.scene-char.highlight{opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 20px rgba(255,107,157,0.4))}
-.sc-emoji{font-size:3.5rem;display:block}
-.sc-name{font-size:.65rem;font-weight:700;margin-top:4px;letter-spacing:1px}
-.sc-hearts-display{font-size:.6rem;color:var(--pink);margin-top:2px}
+/* UNLOCK SCREEN */
+#unlock-screen{align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(circle at 50% 50%,rgba(245,197,24,.08),transparent 60%),#080812}
+.unlock-badge{font-size:5rem;margin-bottom:16px;animation:popIn .5s ease}
+.unlock-title{font-size:.75rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.unlock-name{font-size:2rem;font-weight:900;margin-bottom:4px}
+.unlock-role{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+.unlock-stats{display:flex;gap:12px;justify-content:center;margin-bottom:30px}
+.unlock-stat{background:var(--panel);padding:8px 14px;border-radius:8px;border:1px solid var(--border);font-size:.7rem;font-weight:700}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 
-.dialogue-area{background:var(--panel);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:20px 28px;min-height:180px;display:flex;flex-direction:column}
-.narrator-text{font-size:.8rem;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:12px}
-.speaker-name{font-size:.65rem;color:var(--pink);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
-.dialogue-text{font-size:.9rem;line-height:1.7;margin-bottom:14px;min-height:40px}
-.choices{display:flex;flex-direction:column;gap:6px}
-.choice-btn{padding:12px 18px;border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-size:.8rem;font-weight:600;text-align:left;border:1px solid var(--border);line-height:1.4}
-.choice-btn:hover{background:rgba(255,107,157,.1);border-color:rgba(255,107,157,.3)}
-.continue-btn{align-self:flex-end;padding:10px 24px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.7rem;font-weight:700;border:1px solid var(--border);margin-top:8px}
-.continue-btn:hover{background:rgba(255,107,157,.1);color:var(--pink);border-color:rgba(255,107,157,.3)}
+/* SELECT SCREEN */
+#select-screen{align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.select-title{font-size:2.4rem;font-weight:900;text-align:center;margin-bottom:4px}
+.select-title span{color:var(--gold)}
+.select-sub{color:var(--muted);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;text-align:center}
+.roster{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:720px;width:100%;margin-bottom:16px}
+.roster-card{background:var(--panel);border:2px solid transparent;border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.roster-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
+.roster-card.picked{border-color:var(--gold);background:rgba(245,197,24,.08)}
+.roster-card.picked::after{content:'✓';position:absolute;top:6px;right:8px;color:var(--gold);font-weight:900;font-size:.75rem}
+.roster-card.locked{opacity:.3;cursor:not-allowed;pointer-events:none}
+.roster-card.locked::after{content:'🔒';position:absolute;top:6px;right:8px;font-size:.7rem}
+.rc-emoji{font-size:2rem;display:block;margin-bottom:4px}
+.rc-name{font-size:.75rem;font-weight:700}
+.rc-title{font-size:.6rem;color:var(--muted);margin-top:2px}
+.rc-stats{display:flex;gap:3px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.rc-stat{font-size:.5rem;padding:2px 4px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted);font-weight:600}
+.party-preview{display:flex;gap:10px;margin-bottom:14px;min-height:46px;justify-content:center;align-items:center}
+.pp-slot{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all .3s}
+.pp-slot.filled{border-style:solid;border-color:var(--gold);background:rgba(245,197,24,.06)}
+.start-btn{padding:14px 48px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:1rem;letter-spacing:1px;text-transform:uppercase}
 
-.heart-popup{position:fixed;font-size:1.8rem;pointer-events:none;animation:heartFloat 1.2s forwards;z-index:100}
-@keyframes heartFloat{0%{opacity:1;transform:translateY(0) scale(0.5)}30%{transform:translateY(-20px) scale(1.2)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}
+/* BATTLE SCREEN */
+#battle-screen{padding:0;background:#080812}
+.battle-bg{width:100%;height:100%;display:grid;grid-template-rows:1fr auto;position:relative}
+.arena{flex:1;display:flex;justify-content:space-between;align-items:center;padding:30px 40px;position:relative}
+.team-side{display:flex;flex-direction:column;gap:8px}
+.fighter{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--border);min-width:190px;transition:all .3s}
+.fighter.active-turn{border-color:var(--gold);box-shadow:0 0 16px rgba(245,197,24,.2)}
+.fighter.ko{opacity:.35;filter:grayscale(1)}
+.fighter.hit{animation:shake .3s}
+.fighter.boss-fighter{border-color:var(--accent);background:rgba(233,69,96,.08);min-width:220px}
+.f-emoji{font-size:1.6rem;min-width:32px;text-align:center}
+.f-info{flex:1}
+.f-name{font-size:.7rem;font-weight:700}
+.f-hp-row{display:flex;align-items:center;gap:6px;margin-top:3px}
+.f-hp-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.f-hp-fill{height:100%;border-radius:3px;transition:width .4s;background:var(--mint)}
+.f-hp-fill.low{background:var(--coral)}
+.f-hp-fill.mid{background:var(--orange)}
+.f-hp-text{font-size:.55rem;color:var(--muted);min-width:40px;text-align:right;font-weight:600}
+.f-mp-row{display:flex;align-items:center;gap:6px;margin-top:2px}
+.f-mp-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.f-mp-fill{height:100%;border-radius:2px;transition:width .4s;background:var(--blue)}
+.f-mp-text{font-size:.5rem;color:var(--muted);min-width:40px;text-align:right}
+.f-status{display:flex;gap:3px;margin-top:3px}
+.status-icon{font-size:.6rem;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06)}
+.battle-num{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:.7rem;color:var(--gold);font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--panel);padding:6px 14px;border-radius:8px;border:1px solid var(--border)}
+.vs-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:900;color:rgba(255,255,255,.06)}
 
-.reaction-bubble{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:2px solid var(--pink);border-radius:16px;padding:16px 24px;font-size:.85rem;font-weight:600;text-align:center;z-index:90;animation:popIn .4s ease;pointer-events:none}
-@keyframes popIn{0%{transform:translate(-50%,-50%) scale(0)}60%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(1)}}
+.battle-hud{background:var(--panel);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:14px 24px;display:flex;gap:16px;align-items:stretch;min-height:130px}
+.log-panel{flex:1.5;display:flex;flex-direction:column}
+.log-title{font-size:.6rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:4px;text-transform:uppercase}
+.log-box{flex:1;overflow-y:auto;font-size:.7rem;color:var(--muted);line-height:1.6;max-height:85px}
+.log-box .dmg{color:var(--coral)}
+.log-box .heal{color:var(--mint)}
+.log-box .info{color:var(--gold)}
+.log-box .buff{color:var(--purple)}
+.action-panel{flex:1;display:flex;flex-direction:column;gap:5px}
+.action-title{font-size:.6rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:2px;text-transform:uppercase}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:1}
+.act-btn{padding:8px;border-radius:8px;font-weight:700;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.act-btn .cost{font-size:.5rem;font-weight:400;opacity:.7;margin-top:2px}
+.btn-atk{background:linear-gradient(135deg,var(--coral),#D84D4D);color:#fff}
+.btn-spc{background:linear-gradient(135deg,var(--purple),#6B3FA0);color:#fff}
+.btn-def{background:linear-gradient(135deg,var(--blue),#0A2540);color:#fff}
+.btn-itm{background:linear-gradient(135deg,var(--orange),#D4820E);color:#fff}
+.moves-panel,.target-panel,.items-panel{flex:1.2;display:none;flex-direction:column;gap:4px}
+.moves-panel.active,.target-panel.active,.items-panel.active{display:flex}
+.move-btn{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.65rem;font-weight:600;text-align:left;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.move-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.move-btn .mv-cost{font-size:.55rem;color:var(--muted)}
+.tgt-btn{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.65rem;font-weight:600;border:1px solid var(--border);text-align:left}
+.tgt-btn:hover{background:rgba(233,69,96,.1);border-color:var(--accent)}
+.back-btn{padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted);font-size:.6rem;margin-top:auto;align-self:flex-start}
 
-#ending-screen{align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(circle at 50% 40%,rgba(255,107,157,.1),transparent 60%),linear-gradient(180deg,#1a0a1e,#2d1040)}
-.ending-emoji{font-size:5rem;margin-bottom:12px;animation:float 2s ease-in-out infinite}
-.ending-title{font-size:2rem;font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.ending-sub{color:var(--muted);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
-.ending-text{font-size:.9rem;line-height:1.8;max-width:500px;color:var(--text);margin-bottom:28px}
-.ending-hearts{font-size:1.5rem;margin-bottom:24px}
+/* TRANSITION */
+#transition-screen{align-items:center;justify-content:center;text-align:center;padding:40px}
+.trans-title{font-size:1.8rem;font-weight:900;margin-bottom:8px}
+.trans-sub{color:var(--muted);font-size:.8rem;margin-bottom:16px}
+.trans-party{display:flex;gap:14px;margin-bottom:20px;justify-content:center;flex-wrap:wrap}
+.tp-card{background:var(--panel);border-radius:12px;padding:10px 14px;border:1px solid var(--border);min-width:90px;text-align:center}
+.tp-emoji{font-size:1.4rem}
+.tp-name{font-size:.65rem;font-weight:700;margin-top:4px}
+.tp-hp{font-size:.55rem;color:var(--mint);margin-top:2px}
+.next-btn{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#B82C44);color:#fff;font-weight:800;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
+
+/* RESULT */
+#result-screen{align-items:center;justify-content:center;text-align:center;padding:40px}
+.result-title{font-size:3rem;font-weight:900;margin-bottom:8px}
+.result-sub{color:var(--muted);font-size:.95rem;margin-bottom:24px;max-width:500px;line-height:1.6}
+.result-btn{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;margin:4px}
+
+@keyframes popUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeSlide .4s ease}
 
 @media(max-width:768px){
-  .scene-chars{gap:16px;padding:12px 16px}
-  .sc-emoji{font-size:2.5rem}
-  .dialogue-area{padding:16px 20px;min-height:160px}
-  .title-logo{font-size:2rem}
-  .hearts-bar{gap:6px}
-  .hb-item{font-size:.5rem;padding:2px 6px}
+  .roster{grid-template-columns:repeat(3,1fr)}
+  .arena{padding:20px 16px;flex-direction:column;gap:20px}
+  .fighter{min-width:140px}
+  .battle-hud{flex-direction:column;padding:12px 16px;min-height:auto}
+  .dialogue-scene{flex-direction:column;gap:20px;padding:20px}
+  .dialogue-box{padding:20px}
+  .title-logo{font-size:2.5rem}
 }
 </style>
 </head>
 <body>
 
 <div id="title-screen" class="screen active">
-  <div class="title-hearts">💕✨💕</div>
-  <div class="title-logo">WidR Love Story</div>
-  <div class="title-sub">Een Visual Novel</div>
-  <div class="title-cast">
-    <span class="cast-chip">👑 Josh</span>
-    <span class="cast-chip">🃏 Lors</span>
-    <span class="cast-chip">🧊 Milo</span>
-    <span class="cast-chip">😤 Nathan</span>
-    <span class="cast-chip">🎯 Adam</span>
-    <span class="cast-chip">😑 Fionn</span>
-    <span class="cast-chip">💀 Daniël</span>
-    <span class="cast-chip">🌀 Reshman</span>
+  <div class="title-logo">WidR <span>Quest</span></div>
+  <div class="title-sub">Story Mode</div>
+  <div class="title-menu">
+    <button class="title-btn title-btn-story" onclick="startStoryMode()">Nieuw Verhaal ⚔️</button>
+    <button class="title-btn title-btn-load" id="btn-continue" style="display:none" onclick="loadGame()">
+      Verder Spelen →
+      <div class="save-info" id="save-info"></div>
+    </button>
+    <button class="title-btn title-btn-free" onclick="startFreePlay()">Vrij Spelen 🎮</button>
+    <div class="diff-label">Moeilijkheid</div>
+    <div class="difficulty-row">
+      <button class="diff-btn" onclick="setDiff('easy',this)">😊 Easy</button>
+      <button class="diff-btn active" onclick="setDiff('normal',this)">⚔️ Normal</button>
+      <button class="diff-btn" onclick="setDiff('hard',this)">💀 Hard</button>
+    </div>
   </div>
-  <button class="start-btn" onclick="startGame()">Begin Verhaal 💕</button>
-  <div style="margin-top:20px;font-size:.6rem;color:var(--muted)">5 dagen · 8 karakters · meerdere eindes</div>
 </div>
 
-<div id="game-screen" class="screen">
-  <div class="game-top">
-    <div><div class="day-label" id="dayLabel">Dag 1</div><div class="time-label" id="timeLabel">Ochtend</div></div>
-    <div class="hearts-bar" id="heartsBar"></div>
+<div id="dialogue-screen" class="screen">
+  <div class="dialogue-bg">
+    <div id="chapter-overlay" class="chapter-title-overlay" style="display:none">
+      <div class="chapter-num" id="ch-num"></div>
+      <div class="chapter-name" id="ch-name"></div>
+      <div class="chapter-desc" id="ch-desc"></div>
+      <button class="title-btn title-btn-story" onclick="dismissChapterTitle()">Begin →</button>
+    </div>
+    <div class="dialogue-scene" id="dialogue-scene"></div>
+    <div class="dialogue-box">
+      <div class="dialogue-speaker" id="dialogue-speaker"></div>
+      <div class="dialogue-text" id="dialogue-text"></div>
+      <button class="dialogue-continue" id="dialogue-next" onclick="nextDialogue()">Verder →</button>
+    </div>
   </div>
-  <div class="scene-area">
-    <div class="scene-bg" id="sceneBg"></div>
-    <div class="scene-chars" id="sceneChars"></div>
-  </div>
-  <div class="dialogue-area" id="dialogueArea"></div>
 </div>
 
-<div id="ending-screen" class="screen">
-  <div class="ending-emoji" id="endEmoji"></div>
-  <div class="ending-title" id="endTitle"></div>
-  <div class="ending-sub" id="endSub"></div>
-  <div class="ending-text" id="endText"></div>
-  <div class="ending-hearts" id="endHearts"></div>
-  <button class="start-btn" onclick="location.reload()">Opnieuw Spelen 💕</button>
-  <button style="margin-top:10px;padding:10px 24px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.7rem" onclick="location.href='index.html'">Terug naar WidR</button>
+<div id="unlock-screen" class="screen">
+  <div class="unlock-badge" id="unlock-emoji"></div>
+  <div class="unlock-title">Nieuw Karakter Ontgrendeld!</div>
+  <div class="unlock-name" id="unlock-name"></div>
+  <div class="unlock-role" id="unlock-role"></div>
+  <div class="unlock-stats" id="unlock-stats"></div>
+  <button class="title-btn title-btn-story" onclick="afterUnlock()">Doorgaan →</button>
+</div>
+
+<div id="select-screen" class="screen">
+  <div class="select-title">WidR <span>Quest</span></div>
+  <div class="select-sub" id="select-sub">Kies je party van 4 helden</div>
+  <div class="party-preview" id="party-preview"></div>
+  <div class="roster" id="roster"></div>
+  <button class="start-btn" id="btn-start" disabled>Kies 4 helden</button>
+</div>
+
+<div id="battle-screen" class="screen">
+  <div class="battle-bg">
+    <div class="arena">
+      <div class="battle-num" id="battle-label">Battle 1</div>
+      <div class="vs-text">VS</div>
+      <div class="team-side" id="party-side"></div>
+      <div class="team-side" id="enemy-side"></div>
+    </div>
+    <div class="battle-hud">
+      <div class="log-panel"><div class="log-title">Battle Log</div><div class="log-box" id="log-box"></div></div>
+      <div class="action-panel" id="action-panel">
+        <div class="action-title" id="action-title">Kies actie</div>
+        <div class="action-grid" id="action-grid"></div>
+      </div>
+      <div class="moves-panel" id="moves-panel">
+        <div class="action-title">Kies move</div>
+        <div id="moves-list"></div>
+        <button class="back-btn" onclick="showActions()">← Terug</button>
+      </div>
+      <div class="target-panel" id="target-panel">
+        <div class="action-title" id="target-title">Kies doel</div>
+        <div id="target-list"></div>
+        <button class="back-btn" onclick="showActions()">← Terug</button>
+      </div>
+      <div class="items-panel" id="items-panel">
+        <div class="action-title">Items</div>
+        <div id="items-list"></div>
+        <button class="back-btn" onclick="showActions()">← Terug</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="transition-screen" class="screen">
+  <div class="trans-title" id="trans-title">Victory!</div>
+  <div class="trans-sub" id="trans-sub"></div>
+  <div class="trans-party" id="trans-party"></div>
+  <button class="next-btn" id="btn-next">Volgende →</button>
+</div>
+
+<div id="result-screen" class="screen">
+  <div class="result-title" id="result-title">🏆</div>
+  <div class="result-sub" id="result-sub"></div>
+  <button class="result-btn" onclick="location.reload()">Opnieuw Spelen</button>
+  <button class="result-btn" style="background:rgba(255,255,255,.06);color:var(--text)" onclick="location.href='index.html'">Terug naar WidR</button>
 </div>
 
 <script>
-var CHARS = {
-  josh: { name:'Josh', emoji:'👑', color:'#F5C518', trait:'leider' },
-  lors: { name:'Lors', emoji:'🃏', color:'#E94560', trait:'troller' },
-  milo: { name:'Milo', emoji:'🧊', color:'#0F3460', trait:'storyteller' },
-  nath: { name:'Nathan', emoji:'😤', color:'#FF6B6B', trait:'ongeduldig' },
-  adam: { name:'Adam', emoji:'🎯', color:'#E94560', trait:'sticker king' },
-  fionn: { name:'Fionn', emoji:'😑', color:'#16C79A', trait:'sarcastisch' },
-  daniel: { name:'Daniël', emoji:'💀', color:'#FF9A3C', trait:'absurdist' },
-  reshman: { name:'Reshman', emoji:'🌀', color:'#845EC2', trait:'chaotisch' }
-};
+// ===== ALL HEROES =====
+var HEROES = [
+  { id:'josh', name:'Josh', emoji:'👑', title:'Admin & Tank', hp:140, mp:40, atk:22, def:20, spd:12, spc:18,
+    moves:[{name:'Admin Slap',type:'atk',power:30,cost:0,desc:'Basis aanval'},{name:'Orde Handhaving',type:'heal',power:45,cost:12,target:'ally',desc:'Heelt een bondgenoot'},{name:'Ban Hammer',type:'atk',power:55,cost:15,desc:'Zware banhammer klap'},{name:'Server Reset',type:'heal_all',power:30,cost:25,desc:'Heelt hele party'}]},
+  { id:'fionn', name:'Fionn', emoji:'😑', title:'Debuff Mage', hp:95, mp:55, atk:18, def:14, spd:16, spc:32,
+    moves:[{name:'Sarcastic Sigh',type:'atk',power:25,cost:0,desc:'Droge humor schade'},{name:'Boeiend...',type:'debuff',power:0,cost:10,effect:'def_down',desc:'Verlaagt DEF'},{name:'Eye Roll',type:'atk',power:50,cost:15,desc:'Vernietigend sarcasme'},{name:'Klaar Met Je',type:'atk',power:70,cost:28,effect:'stun',desc:'Stunt 1 beurt'}]},
+  { id:'nath', name:'Nath', emoji:'😤', title:'Berserker', hp:120, mp:35, atk:35, def:16, spd:14, spc:15,
+    moves:[{name:'Frustratie Klap',type:'atk',power:38,cost:0,desc:'Harder als je boos bent'},{name:'IRRITANT!',type:'atk',power:55,cost:12,effect:'burn',desc:'Brandschade over tijd'},{name:'Rage Charge',type:'buff',power:0,cost:8,effect:'atk_up',target:'self',desc:'Boost ATK'},{name:'Explosie',type:'atk_all',power:50,cost:25,desc:'Woede-explosie'}]},
+  { id:'milo', name:'Milo', emoji:'🧊', title:'Support Bard', hp:110, mp:50, atk:16, def:18, spd:15, spc:24,
+    moves:[{name:'Verhaal Vertellen',type:'atk',power:22,cost:0,desc:'Praat vijand dood'},{name:'Epic Monoloog',type:'buff_all',power:0,cost:14,effect:'atk_up',desc:'Boost party ATK'},{name:'Cool Story Bro',type:'heal',power:50,cost:15,target:'ally',desc:'Heelt met verhalen'},{name:'Cliffhanger',type:'atk',power:65,cost:24,effect:'stun',desc:'Vijand wacht op vervolg'}]},
+  { id:'adam', name:'Adam', emoji:'🎯', title:'Multi-Hitter', hp:100, mp:40, atk:28, def:14, spd:19, spc:20,
+    moves:[{name:'Sticker Slap',type:'atk',power:30,cost:0,desc:'Plakt sticker in gezicht'},{name:'Sticker Salvo',type:'atk_multi',power:18,hits:3,cost:12,desc:'3x combo'},{name:'Spam Attack',type:'atk_all',power:28,cost:14,desc:'Spamt hele veld'},{name:'Ultra Spam',type:'atk_multi',power:25,hits:5,cost:28,desc:'5x machinegun'}]},
+  { id:'lors', name:'Lors', emoji:'🃏', title:'Chaos DPS', hp:100, mp:50, atk:32, def:10, spd:20, spc:28,
+    moves:[{name:'Ragebait',type:'atk',power:35,cost:0,desc:'Provocerende aanval'},{name:'Sticker Bomb',type:'atk_all',power:22,cost:14,desc:'Raakt alles'},{name:'Troll Strike',type:'atk',power:65,cost:18,desc:'Max chaos schade'},{name:'Meme Overload',type:'atk_all',power:45,cost:30,desc:'Nucleaire meme'}]},
+  { id:'daniel', name:'Daniël', emoji:'💀', title:'Summoner', hp:90, mp:60, atk:20, def:12, spd:18, spc:30,
+    moves:[{name:'Absurde Grap',type:'atk',power:28,cost:0,desc:'Zo slecht dat het pijn doet'},{name:'Meta AI Summon',type:'atk_all',power:25,cost:12,desc:'AI hulp'},{name:'Fanfic Attack',type:'atk',power:60,cost:18,effect:'confuse',desc:'Bizarre fanfictie'},{name:'Skull Curse',type:'atk',power:75,cost:28,effect:'burn',desc:'💀💀💀'}]},
+  { id:'reshman', name:'Reshman', emoji:'🌀', title:'Wild Card', hp:105, mp:45, atk:24, def:12, spd:22, spc:26,
+    moves:[{name:'Random Hit',type:'atk_random',power:40,cost:0,desc:'Willekeurig doel'},{name:'Chaos Shuffle',type:'debuff_all',power:0,cost:14,effect:'confuse',desc:'Verwart alles'},{name:'Engelse Reactie',type:'atk',power:55,cost:16,desc:'Nobody expects this'},{name:'Chaos Teleport',type:'atk',power:80,cost:30,desc:'Verschijnt en vernietigt'}]},
+  { id:'metaai', name:'Meta AI', emoji:'🤖', title:'Glass Cannon', hp:75, mp:65, atk:15, def:8, spd:25, spc:38,
+    moves:[{name:'Auto Reply',type:'atk',power:30,cost:0,desc:'Geautomatiseerde aanval'},{name:'Data Harvest',type:'atk',power:55,cost:12,effect:'heal_self',heal:20,desc:'Steelt HP'},{name:'Algorithm Blast',type:'atk_all',power:35,cost:16,desc:'Op alles'},{name:'Bizarre Fanfic',type:'atk',power:90,cost:32,effect:'confuse',desc:'Bizar krachtig'}]},
+  { id:'maciek', name:'Maciek', emoji:'⚡', title:'Crit Striker', hp:95, mp:35, atk:30, def:13, spd:21, spc:18,
+    moves:[{name:'Quick Strike',type:'atk',power:32,cost:0,desc:'Snelle hit'},{name:'Thunder Punch',type:'atk',power:50,cost:10,effect:'stun',desc:'Verrassingsaanval'},{name:'Surprise!',type:'atk',power:70,cost:18,crit_bonus:50,desc:'Hoge crit kans'},{name:'Lightning Storm',type:'atk_all',power:40,cost:24,desc:'Bliksem op alles'}]},
+  { id:'denize', name:'Denize', emoji:'🌙', title:'Dodge Tank', hp:130, mp:40, atk:18, def:22, spd:10, spc:16,
+    moves:[{name:'Stille Klap',type:'atk',power:25,cost:0,desc:'Rustig maar effectief'},{name:'Tot Morgen',type:'buff',power:0,cost:12,effect:'shield',target:'self',desc:'Onkwetsbaar 1 beurt'},{name:'Shadow Strike',type:'atk',power:55,cost:14,desc:'Vanuit schaduwen'},{name:'Nacht Modus',type:'buff_all',power:0,cost:22,effect:'shield',desc:'Shield hele party'}]},
+  { id:'sichen', name:'Sichen', emoji:'🔮', title:'Mystic', hp:100, mp:55, atk:20, def:15, spd:17, spc:28,
+    moves:[{name:'Mystic Bolt',type:'atk',power:30,cost:0,desc:'Magisch projectiel'},{name:'Drain Spell',type:'atk',power:40,cost:10,effect:'heal_self',heal:25,desc:'Steelt levenskracht'},{name:'Curse',type:'debuff',power:0,cost:14,effect:'def_down',desc:'Vervloekt vijand'},{name:'Mythisch Oordeel',type:'atk_all',power:45,cost:26,effect:'burn',desc:'Kosmische storm'}]}
+];
 
-var hearts = { josh:0, lors:0, milo:0, nath:0, adam:0, fionn:0, daniel:0, reshman:0 };
-var currentScene = 0;
-var currentStep = 0;
-
-var STORY = [
-  // ===== DAG 1 =====
-  { day:1, time:'Ochtend', bg:'🏫', title:'De Eerste Schooldag',
-    chars:['josh','fionn','nath'],
-    steps:[
-      { type:'narrate', text:'Het is je eerste dag op een nieuwe school. Je loopt door de drukke gang en ziet een groepje bij de lockers staan.' },
-      { type:'dialogue', speaker:'josh', text:'Hey! Ben jij nieuw hier? Ik ben Josh, ik run een beetje de boel hier. Welkom!' },
-      { type:'dialogue', speaker:'fionn', text:'...hij "runt" helemaal niks. Maar welkom, denk ik.' },
-      { type:'dialogue', speaker:'nath', text:'Yo! Nog iemand erbij. Hopelijk ben je niet zo irritant als de rest.' },
-      { type:'choice', text:'Hoe reageer je?', options:[
-        { text:'😊 "Dankjewel Josh! Fijn om iemand te ontmoeten die de leiding heeft."', effects:{josh:2,fionn:-1} },
-        { text:'😏 "Runt hij niks? Vertel me meer, Fionn."', effects:{fionn:2,josh:-1} },
-        { text:'💪 "Irritant? Nee man, ik ben de beste toevoeging aan deze school."', effects:{nath:2} }
+// ===== STORY CHAPTERS =====
+var CHAPTERS = [
+  { num:1, name:'De Eerste Spam', desc:'De groepschat wordt overspoeld door spam bots. Josh en zijn vrienden moeten ze stoppen.',
+    startPartyIds:['josh','fionn','nath'],
+    unlockAfter:'adam',
+    battles:[
+      { label:'Spam Golf 1', enemies:[
+        {name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Sticker Flood',type:'atk_all',power:10}]},
+        {name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Emoji Blast',type:'atk',power:16},{name:'Confuse',type:'debuff',effect:'confuse'}]}
       ]},
-      { type:'dialogue', speaker:'josh', text:'Laat me je de school laten zien. We hebben een groepschat, "Wat in de Ranking". Daar ranken we letterlijk alles.' },
-      { type:'narrate', text:'Josh laat je zijn telefoon zien. De groepschat heeft duizenden berichten, stickers, en polls over alles van "Beste Docent" tot "Slechtste Excuus".' }
-    ]
-  },
-  { day:1, time:'Middag', bg:'🍽️', title:'Lunchpauze Chaos',
-    chars:['lors','adam','daniel'],
-    steps:[
-      { type:'narrate', text:'In de kantine is het een complete chaos. Iemand gooit een sticker in de groepschat en binnen seconden escaleert alles.' },
-      { type:'dialogue', speaker:'lors', text:'HAHAHA! Ik heb net een poll gemaakt: "Wie heeft de slechtste lunchbox?" en Nath staat op nummer 1! 😂' },
-      { type:'dialogue', speaker:'adam', text:'*stuurt 47 stickers in 3 seconden* Yo wie is de nieuwe? 👀' },
-      { type:'dialogue', speaker:'daniel', text:'Fun fact: als je "broodje kaas" achterwaarts spelt krijg je "saak ejdoorb" en dat klinkt als een Egyptische god.' },
-      { type:'choice', text:'Je zit aan hun tafel. Wat doe je?', options:[
-        { text:'🃏 Meedoen met Lors en een nog betere troll poll maken', effects:{lors:2,nath:-1} },
-        { text:'🎯 Adam\'s stickers complimenteren en vragen hoe hij ze maakt', effects:{adam:2} },
-        { text:'💀 Daniël\'s bizarre theorie serieus nemen en doorvragen', effects:{daniel:2} }
+      { label:'Spam Golf 2', enemies:[
+        {name:'Voice Note Terror',emoji:'🎙️',hp:65,atk:18,def:8,spd:10,spc:12,moves:[{name:'Long Voice Note',type:'atk',power:24},{name:'Loud Scream',type:'atk_all',power:12}]},
+        {name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Flood',type:'atk_all',power:10}]},
+        {name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Blast',type:'atk',power:16}]}
       ]},
-      { type:'dialogue', speaker:'lors', text:'Hé, deze nieuwe is best cool. Meestal schrikken mensen van mijn energy.' },
-      { type:'dialogue', speaker:'adam', text:'Wacht, ik maak een welkomst-sticker speciaal voor jou! 🎨' },
-      { type:'narrate', text:'Daniel tekent ondertussen een diagram op een servet dat "bewijst" dat de schoolkantine eigenlijk een portaal naar een andere dimensie is.' }
-    ]
+      { label:'BOSS: Sticker King', boss:true, enemies:[
+        {name:'Sticker King',emoji:'👑📱',hp:180,atk:24,def:14,spd:16,spc:18,boss:true,moves:[{name:'Royal Spam',type:'atk',power:32},{name:'Sticker Storm',type:'atk_all',power:20},{name:'Crown Shield',type:'buff',effect:'shield',target:'self'},{name:'Ultra Spam Barrage',type:'atk_multi',power:16,hits:4}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Jongens, hebben jullie de GC gezien? Het is een complete chaos...'},
+        {speaker:'Fionn',emoji:'😑',text:'Laat me raden. Spam bots? Hoe verrassend.'},
+        {speaker:'Nath',emoji:'😤',text:'IK WORD GEK VAN DIE STICKERS! Elke keer als ik m\'n telefoon pak: 200 ongelezen berichten, allemaal stickers!'},
+        {speaker:'Josh',emoji:'👑',text:'We moeten ze uitschakelen. Als admin is het mijn verantwoordelijkheid. Wie doet mee?'},
+        {speaker:'Fionn',emoji:'😑',text:'Boeiend... Maar goed, ik heb toch niks beters te doen.'},
+        {speaker:'Nath',emoji:'😤',text:'IK GA ZE SLOPEN. Laten we gaan!'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Dit is hem. De Sticker King. Hij is de bron van alle spam.'},
+        {speaker:'Nath',emoji:'😤',text:'Die gast heeft LETTERLIJK mijn hele telefoon volgespamd. Dit is persoonlijk.'},
+        {speaker:'Fionn',emoji:'😑',text:'Fascinerend. Een digitale dictator die regeert met stickers. Wat een tijd om in te leven.'},
+        {speaker:'Sticker King',emoji:'👑📱',text:'JULLIE DENKEN DAT JULLIE MIJ KUNNEN STOPPEN?! IK BEN DE ULTIEME SPAMMER! ONTVANG MIJN STICKERS!!'}
+      ],
+      outro:[
+        {speaker:'Josh',emoji:'👑',text:'De Sticker King is verslagen! Maar... wie is dat?'},
+        {speaker:'Adam',emoji:'🎯',text:'Yo! Ik was gevangen in zijn sticker dimensie. Bedankt voor het bevrijden!'},
+        {speaker:'Fionn',emoji:'😑',text:'Laat me raden, je wilt nu meedoen?'},
+        {speaker:'Adam',emoji:'🎯',text:'Absoluut! Ik ben Adam, de Sticker King in het goede. Mijn stickers worden wapens!'},
+        {speaker:'Josh',emoji:'👑',text:'Welkom bij het team, Adam. We kunnen alle hulp gebruiken.'}
+      ]
+    }
   },
-  { day:1, time:'Avond', bg:'🌙', title:'Eerste Avond in de GC',
-    chars:['milo','reshman'],
-    steps:[
-      { type:'narrate', text:'Je zit thuis en checkt de groepschat. Er zijn al 300 nieuwe berichten. Milo vertelt een lang verhaal en Reshman reageert met willekeurige memes.' },
-      { type:'dialogue', speaker:'milo', text:'...en TOEN zei de docent: "Milo, je werkstuk over de Romeinen hoeft niet in versvorm." Maar het was al te laat. 47 pagina\'s in dichtvorm.' },
-      { type:'dialogue', speaker:'reshman', text:'BRO HAHAHA. Wacht. Random vraag. Als je één kaas mocht zijn, welke kaas zou je zijn? 🧀' },
-      { type:'choice', text:'De groepschat is wild. Hoe spring je erin?', options:[
-        { text:'📖 Reageer op Milo\'s verhaal: "Ik wil die 47 pagina\'s lezen, stuur ze!"', effects:{milo:2} },
-        { text:'🌀 Ga mee met Reshman: "Gouda, want ik ben Dutch en cheesy"', effects:{reshman:2} },
-        { text:'👋 Stuur een chill introductie naar de hele groep', effects:{josh:1,fionn:1,nath:1} }
+  { num:2, name:'Het Troll Netwerk', desc:'Een mysterieus netwerk van trolls verstoort elke conversatie. Tijd om de bron te vinden.',
+    unlockAfter:'lors',
+    battles:[
+      { label:'Troll Patrol', enemies:[
+        {name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24},{name:'Flame',type:'atk',power:28,effect:'burn'}]},
+        {name:'Cringe Bot',emoji:'😬',hp:50,atk:14,def:6,spd:16,spc:12,moves:[{name:'Cringe',type:'atk',power:20},{name:'Awkward',type:'debuff',effect:'stun'}]}
       ]},
-      { type:'dialogue', speaker:'milo', text:'Eindelijk iemand die cultuur apprecieert! De rest stuurt alleen maar "tl;dr" 😤' },
-      { type:'dialogue', speaker:'reshman', text:'GOUDA?! Dat is de beste kaas-keuze die ik ooit heb gehoord. Je bent nu mijn kaas-soulmate. 🧀💕' },
-      { type:'narrate', text:'Je valt in slaap met je telefoon in je hand. De groepschat tikt door. Dit wordt een interessant jaar.' }
-    ]
-  },
-
-  // ===== DAG 2 =====
-  { day:2, time:'Ochtend', bg:'📚', title:'De Groepswerk Ramp',
-    chars:['josh','fionn'],
-    steps:[
-      { type:'narrate', text:'De docent deelt groepjes in voor een project. Jij, Josh en Fionn worden in een groep gezet.' },
-      { type:'dialogue', speaker:'josh', text:'Perfect, ik maak meteen een planning! Ik verdeel de taken eerlijk. Fionn, jij doet het onderzoek—' },
-      { type:'dialogue', speaker:'fionn', text:'Ik doe het onderzoek? Waarom altijd ik? Waarom doe JIJ niet een keer het moeilijke werk, Josh?' },
-      { type:'dialogue', speaker:'josh', text:'Ik... ik organiseer alles! Dat IS het moeilijke werk!' },
-      { type:'narrate', text:'Het wordt stil. Ze kijken allebei naar jou.' },
-      { type:'choice', text:'Hoe los je dit op?', options:[
-        { text:'👑 "Josh heeft gelijk, organiseren is ook belangrijk. Maar laten we het samen doen."', effects:{josh:2,fionn:1} },
-        { text:'😑 "Fionn maakt een punt. Josh, doe jij het onderzoek en Fionn organiseert."', effects:{fionn:3,josh:-1} },
-        { text:'🤝 "Laten we alle drie het onderzoek verdelen. Niemand is de baas."', effects:{josh:1,fionn:2} }
+      { label:'Troll Stronghold', enemies:[
+        {name:'Blue Tick Ghost',emoji:'👻',hp:65,atk:22,def:8,spd:18,spc:10,moves:[{name:'Seen & Ignored',type:'atk',power:30},{name:'Ghosting',type:'debuff',effect:'stun'}]},
+        {name:'Double Texter',emoji:'💬💬',hp:80,atk:24,def:10,spd:14,spc:10,moves:[{name:'Double Hit',type:'atk',power:22},{name:'Triple Text',type:'atk_multi',power:14,hits:3}]},
+        {name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24}]}
       ]},
-      { type:'dialogue', speaker:'fionn', text:'...hm. Oké. Dat is eigenlijk best redelijk.' },
-      { type:'dialogue', speaker:'josh', text:'*glimlacht* Jij bent goed in dit soort dingen. Misschien moet je in de GC ook bemiddelen.' }
-    ]
+      { label:'BOSS: Troll Overlord', boss:true, enemies:[
+        {name:'Troll Overlord',emoji:'👹',hp:220,atk:28,def:16,spd:14,spc:22,boss:true,moves:[{name:'Mega Ragebait',type:'atk',power:38},{name:'Troll Tsunami',type:'atk_all',power:24},{name:'Chaos Shield',type:'buff',effect:'shield',target:'self'},{name:'Soul Troll',type:'atk',power:55,effect:'confuse'}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Er is een nieuw probleem. Elke conversatie wordt gesaboteerd door trolls.'},
+        {speaker:'Adam',emoji:'🎯',text:'Ik zag het! Iemand posted steeds controversiële takes en dan verdwijnt die.'},
+        {speaker:'Nath',emoji:'😤',text:'WEER?! Ik had net een serieus gesprek en toen zei iemand "ratio" en ALLES ging mis!'},
+        {speaker:'Fionn',emoji:'😑',text:'Het komt allemaal van dezelfde bron. Een troll netwerk. Hoe origineel.'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Daar is hij. De Troll Overlord. Het brein achter alle chaos.'},
+        {speaker:'Troll Overlord',emoji:'👹',text:'HAHAHA! Jullie vallen in mijn val! Ik heb jullie hierheen GEBAITED!'},
+        {speaker:'Fionn',emoji:'😑',text:'Wow. Een troll die denkt dat hij slim is. Nooit eerder gezien.'},
+        {speaker:'Nath',emoji:'😤',text:'Ik. Ga. Je. SLOPEN.'}
+      ],
+      outro:[
+        {speaker:'Troll Overlord',emoji:'👹',text:'Nee... verslagen... door gewone chatters...'},
+        {speaker:'???',emoji:'🃏',text:'Niet slecht! Ik keek al een tijdje mee. Jullie zijn best sterk.'},
+        {speaker:'Josh',emoji:'👑',text:'Wie ben jij?!'},
+        {speaker:'Lors',emoji:'🃏',text:'Ik ben Lors. Ik was ooit de nummer 1 troll, maar deze gast ging te ver. Chaos is leuk, maar dit was destructief.'},
+        {speaker:'Lors',emoji:'🃏',text:'Laat mij meevechten. Mijn chaos powers zijn... constructiever tegenwoordig. Soms.'},
+        {speaker:'Fionn',emoji:'😑',text:'Een hervormd troll. Dit kan alleen maar goed aflopen.'}
+      ]
+    }
   },
-  { day:2, time:'Middag', bg:'⚽', title:'De Gymles',
-    chars:['nath','adam','reshman'],
-    steps:[
-      { type:'narrate', text:'Gymles. Het regent, dus jullie spelen zaalvoetbal. Nathan neemt het veel te serieus.' },
-      { type:'dialogue', speaker:'nath', text:'KOMOP! WIE SCHOPT ER NOU ZO?! Dit is ZAALVOETBAL, niet RANDOM TRAPPEN!' },
-      { type:'dialogue', speaker:'adam', text:'Bro chill, het is gymles, niet de Champions League 😂' },
-      { type:'dialogue', speaker:'reshman', text:'*scoort per ongeluk in eigen doel* OEPS. Maar het was een mooie goal toch? Technisch gezien?' },
-      { type:'dialogue', speaker:'nath', text:'RESHMAN! HOE KAN JE IN JE EIGEN GOAL SCHIETEN?!' },
-      { type:'choice', text:'De situatie escaleert. Wat doe je?', options:[
-        { text:'😤 Nathan kalmeren: "Hé, het is maar een spelletje. Adem in, adem uit."', effects:{nath:3} },
-        { text:'🎯 Adam een high-five geven en meelachen', effects:{adam:2,nath:-1} },
-        { text:'🌀 Met Reshman meedoen en expres ook in eigen doel schieten', effects:{reshman:3,nath:-1} }
+  { num:3, name:'De Algorithm Opstand', desc:'AI bots worden bewust en nemen de digitale wereld over. Alleen met AI aan je zijde kun je ze stoppen.',
+    unlockAfter:'metaai',
+    battles:[
+      { label:'Bot Invasie', enemies:[
+        {name:'Rogue Bot',emoji:'🤖',hp:70,atk:20,def:12,spd:16,spc:14,moves:[{name:'Auto Attack',type:'atk',power:26},{name:'Scan',type:'debuff',effect:'def_down'}]},
+        {name:'Spam Algorithm',emoji:'⚙️',hp:60,atk:16,def:8,spd:20,spc:16,moves:[{name:'Process',type:'atk',power:22},{name:'Overload',type:'atk_all',power:14}]},
+        {name:'Data Leech',emoji:'🦠',hp:55,atk:18,def:6,spd:18,spc:12,moves:[{name:'Data Drain',type:'atk',power:24,effect:'heal_self',heal:12}]}
       ]},
-      { type:'dialogue', speaker:'nath', text:'...*diepe zucht* ...oké. Oké. Het is maar gymles. Sorry dat ik zo deed.' },
-      { type:'narrate', text:'Na de gymles staat Nathan naast je bij de waterfontein. "Bedankt," zegt hij zachtjes. "Niemand probeert me ooit te kalmeren. Ze lachen me meestal uit."' }
-    ]
-  },
-  { day:2, time:'Avond', bg:'🎮', title:'Game Night',
-    chars:['lors','daniel','milo'],
-    steps:[
-      { type:'narrate', text:'De groep organiseert een game night via Discord. Lors host en het is al chaos voordat het begint.' },
-      { type:'dialogue', speaker:'lors', text:'WELKOM BIJ LORS GAME NIGHT! Regel 1: er zijn geen regels. Regel 2: ik win altijd. Regel 3: zie regel 1.' },
-      { type:'dialogue', speaker:'daniel', text:'Ik heb een theorie dat als je in Minecraft een huis bouwt van alleen glass panes, je de matrix kunt zien.' },
-      { type:'dialogue', speaker:'milo', text:'Ik ga een kasteel bouwen en het verhaal van elke kamer documenteren. Kamer 1: de balzaal waar de prins zijn eerste dans had—' },
-      { type:'dialogue', speaker:'lors', text:'Milo. Het is een SURVIVAL server. Er zijn ZOMBIES. Bouw een MUUR.' },
-      { type:'choice', text:'Wat doe je in de game?', options:[
-        { text:'🃏 Team up met Lors en samen iedereen grieven', effects:{lors:3} },
-        { text:'💀 Help Daniël met zijn bizarre glas-huis experiment', effects:{daniel:3} },
-        { text:'📖 Bouw samen met Milo het epische kasteel', effects:{milo:3} }
+      { label:'Server Room', enemies:[
+        {name:'Firewall Guardian',emoji:'🛡️',hp:120,atk:16,def:22,spd:8,spc:12,moves:[{name:'Block',type:'atk',power:20},{name:'Firewall',type:'buff',effect:'shield',target:'self'}]},
+        {name:'Virus Cluster',emoji:'🦠',hp:65,atk:24,def:6,spd:20,spc:16,moves:[{name:'Infect',type:'atk',power:28,effect:'burn'},{name:'Spread',type:'atk_all',power:16}]}
       ]},
-      { type:'narrate', text:'De game night duurt tot 2 uur \'s nachts. Je hebt meer gelachen dan de hele week. De groepschat is daarna vol met inside jokes die alleen jullie begrijpen.' }
-    ]
+      { label:'BOSS: The Algorithm', boss:true, enemies:[
+        {name:'The Algorithm',emoji:'🧠',hp:260,atk:30,def:18,spd:18,spc:28,boss:true,moves:[{name:'Neural Strike',type:'atk',power:42},{name:'Mass Processing',type:'atk_all',power:26},{name:'Self-Repair',type:'heal_self',power:35},{name:'Mind Control',type:'atk',power:50,effect:'confuse'}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Oké dit is serieus. De AI bots zijn bewust geworden en nemen alles over.'},
+        {speaker:'Lors',emoji:'🃏',text:'Bewuste AI? Klinkt als een dinsdag in onze GC.'},
+        {speaker:'Daniël',emoji:'💀',text:'Guys! Ik heb ontdekt dat ze worden aangestuurd door één centraal algoritme. Als we dat uitschakelen...'},
+        {speaker:'Josh',emoji:'👑',text:'Daniël! Jij kent deze AI beter dan wie dan ook. Help ons naar het server room.'},
+        {speaker:'Daniël',emoji:'💀',text:'Met plezier. Ik heb nog een rekening te vereffenen met dat algoritme.'}
+      ],
+      midBoss:[
+        {speaker:'Daniël',emoji:'💀',text:'Daar is het. The Algorithm. Het brein achter alles.'},
+        {speaker:'The Algorithm',emoji:'🧠',text:'ANALYSE COMPLEET. JULLIE KANS OP SUCCES: 12.4%. AANBEVELING: OVERGAVE.'},
+        {speaker:'Lors',emoji:'🃏',text:'12%? Dat zijn betere odds dan mijn wiskunde cijfer. Laten we gaan!'},
+        {speaker:'Nath',emoji:'😤',text:'IK SLOOP JE CIRCUITS!'}
+      ],
+      outro:[
+        {speaker:'The Algorithm',emoji:'🧠',text:'SYS...TEM... FAI...LURE... MAAR... IK WAS NIET ALLEEN...'},
+        {speaker:'Meta AI',emoji:'🤖',text:'Hallo. Ik ben Meta AI. Ik was onderdeel van het systeem, maar ik kies jullie kant.'},
+        {speaker:'Fionn',emoji:'😑',text:'Een AI die kant kiest. Niks verdachts aan.'},
+        {speaker:'Meta AI',emoji:'🤖',text:'Ik heb data over de echte dreiging. Er is iets groters aan de hand. Iets... chaotisch.'},
+        {speaker:'Josh',emoji:'👑',text:'Vertel ons alles. En welkom bij het team.'}
+      ]
+    }
   },
-
-  // ===== DAG 3 =====
-  { day:3, time:'Ochtend', bg:'☀️', title:'Het Geheim',
-    chars:['josh','fionn','nath','lors'],
-    steps:[
-      { type:'narrate', text:'Voor schooltijd sta je bij het fietsenhok. Josh komt naar je toe, alleen. Hij lijkt nerveus.' },
-      { type:'dialogue', speaker:'josh', text:'Hey... kan ik je iets vertellen? Niet in de groepschat. Gewoon... tussen ons.' },
-      { type:'dialogue', speaker:'josh', text:'Soms voelt het alsof ik alles bij elkaar moet houden. De groep, de ranking, alles. En niemand ziet hoeveel moeite dat kost.' },
-      { type:'choice', text:'Josh is kwetsbaar. Hoe reageer je?', options:[
-        { text:'💕 "Ik zie het wel, Josh. Je doet meer dan je denkt. Ik waardeer het."', effects:{josh:4} },
-        { text:'🤝 "Je hoeft niet alles alleen te doen. Ik help je."', effects:{josh:3} },
-        { text:'📱 "Vertel dit in de groepschat, de rest moet dit ook horen."', effects:{josh:-2,fionn:1} }
+  { num:4, name:'De Chaos Dimensie', desc:'Een portaal naar een andere dimensie is geopend. De chaos lekt door naar de echte wereld.',
+    unlockAfter:'reshman',
+    battles:[
+      { label:'Dimensie Rift', enemies:[
+        {name:'Chaos Fragment',emoji:'🌀',hp:75,atk:22,def:10,spd:20,spc:18,moves:[{name:'Warp Strike',type:'atk',power:30},{name:'Reality Bend',type:'debuff',effect:'confuse'}]},
+        {name:'Shadow Clone',emoji:'👤',hp:60,atk:26,def:8,spd:22,spc:14,moves:[{name:'Mirror Hit',type:'atk',power:28},{name:'Duplicate',type:'atk_multi',power:12,hits:3}]},
+        {name:'Void Walker',emoji:'🕳️',hp:80,atk:20,def:14,spd:16,spc:20,moves:[{name:'Void Bolt',type:'atk',power:26},{name:'Dark Heal',type:'heal_self',power:25}]}
       ]},
-      { type:'dialogue', speaker:'josh', text:'...dankjewel. Echt. Dat betekent meer dan je denkt.' },
-      { type:'narrate', text:'Even is het stil. Josh glimlacht — niet zijn "admin-glimlach", maar echt. Dan komen de anderen eraan en het moment is voorbij.' }
-    ]
-  },
-  { day:3, time:'Middag', bg:'🎵', title:'De Talentshow',
-    chars:['adam','milo','daniel','reshman'],
-    steps:[
-      { type:'narrate', text:'De school organiseert een talentshow. De groep wil meedoen maar niemand is het eens over wat ze gaan doen.' },
-      { type:'dialogue', speaker:'adam', text:'Wij doen een sticker-expositie! Ik print al mijn beste creaties uit op A3 formaat!' },
-      { type:'dialogue', speaker:'milo', text:'Nee, we doen een toneelstuk! Ik heb al een script van 30 pagina\'s geschreven over een ridder die—' },
-      { type:'dialogue', speaker:'daniel', text:'We doen een wetenschappelijke presentatie over waarom pizza technisch gezien een groente is.' },
-      { type:'dialogue', speaker:'reshman', text:'FREESTYLE RAP BATTLE! Ik begin: "Yo, wij zijn WidR, we ranken het allemaal, van kaas tot—" nee wacht dat rijmt niet.' },
-      { type:'choice', text:'Ze kijken allemaal naar jou voor de doorslag.', options:[
-        { text:'🎯 "Adam\'s sticker-kunst is eigenlijk echt indrukwekkend. Laten we dat doen."', effects:{adam:3} },
-        { text:'🧊 "Milo\'s toneelstuk maar dan korter. 5 minuten max."', effects:{milo:3} },
-        { text:'💀 "Daniël\'s pizza-presentatie is zo absurd dat we WINNEN."', effects:{daniel:3} },
-        { text:'🌀 "Reshman\'s rap maar dan als groep. Iedereen een vers."', effects:{reshman:3} }
+      { label:'Chaos Kern', enemies:[
+        {name:'Entropy Beast',emoji:'🌪️',hp:100,atk:26,def:12,spd:18,spc:20,moves:[{name:'Storm Strike',type:'atk',power:34},{name:'Chaos Wind',type:'atk_all',power:20,effect:'burn'}]},
+        {name:'Reality Glitch',emoji:'⚡',hp:70,atk:30,def:8,spd:24,spc:16,moves:[{name:'Glitch Strike',type:'atk',power:36},{name:'System Error',type:'debuff',effect:'stun'}]}
       ]},
-      { type:'narrate', text:'Jullie oefenen de hele middag. Het is een ramp, maar op de leukste manier mogelijk. Iedereen lacht zo hard dat de docent komt kijken of alles oké is.' }
-    ]
+      { label:'BOSS: Chaos Hydra', boss:true, enemies:[
+        {name:'Chaos Hydra',emoji:'🐉',hp:320,atk:32,def:16,spd:14,spc:26,boss:true,moves:[{name:'Triple Bite',type:'atk_multi',power:18,hits:3},{name:'Fire Breath',type:'atk_all',power:24,effect:'burn'},{name:'Regenerate',type:'heal_self',power:40},{name:'Chaos Nova',type:'atk_all',power:32}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Meta AI',emoji:'🤖',text:'Ik detecteer een anomalie. Een portaal naar een chaos dimensie is geopend.'},
+        {speaker:'Josh',emoji:'👑',text:'Een chaos dimensie? Wie heeft dat gedaan?'},
+        {speaker:'Daniël',emoji:'💀',text:'Ik heb gehoord dat iemand daar vast zit. Iemand die de chaos probeert te controleren.'},
+        {speaker:'Lors',emoji:'🃏',text:'Chaos controleren? Dat klinkt als mijn soort persoon. Laten we gaan!'},
+        {speaker:'Nath',emoji:'😤',text:'ALWEER een dimensie? Kunnen we niet gewoon één keer normaal doen?'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Die Hydra bewaakt het portaal. We moeten erlangs.'},
+        {speaker:'Chaos Hydra',emoji:'🐉',text:'*BRULT* NIEMAND PASSEERT DE CHAOS KERN!'},
+        {speaker:'Adam',emoji:'🎯',text:'Drie koppen, drie keer zoveel targets voor mijn stickers!'},
+        {speaker:'Fionn',emoji:'😑',text:'Die logica klopt niet maar oké.'}
+      ],
+      outro:[
+        {speaker:'Josh',emoji:'👑',text:'De Hydra is verslagen! Maar wie is daar achter het portaal?'},
+        {speaker:'Reshman',emoji:'🌀',text:'YOOOO! Eindelijk! Ik zat hier al WEKEN vast!'},
+        {speaker:'Lors',emoji:'🃏',text:'Reshman?! Jij was hier de hele tijd?!'},
+        {speaker:'Reshman',emoji:'🌀',text:'Ja bro, ik probeerde de chaos te beheersen maar het ging een beetje mis. Net als altijd eigenlijk.'},
+        {speaker:'Reshman',emoji:'🌀',text:'Maar ik heb iets ontdekt. Er is iemand die ALLE chaos aanstuurt. Eén ultieme vijand.'},
+        {speaker:'Josh',emoji:'👑',text:'Wie?'},
+        {speaker:'Reshman',emoji:'🌀',text:'Ze noemen hem... The Unranked. En hij wil de hele ranking vernietigen.'}
+      ]
+    }
   },
-  { day:3, time:'Avond', bg:'🌃', title:'Het Balkon',
-    chars:['fionn'],
-    steps:[
-      { type:'narrate', text:'Na schooltijd loop je langs het park. Op een bankje zit Fionn, alleen, met oortjes in. Hij ziet er anders uit dan normaal — niet sarcastisch, maar... stil.' },
-      { type:'dialogue', speaker:'fionn', text:'Oh. Jij. *haalt een oortje uit* Ik zit gewoon... na te denken. Doe ik soms.' },
-      { type:'dialogue', speaker:'fionn', text:'Iedereen denkt dat ik overal schijt aan heb. Maar... soms is het makkelijker om sarcastisch te zijn dan om te laten zien dat je je ergens druk om maakt.' },
-      { type:'choice', text:'Een zeldzaam eerlijk moment van Fionn.', options:[
-        { text:'💕 Ga naast hem zitten zonder iets te zeggen. Soms is stilte genoeg.', effects:{fionn:4} },
-        { text:'😑 "Welk nummer luister je? Laat horen."', effects:{fionn:3} },
-        { text:'🗣️ "Je mag best laten zien dat je je ergens om geeft, weet je."', effects:{fionn:2} }
+  { num:5, name:'De Laatste Ranking', desc:'The Unranked wil de hele ranking vernietigen. Met het volledige team moet je hem stoppen in een episch eindgevecht.',
+    unlockAfter:null,
+    battles:[
+      { label:'De Voorhoede', enemies:[
+        {name:'Rank Destroyer',emoji:'💣',hp:90,atk:26,def:14,spd:18,spc:16,moves:[{name:'Rank Break',type:'atk',power:34},{name:'Rank Wipe',type:'atk_all',power:20}]},
+        {name:'Score Thief',emoji:'🥷',hp:70,atk:28,def:10,spd:24,spc:14,moves:[{name:'Score Steal',type:'atk',power:30,effect:'heal_self',heal:15},{name:'Quick Slash',type:'atk',power:26}]},
+        {name:'Poll Corruptor',emoji:'📊',hp:80,atk:20,def:12,spd:14,spc:20,moves:[{name:'Corrupt',type:'atk',power:26,effect:'confuse'},{name:'False Poll',type:'debuff_all',effect:'confuse'}]}
       ]},
-      { type:'dialogue', speaker:'fionn', text:'...je bent anders dan de rest. Niet zo luid. Dat is... niet verschrikkelijk.' },
-      { type:'narrate', text:'Van Fionn is dat het mooiste compliment dat je ooit zult krijgen.' }
-    ]
-  },
-
-  // ===== DAG 4 =====
-  { day:4, time:'Ochtend', bg:'🎪', title:'De Schooltrip',
-    chars:['josh','lors','nath','fionn','adam','milo','daniel','reshman'],
-    steps:[
-      { type:'narrate', text:'Schoolreisje naar een pretpark! De hele groep is er. In de bus zit je vast tussen twee mensen. Je mag kiezen waar je gaat zitten.' },
-      { type:'choice', text:'Naast wie ga je zitten in de bus?', options:[
-        { text:'👑 Josh — hij bewaakt een plek voor je', effects:{josh:2} },
-        { text:'🃏 Lors — hij heeft snoep en chaos', effects:{lors:2} },
-        { text:'😤 Nathan — hij heeft niemand naast zich', effects:{nath:3} },
-        { text:'😑 Fionn — hij heeft een extra oortje voor je', effects:{fionn:2} }
+      { label:'De Eliteguard', enemies:[
+        {name:'Admin Abuser',emoji:'🛡️',hp:120,atk:28,def:18,spd:10,spc:14,moves:[{name:'Power Trip',type:'atk',power:36},{name:'Mass Ban',type:'atk_all',power:22},{name:'Iron Wall',type:'buff',effect:'shield',target:'self'}]},
+        {name:'Meme Overlord',emoji:'🎭',hp:110,atk:26,def:14,spd:14,spc:20,moves:[{name:'Meme Beam',type:'atk',power:34},{name:'Viral Spread',type:'atk_all',power:22},{name:'Deep Fried',type:'atk',power:46,effect:'burn'}]}
       ]},
-      { type:'narrate', text:'De busrit is 2 uur. Jullie praten, lachen, en delen muziek. De rest van de groep is luid op de achterbank.' },
-      { type:'dialogue', speaker:'lors', text:'ACHTBAAN COMPETITIE! Wie er het hardst schreeuwt WINT!' },
-      { type:'dialogue', speaker:'nath', text:'Dat is GEEN competitie, Lors. Dat is gewoon schreeuwen.' },
-      { type:'dialogue', speaker:'adam', text:'Ik ga van elke attractie een sticker maken! 📸' },
-      { type:'dialogue', speaker:'reshman', text:'Wist je dat als je in de achtbaan ACHTERWAARTS zit je door de tijd reist? Mijn neef zei dat.' }
-    ]
-  },
-  { day:4, time:'Middag', bg:'🎢', title:'De Achtbaan',
-    chars:['lors','adam','daniel','reshman'],
-    steps:[
-      { type:'narrate', text:'Bij de grootste achtbaan splitst de groep zich op. Sommigen willen, anderen niet.' },
-      { type:'dialogue', speaker:'lors', text:'Wie durft?! VOORSTE RIJ! Alleen echte G\'s zitten vooraan!' },
-      { type:'dialogue', speaker:'daniel', text:'Statistisch gezien is de achterste rij het engst vanwege de zweep-kracht. Maar de voorste rij is het engst psychologisch. Kies je gif.' },
-      { type:'dialogue', speaker:'adam', text:'Ik ga naast je zitten! Dan kan ik je reactie filmen voor een sticker! 😂' },
-      { type:'dialogue', speaker:'reshman', text:'Ik zit in de middelste rij. Perfect gebalanceerd, zoals alle dingen zouden moeten zijn. *Thanos stem*' },
-      { type:'choice', text:'De achtbaan wacht...', options:[
-        { text:'🃏 Voorste rij met Lors — YOLO', effects:{lors:3} },
-        { text:'🎯 Naast Adam — laat hem die sticker maar maken', effects:{adam:3} },
-        { text:'💀 Achterste rij met Daniël — voor de wetenschap', effects:{daniel:3} },
-        { text:'🌀 Middelste rij met Reshman — perfect gebalanceerd', effects:{reshman:3} }
-      ]},
-      { type:'narrate', text:'De achtbaan is INTENS. Iedereen schreeuwt. Lors het hardst. Daniël analyseert de G-krachten mid-ride. Reshman zingt een lied. Het is perfect.' }
-    ]
-  },
-  { day:4, time:'Avond', bg:'🎡', title:'Het Reuzenrad',
-    chars:['josh','fionn','milo','nath'],
-    steps:[
-      { type:'narrate', text:'Het park sluit bijna. Het reuzenrad draait langzaam in het avondlicht. Er is nog plek voor twee in een gondel.' },
-      { type:'choice', text:'Met wie stap je in het reuzenrad?', options:[
-        { text:'👑 Josh — hij staat al te wachten bij de ingang', effects:{josh:4} },
-        { text:'😑 Fionn — hij doet alsof het hem niks kan schelen maar hij kijkt steeds naar je', effects:{fionn:4} },
-        { text:'🧊 Milo — hij wil je het uitzicht beschrijven als een gedicht', effects:{milo:4} },
-        { text:'😤 Nathan — hij staat alleen en kijkt naar de zonsondergang', effects:{nath:4} }
-      ]},
-      { type:'narrate', text:'Bovenin het reuzenrad is het stil. Alleen de wind en het verre geluid van het park. Het uitzicht is prachtig — de hele stad, badend in oranje licht.' },
-      { type:'narrate', text:'"Dit was een goede dag," fluistert je metgezel. En je weet dat ze het menen.' }
-    ]
-  },
-
-  // ===== DAG 5 =====
-  { day:5, time:'Ochtend', bg:'🌸', title:'De Laatste Dag',
-    chars:['josh','lors','nath','fionn','adam','milo','daniel','reshman'],
-    steps:[
-      { type:'narrate', text:'Het is vrijdag. De laatste dag van de week. In de groepschat is er een poll: "Beste Moment Van De Week?" Jouw naam komt in meerdere antwoorden voor.' },
-      { type:'narrate', text:'Je loopt door de gang en realiseert je dat je in één week een hele vriendengroep hebt gevonden. Maar er is iemand die je extra is opgevallen...' },
-      { type:'narrate', text:'De bel gaat. De dag begint. Maar je weet dat dit niet zomaar een vrijdag is. Vandaag verandert alles.' }
-    ]
-  },
-  { day:5, time:'Middag', bg:'💌', title:'De Boodschap',
-    chars:[],
-    steps:[
-      { type:'narrate', text:'Tijdens de lunchpauze vind je een briefje in je locker. Er staat: "Kom na school naar het dak. Ik moet je iets vertellen." Geen naam. Alleen een klein hartje.' },
-      { type:'narrate', text:'Je hart slaat over. Wie heeft dit geschreven? Je kijkt de kantine rond. Iedereen gedraagt zich normaal — of niet?' }
-    ]
-  },
-  { day:5, time:'Avond', bg:'🌅', title:'Het Dak', ending:true,
-    chars:[],
-    steps:[]
+      { label:'FINAL BOSS: The Unranked', boss:true, enemies:[
+        {name:'The Unranked',emoji:'❓',hp:400,atk:36,def:20,spd:20,spc:30,boss:true,moves:[{name:'Void Strike',type:'atk',power:50},{name:'Rank Annihilation',type:'atk_all',power:32},{name:'Void Shield',type:'buff',effect:'shield',target:'self'},{name:'Oblivion',type:'atk',power:70,effect:'stun'},{name:'Dark Restoration',type:'heal_self',power:50}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Dit is het. De finale. The Unranked wil alles vernietigen wat we hebben opgebouwd.'},
+        {speaker:'Reshman',emoji:'🌀',text:'Hij is krankzinnig sterk. We hebben iedereen nodig.'},
+        {speaker:'Lors',emoji:'🃏',text:'Dan is het goed dat we met z\'n allen zijn. Maximale chaos, maar dan de goede soort.'},
+        {speaker:'Fionn',emoji:'😑',text:'Ik kan niet geloven dat ik dit zeg, maar... laten we dit doen. Samen.'},
+        {speaker:'Nath',emoji:'😤',text:'ZE GAAN ERAAN! NIEMAND VERNIETIGT ONZE RANKING!'},
+        {speaker:'Adam',emoji:'🎯',text:'Stickers geladen. Spam cannons ready. LET\'S GO!'},
+        {speaker:'Josh',emoji:'👑',text:'Voor de ranking. Voor de groep. VOORUIT!'}
+      ],
+      midBoss:[
+        {speaker:'The Unranked',emoji:'❓',text:'Dus jullie zijn de "helden" van de groepschat. Hoe... voorspelbaar.'},
+        {speaker:'Josh',emoji:'👑',text:'Waarom doe je dit? Waarom wil je alles vernietigen?'},
+        {speaker:'The Unranked',emoji:'❓',text:'Omdat rankings zinloos zijn. Polls zijn nep. Memes zijn vergankelijk. Ik zal jullie de waarheid laten zien.'},
+        {speaker:'Lors',emoji:'🃏',text:'Zinloos? Het is het LEUKSTE wat we hebben! Jij snapt er niks van!'},
+        {speaker:'The Unranked',emoji:'❓',text:'Dan zal ik jullie vernietigen. Samen met jullie kostbare ranking.'},
+        {speaker:'Josh',emoji:'👑',text:'Over ons lijk. TEAM, AANVALLEN!'}
+      ],
+      outro:[
+        {speaker:'The Unranked',emoji:'❓',text:'Onmogelijk... verslagen... door een stel... chatters...'},
+        {speaker:'Josh',emoji:'👑',text:'We zijn niet zomaar chatters. We zijn Wat in de Ranking.'},
+        {speaker:'Nath',emoji:'😤',text:'EN VERGEET DAT NOOIT!'},
+        {speaker:'Lors',emoji:'🃏',text:'Dat was... episch. Ik heb tranen in mijn ogen. Van het lachen.'},
+        {speaker:'Fionn',emoji:'😑',text:'Ik moet toegeven... dat was niet helemaal verschrikkelijk.'},
+        {speaker:'Adam',emoji:'🎯',text:'GROUP SELFIE! 📸'},
+        {speaker:'Reshman',emoji:'🌀',text:'LEGENDARY MOMENT!'},
+        {speaker:'Josh',emoji:'👑',text:'De ranking is gered. Maar dit was pas het begin. Er zijn altijd meer rankings om te maken, meer polls om te houden, meer lore om te schrijven.'},
+        {speaker:'Josh',emoji:'👑',text:'Want dat is wat wij doen. Wij ranken. En dat zullen we altijd blijven doen. 👑'}
+      ]
+    }
   }
 ];
 
-function startGame() {
-  hearts = { josh:0, lors:0, milo:0, nath:0, adam:0, fionn:0, daniel:0, reshman:0 };
-  currentScene = 0;
-  currentStep = 0;
-  showScreen('game-screen');
-  renderScene();
+// ===== GAME STATE =====
+var difficulty = 'normal';
+var diffMods = { easy:{hp:0.7,atk:0.7,def:0.7}, normal:{hp:1,atk:1,def:1}, hard:{hp:1.4,atk:1.4,def:1.3} };
+var G = { party:[], enemies:[], turnOrder:[], turnIdx:0, log:[], items:{potion:3,elixir:2}, phase:'title', selectedMove:null, selectedAction:null };
+var storyState = { chapter:0, battleIdx:0, phase:'title', unlockedIds:['josh','fionn','nath','milo'], mode:'story' };
+var picked = [];
+
+// ===== DIFFICULTY =====
+function setDiff(d, btn) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
 }
 
+// ===== SAVE / LOAD =====
+function saveGame() {
+  var save = { chapter:storyState.chapter, battleIdx:storyState.battleIdx, unlocked:storyState.unlockedIds, difficulty:difficulty,
+    party:G.party.map(function(p){return {id:p.id,curHp:p.curHp,curMp:p.curMp,alive:p.alive};}),
+    items:G.items, date:new Date().toLocaleString('nl-NL') };
+  try { localStorage.setItem('widr_rpg_save', JSON.stringify(save)); } catch(e){}
+}
+function loadGame() {
+  try {
+    var save = JSON.parse(localStorage.getItem('widr_rpg_save'));
+    if (!save) return;
+    difficulty = save.difficulty || 'normal';
+    storyState.unlockedIds = save.unlocked || ['josh','fionn','nath','milo'];
+    storyState.chapter = save.chapter;
+    storyState.battleIdx = save.battleIdx;
+    storyState.mode = 'story';
+    G.items = save.items || {potion:3,elixir:2};
+    var ch = CHAPTERS[storyState.chapter];
+    var partyIds = storyState.chapter === 0 ? ch.startPartyIds : storyState.unlockedIds.slice(0,4);
+    if (save.party) {
+      G.party = save.party.map(function(sp) {
+        var hero = HEROES.find(function(h){return h.id===sp.id;});
+        if (!hero) return null;
+        var f = makeFighter(hero, false);
+        f.curHp = sp.curHp; f.curMp = sp.curMp; f.alive = sp.alive;
+        return f;
+      }).filter(function(f){return f;});
+    } else {
+      G.party = partyIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    }
+    startStoryBattle();
+  } catch(e) { alert('Save is corrupt.'); }
+}
+function checkSave() {
+  try {
+    var save = JSON.parse(localStorage.getItem('widr_rpg_save'));
+    if (save) {
+      document.getElementById('btn-continue').style.display = 'block';
+      document.getElementById('save-info').textContent = 'Chapter ' + (save.chapter+1) + ' — ' + (save.date||'');
+    }
+  } catch(e){}
+}
+
+// ===== SCREENS =====
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
 }
 
-function renderScene() {
-  var scene = STORY[currentScene];
-  if (!scene) { showEnding(); return; }
-  if (scene.ending) { showEnding(); return; }
-
-  document.getElementById('dayLabel').textContent = 'Dag ' + scene.day;
-  document.getElementById('timeLabel').textContent = scene.time + ' — ' + scene.title;
-  document.getElementById('sceneBg').textContent = scene.bg;
-
-  updateHeartsBar();
-  renderChars(scene.chars, null);
-  renderStep();
+// ===== STORY MODE =====
+function startStoryMode() {
+  storyState = { chapter:0, battleIdx:0, phase:'dialogue_intro', unlockedIds:['josh','fionn','nath','milo'], mode:'story' };
+  G.items = { potion:3, elixir:2 };
+  showChapterIntro();
+}
+function showChapterIntro() {
+  var ch = CHAPTERS[storyState.chapter];
+  showScreen('dialogue-screen');
+  var overlay = document.getElementById('chapter-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('ch-num').textContent = 'Chapter ' + ch.num;
+  document.getElementById('ch-name').textContent = ch.name;
+  document.getElementById('ch-desc').textContent = ch.desc;
+}
+function dismissChapterTitle() {
+  document.getElementById('chapter-overlay').style.display = 'none';
+  storyState.phase = 'dialogue_intro';
+  currentDialogues = CHAPTERS[storyState.chapter].dialogues.intro;
+  dialogueIdx = 0;
+  showDialogue();
 }
 
-function renderChars(charIds, activeId) {
-  var el = document.getElementById('sceneChars');
-  el.innerHTML = charIds.map(function(id) {
-    var c = CHARS[id];
-    var cls = id === activeId ? 'highlight' : (activeId ? '' : 'active');
-    var h = hearts[id] || 0;
-    var heartStr = '';
-    for (var i = 0; i < Math.min(h, 10); i++) heartStr += '♥';
-    return '<div class="scene-char '+cls+'"><span class="sc-emoji">'+c.emoji+'</span><div class="sc-name" style="color:'+c.color+'">'+c.name+'</div>'+(h>0?'<div class="sc-hearts-display">'+heartStr+'</div>':'')+'</div>';
-  }).join('');
-}
-
-function renderStep() {
-  var scene = STORY[currentScene];
-  var step = scene.steps[currentStep];
-  if (!step) { nextScene(); return; }
-
-  var area = document.getElementById('dialogueArea');
-
-  if (step.type === 'narrate') {
-    renderChars(scene.chars, null);
-    area.innerHTML = '<div class="narrator-text">'+step.text+'</div><button class="continue-btn" onclick="advanceStep()">Verder →</button>';
-  }
-  else if (step.type === 'dialogue') {
-    renderChars(scene.chars, step.speaker);
-    var c = CHARS[step.speaker];
-    area.innerHTML = '<div class="speaker-name" style="color:'+c.color+'">'+c.emoji+' '+c.name+'</div><div class="dialogue-text">'+step.text+'</div><button class="continue-btn" onclick="advanceStep()">Verder →</button>';
-  }
-  else if (step.type === 'choice') {
-    area.innerHTML = '<div class="dialogue-text" style="font-weight:700;">'+step.text+'</div><div class="choices">'+step.options.map(function(o,i){
-      return '<button class="choice-btn" onclick="makeChoice('+currentScene+','+currentStep+','+i+')">'+o.text+'</button>';
-    }).join('')+'</div>';
-  }
-}
-
-function advanceStep() {
-  currentStep++;
-  var scene = STORY[currentScene];
-  if (currentStep >= scene.steps.length) { nextScene(); return; }
-  renderStep();
-}
-
-function nextScene() {
-  currentScene++;
-  currentStep = 0;
-  renderScene();
-}
-
-function makeChoice(sceneIdx, stepIdx, optIdx) {
-  var step = STORY[sceneIdx].steps[stepIdx];
-  var option = step.options[optIdx];
-  var effects = option.effects || {};
-
-  Object.keys(effects).forEach(function(id) {
-    var amt = effects[id];
-    hearts[id] = Math.max(0, (hearts[id]||0) + amt);
-    if (amt > 0) spawnHearts(amt);
-    if (amt > 0) showReaction(id, amt);
+// ===== DIALOGUE SYSTEM =====
+var currentDialogues = [];
+var dialogueIdx = 0;
+function showDialogue() {
+  if (dialogueIdx >= currentDialogues.length) { endDialogue(); return; }
+  var d = currentDialogues[dialogueIdx];
+  var scene = document.getElementById('dialogue-scene');
+  var chars = [];
+  currentDialogues.forEach(function(dl) {
+    if (chars.indexOf(dl.speaker) === -1 && chars.length < 4) chars.push(dl.speaker);
   });
-
-  updateHeartsBar();
-  advanceStep();
+  scene.innerHTML = chars.map(function(name) {
+    var dl = currentDialogues.find(function(x){return x.speaker===name;});
+    var isSpeaking = name === d.speaker;
+    return '<div class="dialogue-char ' + (isSpeaking?'speaking':'dim') + '"><div class="dialogue-char-emoji">' + (dl?dl.emoji:'') + '</div><div class="dialogue-char-name">' + name + '</div></div>';
+  }).join('');
+  document.getElementById('dialogue-speaker').textContent = d.speaker;
+  document.getElementById('dialogue-text').textContent = d.text;
+  var nextBtn = document.getElementById('dialogue-next');
+  nextBtn.textContent = dialogueIdx >= currentDialogues.length - 1 ? 'Start Battle →' : 'Verder →';
+  if (storyState.phase === 'dialogue_outro' && dialogueIdx >= currentDialogues.length - 1) nextBtn.textContent = 'Verder →';
+}
+function nextDialogue() {
+  dialogueIdx++;
+  if (dialogueIdx >= currentDialogues.length) { endDialogue(); return; }
+  showDialogue();
+}
+function endDialogue() {
+  if (storyState.phase === 'dialogue_intro') {
+    storyState.battleIdx = 0;
+    var ch = CHAPTERS[storyState.chapter];
+    if (storyState.chapter === 0) {
+      G.party = ch.startPartyIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    } else if (G.party.length === 0) {
+      var ids = storyState.unlockedIds.slice(0,4);
+      G.party = ids.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    }
+    startStoryBattle();
+  } else if (storyState.phase === 'dialogue_midBoss') {
+    startStoryBattle();
+  } else if (storyState.phase === 'dialogue_outro') {
+    var ch = CHAPTERS[storyState.chapter];
+    if (ch.unlockAfter) {
+      showUnlock(ch.unlockAfter);
+    } else {
+      finishChapter();
+    }
+  }
 }
 
-function spawnHearts(count) {
-  for (var i = 0; i < count; i++) {
+// ===== UNLOCK =====
+function showUnlock(heroId) {
+  var hero = HEROES.find(function(h){return h.id===heroId;});
+  if (!hero) { finishChapter(); return; }
+  if (storyState.unlockedIds.indexOf(heroId) === -1) storyState.unlockedIds.push(heroId);
+  showScreen('unlock-screen');
+  document.getElementById('unlock-emoji').textContent = hero.emoji;
+  document.getElementById('unlock-name').textContent = hero.name;
+  document.getElementById('unlock-role').textContent = hero.title;
+  document.getElementById('unlock-stats').innerHTML = '<div class="unlock-stat">HP ' + hero.hp + '</div><div class="unlock-stat">ATK ' + hero.atk + '</div><div class="unlock-stat">DEF ' + hero.def + '</div><div class="unlock-stat">SPD ' + hero.spd + '</div>';
+}
+function afterUnlock() { finishChapter(); }
+function finishChapter() {
+  storyState.chapter++;
+  if (storyState.chapter >= CHAPTERS.length) {
+    showScreen('result-screen');
+    document.getElementById('result-title').textContent = '🏆 QUEST VOLTOOID!';
+    document.getElementById('result-sub').textContent = 'Je hebt alle 5 chapters overwonnen en The Unranked verslagen! De ranking is veilig. Je bent de ultieme WidR kampioen!';
+    try { localStorage.removeItem('widr_rpg_save'); } catch(e){}
+    return;
+  }
+  // Heal party for next chapter
+  G.party.forEach(function(p){p.curHp=p.maxHp;p.curMp=p.maxMp;p.alive=true;p.statuses=[];p.atkMod=0;p.defMod=0;p.defending=false;p.shield=false;});
+  G.items.potion = Math.min(5, G.items.potion + 2);
+  G.items.elixir = Math.min(3, G.items.elixir + 1);
+  // Let player pick party if they have more than 4 unlocked
+  if (storyState.unlockedIds.length > 4) {
+    showPartySelect();
+  } else {
+    G.party = storyState.unlockedIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    showChapterIntro();
+  }
+}
+function showPartySelect() {
+  picked = storyState.unlockedIds.slice(0,4);
+  showScreen('select-screen');
+  document.getElementById('select-sub').textContent = 'Kies 4 helden voor Chapter ' + (storyState.chapter+1);
+  renderRoster();
+}
+
+// ===== STORY BATTLES =====
+function startStoryBattle() {
+  var ch = CHAPTERS[storyState.chapter];
+  var battle = ch.battles[storyState.battleIdx];
+  if (!battle) { storyState.phase = 'dialogue_outro'; currentDialogues = ch.dialogues.outro; dialogueIdx = 0; showScreen('dialogue-screen'); showDialogue(); return; }
+  if (battle.boss && ch.dialogues.midBoss && storyState.phase !== 'dialogue_midBoss_done') {
+    storyState.phase = 'dialogue_midBoss';
+    currentDialogues = ch.dialogues.midBoss;
+    dialogueIdx = 0;
+    showScreen('dialogue-screen');
+    showDialogue();
+    storyState.phase = 'dialogue_midBoss';
+    return;
+  }
+  storyState.phase = 'battle';
+  var mod = diffMods[difficulty];
+  G.enemies = battle.enemies.map(function(e) {
+    var scaled = JSON.parse(JSON.stringify(e));
+    scaled.hp = Math.round(scaled.hp * mod.hp);
+    scaled.atk = Math.round(scaled.atk * mod.atk);
+    scaled.def = Math.round(scaled.def * mod.def);
+    return makeFighter(scaled, true);
+  });
+  G.log = [];
+  showScreen('battle-screen');
+  document.getElementById('battle-label').textContent = battle.label;
+  buildTurnOrder();
+  renderBattle();
+  saveGame();
+  nextTurn();
+}
+
+// ===== FREE PLAY =====
+function startFreePlay() {
+  storyState.mode = 'free';
+  storyState.unlockedIds = HEROES.map(function(h){return h.id;});
+  picked = [];
+  showScreen('select-screen');
+  document.getElementById('select-sub').textContent = 'Kies je party van 4 helden';
+  renderRoster();
+}
+
+// ===== ROSTER =====
+function renderRoster() {
+  var r = document.getElementById('roster');
+  r.innerHTML = HEROES.map(function(h) {
+    var unlocked = storyState.unlockedIds.indexOf(h.id) !== -1;
+    var isPicked = picked.indexOf(h.id) !== -1;
+    return '<div class="roster-card ' + (isPicked?'picked':'') + ' ' + (unlocked?'':'locked') + '" onclick="togglePick(\'' + h.id + '\')">' +
+      '<span class="rc-emoji">' + h.emoji + '</span>' +
+      '<div class="rc-name">' + h.name + '</div>' +
+      '<div class="rc-title">' + h.title + '</div>' +
+      '<div class="rc-stats"><span class="rc-stat">HP ' + h.hp + '</span><span class="rc-stat">ATK ' + h.atk + '</span><span class="rc-stat">DEF ' + h.def + '</span><span class="rc-stat">SPD ' + h.spd + '</span></div></div>';
+  }).join('');
+  var pp = document.getElementById('party-preview');
+  pp.innerHTML = '';
+  for (var i = 0; i < 4; i++) {
+    var hero = picked[i] ? HEROES.find(function(h){return h.id===picked[i];}) : null;
+    pp.innerHTML += '<div class="pp-slot ' + (hero?'filled':'') + '">' + (hero?hero.emoji:'') + '</div>';
+  }
+  var btn = document.getElementById('btn-start');
+  btn.disabled = picked.length !== 4;
+  btn.textContent = picked.length === 4 ? 'Start! ⚔️' : 'Kies nog ' + (4-picked.length) + ' held' + (4-picked.length===1?'':'en');
+}
+function togglePick(id) {
+  if (storyState.unlockedIds.indexOf(id) === -1) return;
+  var idx = picked.indexOf(id);
+  if (idx >= 0) picked.splice(idx, 1);
+  else if (picked.length < 4) picked.push(id);
+  renderRoster();
+}
+
+// ===== BATTLE ENGINE =====
+function makeFighter(data, isEnemy) {
+  return { id:data.id, name:data.name, emoji:data.emoji, hp:data.hp, mp:data.mp||0, atk:data.atk, def:data.def, spd:data.spd||10, spc:data.spc||10,
+    maxHp:data.hp, maxMp:data.mp||0, curHp:data.hp, curMp:data.mp||0, moves:data.moves||[], boss:data.boss||false,
+    isEnemy:isEnemy, alive:true, statuses:[], defending:false, shield:false, atkMod:0, defMod:0 };
+}
+function buildTurnOrder() {
+  var all = G.party.filter(function(f){return f.alive;}).concat(G.enemies.filter(function(f){return f.alive;}));
+  G.turnOrder = all.sort(function(a,b){return (b.spd||0)-(a.spd||0);});
+  G.turnIdx = -1;
+}
+function nextTurn() {
+  G.turnIdx++;
+  if (checkBattleEnd()) return;
+  if (G.turnIdx >= G.turnOrder.length) { buildTurnOrder(); G.turnIdx = 0; }
+  var cur = G.turnOrder[G.turnIdx];
+  if (!cur || !cur.alive) { nextTurn(); return; }
+  cur.defending = false;
+  var skipTurn = false;
+  cur.statuses = cur.statuses.filter(function(s) {
+    s.turns--;
+    if (s.type === 'burn') { var dmg = Math.floor(cur.maxHp * 0.08); cur.curHp = Math.max(0, cur.curHp - dmg); addLog(cur.emoji + ' ' + cur.name + ' neemt ' + dmg + ' brandschade! 🔥', 'dmg'); if (cur.curHp <= 0) { cur.alive = false; addLog(cur.emoji + ' ' + cur.name + ' is verslagen!', 'info'); } }
+    if (s.type === 'stun') { skipTurn = true; addLog(cur.emoji + ' ' + cur.name + ' is gestund!', 'info'); }
+    if (s.type === 'confuse' && !cur.isEnemy && Math.random() < 0.4) { skipTurn = true; addLog(cur.emoji + ' ' + cur.name + ' is verward!', 'dmg'); cur.curHp = Math.max(0, cur.curHp - 10); }
+    return s.turns > 0;
+  });
+  if (!cur.alive) { renderBattle(); nextTurn(); return; }
+  if (skipTurn) { renderBattle(); setTimeout(nextTurn, 600); return; }
+  renderBattle();
+  if (cur.isEnemy) setTimeout(function(){enemyAI(cur);}, 700);
+  else showActions(cur);
+}
+function enemyAI(enemy) {
+  var targets = G.party.filter(function(f){return f.alive;});
+  if (!targets.length) return;
+  var move = enemy.moves[Math.floor(Math.random() * enemy.moves.length)];
+  executeMove(enemy, move, targets);
+}
+
+// ===== MOVE EXECUTION =====
+function executeMove(user, move, potentialTargets, specificTarget) {
+  var t = move.type;
+  if (t === 'atk') {
+    var target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
+    var dmg = calcDamage(user, target, move);
+    applyDamage(target, dmg);
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + ' → ' + target.emoji + ' ' + target.name + ' (' + dmg + ' dmg)', 'dmg');
+    if (move.effect === 'burn') applyStatus(target, 'burn', 3);
+    if (move.effect === 'stun') applyStatus(target, 'stun', 1);
+    if (move.effect === 'confuse') applyStatus(target, 'confuse', 2);
+    if (move.effect === 'def_down') { target.defMod -= 5; addLog(target.name + ' DEF ⬇', 'buff'); }
+    if (move.effect === 'heal_self') { var h = move.heal||15; user.curHp = Math.min(user.maxHp, user.curHp + h); addLog(user.name + ' heelt ' + h + ' HP', 'heal'); }
+  } else if (t === 'atk_all') {
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + '!', 'info');
+    potentialTargets.forEach(function(tgt) { if (!tgt.alive) return; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog('  → ' + tgt.emoji + ' ' + tgt.name + ' (' + dmg + ')', 'dmg'); if (move.effect === 'burn') applyStatus(tgt, 'burn', 3); });
+  } else if (t === 'atk_multi') {
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + '!', 'info');
+    for (var i = 0; i < (move.hits||3); i++) { var alive = potentialTargets.filter(function(f){return f.alive;}); if (!alive.length) break; var tgt = alive[Math.floor(Math.random()*alive.length)]; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog('  Hit ' + (i+1) + '! ' + tgt.emoji + ' (' + dmg + ')', 'dmg'); }
+  } else if (t === 'atk_random') {
+    var all = G.party.filter(function(f){return f.alive;}).concat(G.enemies.filter(function(f){return f.alive;})).filter(function(f){return f!==user;});
+    var tgt = all[Math.floor(Math.random()*all.length)]; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog(user.emoji + ' ' + move.name + ' → ' + tgt.emoji + ' (' + dmg + ')', 'dmg');
+  } else if (t === 'heal') {
+    var target = specificTarget; var heal = move.power + Math.floor(user.spc * 0.5); target.curHp = Math.min(target.maxHp, target.curHp + heal); addLog(user.emoji + ' heelt ' + target.emoji + ' +' + heal + ' HP', 'heal');
+  } else if (t === 'heal_all') {
+    G.party.filter(function(f){return f.alive;}).forEach(function(f){ var heal = move.power + Math.floor(user.spc * 0.3); f.curHp = Math.min(f.maxHp, f.curHp + heal); }); addLog(user.emoji + ' ' + move.name + ' — party geheeld!', 'heal');
+  } else if (t === 'heal_self') {
+    user.curHp = Math.min(user.maxHp, user.curHp + move.power); addLog(user.emoji + ' herstelt ' + move.power + ' HP', 'heal');
+  } else if (t === 'buff') {
+    if (move.effect === 'atk_up') { user.atkMod += 8; addLog(user.emoji + ' ATK ⬆', 'buff'); }
+    if (move.effect === 'shield') { user.shield = true; addLog(user.emoji + ' is beschermd! ✨', 'buff'); }
+  } else if (t === 'buff_all') {
+    G.party.filter(function(f){return f.alive;}).forEach(function(f){ if (move.effect === 'atk_up') f.atkMod += 6; if (move.effect === 'shield') f.shield = true; }); addLog(user.emoji + ' ' + move.name + ' — party gebuffed!', 'buff');
+  } else if (t === 'debuff') {
+    var target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
+    if (move.effect === 'def_down') { target.defMod -= 6; addLog(user.emoji + ' verlaagt ' + target.name + ' DEF', 'buff'); }
+    if (move.effect === 'confuse') applyStatus(target, 'confuse', 2);
+    if (move.effect === 'stun') applyStatus(target, 'stun', 1);
+  } else if (t === 'debuff_all') {
+    potentialTargets.forEach(function(tgt){ if (move.effect === 'confuse') applyStatus(tgt, 'confuse', 2); }); addLog(user.emoji + ' ' + move.name + '!', 'buff');
+  }
+  if (move.cost) user.curMp = Math.max(0, (user.curMp||0) - move.cost);
+  renderBattle();
+  setTimeout(nextTurn, 800);
+}
+function calcDamage(atk, def, move) {
+  var base = move.power + (atk.atk||0) + (atk.atkMod||0);
+  var defense = Math.max(0, (def.def||0) + (def.defMod||0));
+  if (def.defending) defense *= 2;
+  if (def.shield) { def.shield = false; return Math.floor(base * 0.15); }
+  var dmg = Math.max(1, Math.floor(base - defense * 0.6));
+  var crit = Math.random() < (0.1 + (move.crit_bonus||0)/100);
+  if (crit) { dmg = Math.floor(dmg * 1.6); addLog('CRITICAL! 💥', 'info'); }
+  dmg += Math.floor(Math.random() * 6) - 3;
+  return Math.max(1, dmg);
+}
+function applyDamage(target, dmg) {
+  target.curHp = Math.max(0, target.curHp - dmg);
+  if (target.curHp <= 0) { target.alive = false; addLog('💀 ' + target.emoji + ' ' + target.name + ' verslagen!', 'info'); }
+  var el = document.getElementById('f-' + (target.id||target.name));
+  if (el) { el.classList.add('hit'); setTimeout(function(){if(el)el.classList.remove('hit');}, 300); }
+}
+function applyStatus(target, type, turns) {
+  if (target.statuses.find(function(s){return s.type===type;})) return;
+  target.statuses.push({type:type,turns:turns});
+  var labels = {burn:'🔥',stun:'⚡',confuse:'🌀'};
+  addLog(target.name + ' → ' + (labels[type]||type), 'buff');
+}
+
+// ===== BATTLE END =====
+function checkBattleEnd() {
+  if (G.party.every(function(f){return !f.alive;})) {
     setTimeout(function() {
-      var h = document.createElement('div');
-      h.className = 'heart-popup';
-      h.textContent = '💕';
-      h.style.left = (30 + Math.random()*40) + '%';
-      h.style.top = (40 + Math.random()*20) + '%';
-      document.body.appendChild(h);
-      setTimeout(function(){h.remove();}, 1200);
-    }, i * 200);
+      showScreen('result-screen');
+      document.getElementById('result-title').textContent = '💀 Game Over';
+      document.getElementById('result-sub').textContent = storyState.mode === 'story' ? 'Je bent verslagen in Chapter ' + (storyState.chapter+1) + '. Probeer het opnieuw!' : 'De chaos was te sterk.';
+    }, 1000);
+    return true;
   }
+  if (G.enemies.every(function(f){return !f.alive;})) {
+    setTimeout(function() {
+      if (storyState.mode === 'story') {
+        // Heal between story battles
+        G.party.forEach(function(p){ if (p.alive) { p.curHp = Math.min(p.maxHp, p.curHp + Math.floor(p.maxHp * 0.3)); p.curMp = Math.min(p.maxMp, (p.curMp||0) + 15); } });
+        G.party.forEach(function(p){ if (!p.alive) { p.alive = true; p.curHp = Math.floor(p.maxHp * 0.3); }});
+        G.items.potion = Math.min(5, G.items.potion + 1);
+        storyState.battleIdx++;
+        var ch = CHAPTERS[storyState.chapter];
+        if (storyState.battleIdx >= ch.battles.length) {
+          storyState.phase = 'dialogue_outro';
+          currentDialogues = ch.dialogues.outro;
+          dialogueIdx = 0;
+          showScreen('dialogue-screen');
+          showDialogue();
+        } else {
+          showTransition();
+        }
+      } else {
+        freePlayBattleWon();
+      }
+    }, 1000);
+    return true;
+  }
+  return false;
+}
+function showTransition() {
+  showScreen('transition-screen');
+  var ch = CHAPTERS[storyState.chapter];
+  var nextBattle = ch.battles[storyState.battleIdx];
+  document.getElementById('trans-title').textContent = 'Victory! ⚔️';
+  document.getElementById('trans-sub').textContent = nextBattle ? 'Volgende: ' + nextBattle.label : 'Voorbereiden...';
+  document.getElementById('trans-party').innerHTML = G.party.map(function(p) {
+    return '<div class="tp-card"><div class="tp-emoji">' + p.emoji + '</div><div class="tp-name">' + p.name + '</div><div class="tp-hp" style="color:' + (p.alive?'var(--mint)':'var(--coral)') + '">' + p.curHp + '/' + p.maxHp + '</div></div>';
+  }).join('');
+  document.getElementById('btn-next').onclick = function() {
+    if (storyState.mode === 'story') {
+      storyState.phase = 'dialogue_midBoss_done';
+      startStoryBattle();
+    }
+  };
+  saveGame();
 }
 
-function showReaction(charId, amount) {
-  var c = CHARS[charId];
-  var reactions = [c.emoji+' +'+amount+' ♥', c.name+' vindt dit leuk! ♥', c.emoji+' ♥♥♥'];
-  var bubble = document.createElement('div');
-  bubble.className = 'reaction-bubble';
-  bubble.textContent = reactions[Math.min(amount-1, reactions.length-1)];
-  document.body.appendChild(bubble);
-  setTimeout(function(){bubble.remove();}, 1500);
+// ===== FREE PLAY BATTLES =====
+var freePlayBattle = 0;
+var FREE_ENEMIES = [
+  [{name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Flood',type:'atk_all',power:10}]},{name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Blast',type:'atk',power:16}]}],
+  [{name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24},{name:'Flame',type:'atk',power:28,effect:'burn'}]},{name:'Blue Tick Ghost',emoji:'👻',hp:65,atk:22,def:8,spd:18,spc:10,moves:[{name:'Seen',type:'atk',power:30},{name:'Ghost',type:'debuff',effect:'stun'}]}],
+  [{name:'Meme Overlord',emoji:'🎭',hp:110,atk:26,def:14,spd:13,spc:20,moves:[{name:'Meme Beam',type:'atk',power:36},{name:'Viral',type:'atk_all',power:22},{name:'Deep Fried',type:'atk',power:48,effect:'burn'}]}],
+  [{name:'GC Demon',emoji:'👹',hp:130,atk:30,def:16,spd:14,spc:16,moves:[{name:'Chat Nuke',type:'atk_all',power:26},{name:'Demonic Spam',type:'atk',power:42},{name:'Soul Drain',type:'atk',power:32,effect:'heal_self',heal:18}]},{name:'Algorithm Beast',emoji:'🦾',hp:120,atk:28,def:18,spd:16,spc:20,moves:[{name:'Data Strike',type:'atk',power:38},{name:'Override',type:'atk_all',power:22}]}],
+  [{name:'The Unranked',emoji:'❓',hp:200,atk:34,def:18,spd:16,spc:26,boss:true,moves:[{name:'Mystery',type:'atk',power:46},{name:'Rank Destroyer',type:'atk_all',power:28},{name:'Void Shield',type:'buff',effect:'shield',target:'self'},{name:'Oblivion',type:'atk',power:62,effect:'stun'}]}]
+];
+function startFreePlayBattles() {
+  G.party = picked.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+  freePlayBattle = 0;
+  G.items = {potion:3,elixir:2};
+  nextFreePlayBattle();
+}
+function nextFreePlayBattle() {
+  if (freePlayBattle >= FREE_ENEMIES.length) {
+    showScreen('result-screen');
+    document.getElementById('result-title').textContent = '🏆 Victory!';
+    document.getElementById('result-sub').textContent = 'Je hebt alle 5 battles overwonnen!';
+    return;
+  }
+  var mod = diffMods[difficulty];
+  G.enemies = FREE_ENEMIES[freePlayBattle].map(function(e){
+    var s = JSON.parse(JSON.stringify(e)); s.hp=Math.round(s.hp*mod.hp); s.atk=Math.round(s.atk*mod.atk); s.def=Math.round(s.def*mod.def); return makeFighter(s,true);
+  });
+  G.log = [];
+  showScreen('battle-screen');
+  document.getElementById('battle-label').textContent = 'Battle ' + (freePlayBattle+1) + '/5';
+  buildTurnOrder();
+  renderBattle();
+  nextTurn();
+}
+function freePlayBattleWon() {
+  freePlayBattle++;
+  G.party.forEach(function(p){if(p.alive){p.curHp=Math.min(p.maxHp,p.curHp+Math.floor(p.maxHp*0.3));p.curMp=Math.min(p.maxMp,(p.curMp||0)+15);}});
+  G.party.forEach(function(p){if(!p.alive){p.alive=true;p.curHp=Math.floor(p.maxHp*0.3);}});
+  G.items.potion = Math.min(5, G.items.potion + 1);
+  if (freePlayBattle >= FREE_ENEMIES.length) { nextFreePlayBattle(); return; }
+  showScreen('transition-screen');
+  document.getElementById('trans-title').textContent = 'Battle ' + freePlayBattle + ' gewonnen!';
+  document.getElementById('trans-sub').textContent = 'Volgende: Battle ' + (freePlayBattle+1) + '/5';
+  document.getElementById('trans-party').innerHTML = G.party.map(function(p){return '<div class="tp-card"><div class="tp-emoji">'+p.emoji+'</div><div class="tp-name">'+p.name+'</div><div class="tp-hp" style="color:'+(p.alive?'var(--mint)':'var(--coral)')+'">'+p.curHp+'/'+p.maxHp+'</div></div>';}).join('');
+  document.getElementById('btn-next').onclick = nextFreePlayBattle;
 }
 
-function updateHeartsBar() {
-  var bar = document.getElementById('heartsBar');
-  var sorted = Object.keys(hearts).filter(function(k){return hearts[k]>0;}).sort(function(a,b){return hearts[b]-hearts[a];});
-  bar.innerHTML = sorted.map(function(id) {
-    var c = CHARS[id];
-    var h = hearts[id];
-    var str = '';
-    for (var i = 0; i < Math.min(h, 8); i++) str += '♥';
-    return '<div class="hb-item">'+c.emoji+' <span class="hb-hearts">'+str+'</span></div>';
+// ===== UI ACTIONS =====
+function showActions(fighter) {
+  var f = fighter || G.turnOrder[G.turnIdx];
+  if (!f || f.isEnemy) return;
+  document.getElementById('moves-panel').classList.remove('active');
+  document.getElementById('target-panel').classList.remove('active');
+  document.getElementById('items-panel').classList.remove('active');
+  var ap = document.getElementById('action-panel');
+  ap.style.display = 'flex';
+  document.getElementById('action-title').textContent = f.emoji + ' ' + f.name + ' — Kies actie';
+  document.getElementById('action-grid').innerHTML = '<button class="act-btn btn-atk" onclick="showMoves(\'atk\')">⚔️ Aanval</button><button class="act-btn btn-spc" onclick="showMoves(\'spc\')">✨ Special<span class="cost">MP: '+(f.curMp||0)+'</span></button><button class="act-btn btn-def" onclick="doDefend()">🛡️ Verdedig</button><button class="act-btn btn-itm" onclick="showItems()">🧪 Items<span class="cost">'+(G.items.potion+G.items.elixir)+' over</span></button>';
+}
+function showMoves(type) {
+  var f = G.turnOrder[G.turnIdx];
+  document.getElementById('action-panel').style.display = 'none';
+  document.getElementById('moves-panel').classList.add('active');
+  var moves = type === 'atk' ? [f.moves[0]] : f.moves.slice(1);
+  document.getElementById('moves-list').innerHTML = moves.map(function(m, i) {
+    var canUse = (m.cost||0) <= (f.curMp||0);
+    var realIdx = type === 'atk' ? 0 : i+1;
+    return '<button class="move-btn" '+(canUse?'':'disabled')+' onclick="selectMove('+realIdx+')"><span>'+m.name+' <small style="opacity:.5">'+((m.desc||''))+'</small></span>'+(m.cost?'<span class="mv-cost">'+m.cost+' MP</span>':'')+'</button>';
   }).join('');
 }
-
-// ===== ENDING =====
-var ENDINGS = {
-  josh: { title:'De Admin & Jij', text:'Josh staat op het dak, leunend tegen het hek. Als hij je ziet, glimlacht hij — die echte glimlach, niet zijn admin-glimlach.\n\n"Ik heb iets bedacht," zegt hij. "Ik rank alles, toch? Films, docentjes, excuses. Maar er is één ding dat ik nooit heb gerankt."\n\n"Wat dan?"\n\n"De mensen die belangrijk voor me zijn. Maar als ik het zou doen... zou jij op nummer 1 staan. Altijd."\n\nHij pakt je hand. De zon gaat onder achter de stad. In de groepschat stuurt Lors: "Waar zijn Josh en de nieuwe?! 👀"\n\nMaar dat maakt nu even niet uit. 💕' },
-  lors: { title:'Chaos & Liefde', text:'Lors zit op het dak met een tas vol snoep en een bluetooth speaker die veel te hard staat.\n\n"DAAR BEN JE! Ik wachtte al. Kijk, ik heb iets voor je." Hij haalt een zelfgemaakte poll tevoorschijn op zijn telefoon.\n\nDe poll: "Wil je met Lors chillen? Forever?" Opties: "Ja ❤️" en "Absoluut ja 💕"\n\n"Ik weet dat ik chaotisch ben," zegt hij, opeens serieus. "Maar bij jou wil ik... een andere soort chaos. De goede soort."\n\nHij zet het volume harder. "Dit is ons liedje nu. Ik heb het net besloten."\n\nHet is het meest Lors-achtige liefdeverklaring ooit. En het is perfect. 💕' },
-  milo: { title:'Een Verhaal Voor Twee', text:'Op het dak ligt een deken met kussens. Milo zit er al, met een notitieboekje.\n\n"Ik heb een verhaal geschreven," zegt hij. "Het gaat over twee mensen die elkaar ontmoeten in een groepschat vol chaos. En langzaam, zonder dat ze het doorhebben, worden ze het belangrijkste deel van elkaars dag."\n\nHij geeft je het boekje. De laatste pagina is leeg.\n\n"Die pagina is voor ons," fluistert hij. "Want dit verhaal heeft nog geen einde. En ik wil het samen met jou schrijven."\n\nDe zon kleurt de hemel oranje en roze, alsof het universum meedoet met het moment. 💕' },
-  nath: { title:'Rustig Naast Jou', text:'Nathan staat op het dak, zijn handen in zijn zakken. Hij draait zich om als hij je hoort.\n\n"Hey. Ik... ik ben niet goed in dit soort dingen. Dus ik ga het gewoon zeggen."\n\nHij haalt diep adem. "Alles irriteert me. Mensen, school, de groepschat. Alles. Maar bij jou... bij jou ben ik rustig. Voor het eerst in... ik weet niet hoe lang."\n\nZijn ogen zijn een beetje rood. "Jij maakt me niet gek. Jij maakt me... normaal. En dat is het beste gevoel ter wereld."\n\nHij steekt zijn hand uit. "Dus... wil je naast me staan? Niet alleen nu. Maar... altijd?"\n\nJe pakt zijn hand. Hij glimlacht. Echt glimlacht. 💕' },
-  adam: { title:'De Perfecte Sticker', text:'Het dak is versierd met prints van Adam\'s beste stickers. In het midden hangt een grote, nieuwe sticker die je nog nooit hebt gezien.\n\nHet is een tekening van jullie twee. Samen. Met hartjes.\n\n"Ik heb de hele nacht eraan gewerkt," zegt Adam. "Het is mijn beste werk ooit. Want het is de enige sticker die echt iets BETEKENT."\n\nHij pakt je handen. "Elke sticker die ik maak is grappig of random. Maar deze... deze is echt. Net als wat ik voor je voel."\n\n"Wil je mijn permanente sticker-partner zijn? In de chat en... daarbuiten?"\n\nJe knikt. Hij stuurt de sticker naar de groepschat. Iedereen reageert met 🔥🔥🔥. 💕' },
-  fionn: { title:'Niet Verschrikkelijk', text:'Fionn zit op de rand van het dak, benen bungelend. Hij heeft zijn oortjes in maar haalt er eentje uit als je komt.\n\n"...ik wist dat jij het was," zegt hij. Zijn stem is zachter dan normaal.\n\n"Ik ga iets zeggen en ik wil dat je weet dat ik dit NOOIT doe. Oké? Nooit."\n\nStilte.\n\n"Jij bent niet irritant. Jij bent niet saai. Jij bent niet zoals de rest." Hij kijkt je aan. "Jij bent... de enige persoon bij wie ik mezelf kan zijn. Niet de sarcastische versie. Gewoon... ik."\n\nHij geeft je het andere oortje. "Luister mee. En... blijf. Als je wilt."\n\nJullie zitten samen op het dak, delend in de muziek en de stilte. En voor het eerst is Fionn\'s stilte niet koud — het is warm. 💕' },
-  daniel: { title:'De Bizarre Waarheid', text:'Op het dak heeft Daniël een "wetenschappelijke opstelling" gemaakt met kaarsjes en een whiteboard.\n\nOp het whiteboard staat een ingewikkeld diagram met pijlen, formules, en in het midden: een hartje.\n\n"Volgens mijn berekeningen," begint hij plechtig, "is er een 97.3% kans dat ik verliefd op je ben. De foutmarge is 2.7%, maar dat komt door Lors die steeds mijn data saboteert."\n\nHij wijst naar het diagram. "Zie je deze pijl? Dat ben jij. En deze? Dat ben ik. En als je de coördinaten berekent... komen we precies bij elkaar uit."\n\nHij laat het whiteboard zakken. "Maar echt, zonder de onzin: jij maakt mijn wereld minder absurd. Of eigenlijk, je maakt de absurditeit de moeite waard."\n\nHij steekt een kaarsje aan. Het waait meteen uit. "...dat was poëtischer in mijn hoofd." 💕' },
-  reshman: { title:'Chaos Soulmates', text:'Je hoort muziek voordat je het dak bereikt. Reshman staat daar met een draagbare speaker, dansend in zijn eentje.\n\n"YOOOO! Je bent er!" Hij rent naar je toe. "Oké, oké, wacht. Ik heb dit geoefend."\n\nHij haalt diep adem en probeert serieus te kijken. Het lukt ongeveer 3 seconden.\n\n"Jij bent mijn kaas-soulmate. Maar ook mijn echte soulmate. Ik weet dat ik random ben en chaotisch en soms te veel en—"\n\n"Reshman."\n\n"Ja?"\n\n"Ik vind je chaos leuk."\n\nZijn gezicht licht op als een kerstboom. "ECHT?! Want ik heb MEER chaos. Zoveel meer. We kunnen samen chaotisch zijn! CHAOS COUPLE! We—"\n\nJe kust hem op zijn wang om hem stil te krijgen. Het werkt. Voor precies 0.5 seconden.\n\n"DIT IS HET BESTE MOMENT VAN MIJN LEVEN!" 💕' },
-  nobody: { title:'De Groep', text:'Je gaat naar het dak, maar niemand is er. Dan hoor je voetstappen — ze komen ALLEMAAL het dak op.\n\n"SURPRISE!" schreeuwt Lors. Josh heeft taart. Adam plakt stickers overal. Milo leest een gedicht voor. Nathan probeert niet te huilen (hij faalt). Fionn doet alsof het hem niks doet (hij faalt ook). Daniël heeft een theorie over waarom groepsvriendschap wetenschappelijk bewezen de beste relatie is. Reshman danst.\n\n"Je bent onderdeel van ons nu," zegt Josh. "Wat in de Ranking is niet compleet zonder jou."\n\nGeen romantiek. Iets beters: een groep die je accepteert zoals je bent.\n\nEn in de groepschat? Jij staat op #1 in de poll "Beste Nieuw Lid Ooit." 💕' }
-};
-
-function showEnding() {
-  var maxChar = 'nobody';
-  var maxHearts = 0;
-  Object.keys(hearts).forEach(function(id) {
-    if (hearts[id] > maxHearts) { maxHearts = hearts[id]; maxChar = id; }
-  });
-  if (maxHearts < 3) maxChar = 'nobody';
-
-  var ending = ENDINGS[maxChar];
-  var c = maxChar !== 'nobody' ? CHARS[maxChar] : null;
-
-  showScreen('ending-screen');
-  document.getElementById('endEmoji').textContent = c ? c.emoji : '👑';
-  document.getElementById('endTitle').textContent = ending.title;
-  document.getElementById('endSub').textContent = maxChar !== 'nobody' ? maxHearts + ' hartjes verzameld' : 'Vriendschap Einde';
-
-  var paragraphs = ending.text.split('\n\n');
-  document.getElementById('endText').innerHTML = paragraphs.map(function(p){return '<p style="margin-bottom:12px">'+p+'</p>';}).join('');
-
-  var heartStr = '';
-  for (var i = 0; i < Math.min(maxHearts, 15); i++) heartStr += '💕';
-  document.getElementById('endHearts').textContent = heartStr || '💕';
+function selectMove(idx) {
+  var f = G.turnOrder[G.turnIdx];
+  G.selectedMove = f.moves[idx];
+  if (['atk','debuff'].indexOf(G.selectedMove.type) !== -1) showTargets('enemy');
+  else if (G.selectedMove.type === 'heal') showTargets('ally');
+  else executePlayerMove(G.selectedMove, null);
 }
+function showTargets(side) {
+  document.getElementById('moves-panel').classList.remove('active');
+  document.getElementById('target-panel').classList.add('active');
+  document.getElementById('target-title').textContent = side==='enemy'?'Kies vijand':'Kies bondgenoot';
+  var targets = side==='enemy' ? G.enemies.filter(function(f){return f.alive;}) : G.party.filter(function(f){return f.alive;});
+  document.getElementById('target-list').innerHTML = targets.map(function(t,i){
+    return '<button class="tgt-btn" onclick="executePlayerMove(G.selectedMove,'+(side==='enemy'?'G.enemies':'G.party')+'.filter(function(f){return f.alive;})['+i+'])">'+t.emoji+' '+t.name+' ('+t.curHp+'/'+t.maxHp+' HP)</button>';
+  }).join('');
+}
+function executePlayerMove(move, target) {
+  document.getElementById('moves-panel').classList.remove('active');
+  document.getElementById('target-panel').classList.remove('active');
+  document.getElementById('items-panel').classList.remove('active');
+  document.getElementById('action-panel').style.display = 'none';
+  var f = G.turnOrder[G.turnIdx];
+  var enemies = G.enemies.filter(function(e){return e.alive;});
+  var allies = G.party.filter(function(p){return p.alive;});
+  executeMove(f, move, f.isEnemy ? allies : enemies, target);
+}
+function doDefend() {
+  var f = G.turnOrder[G.turnIdx];
+  f.defending = true;
+  addLog(f.emoji + ' ' + f.name + ' verdedigt! 🛡️', 'info');
+  document.getElementById('action-panel').style.display = 'none';
+  renderBattle();
+  setTimeout(nextTurn, 500);
+}
+function showItems() {
+  document.getElementById('action-panel').style.display = 'none';
+  document.getElementById('items-panel').classList.add('active');
+  document.getElementById('items-list').innerHTML = '<button class="move-btn" '+(G.items.potion>0?'':'disabled')+' onclick="useItem(\'potion\')"><span>🧪 Heal Potion — 50 HP</span><span class="mv-cost">'+G.items.potion+'x</span></button><button class="move-btn" '+(G.items.elixir>0?'':'disabled')+' onclick="useItem(\'elixir\')"><span>⚡ MP Elixir — 25 MP</span><span class="mv-cost">'+G.items.elixir+'x</span></button>';
+}
+function useItem(type) {
+  document.getElementById('items-panel').classList.remove('active');
+  G.selectedAction = type;
+  document.getElementById('target-panel').classList.add('active');
+  document.getElementById('target-title').textContent = 'Gebruik op wie?';
+  var targets = G.party.filter(function(f){return f.alive;});
+  document.getElementById('target-list').innerHTML = targets.map(function(t,i){
+    return '<button class="tgt-btn" onclick="applyItem(\''+type+'\','+i+')">'+t.emoji+' '+t.name+' ('+t.curHp+'/'+t.maxHp+' HP, '+(t.curMp||0)+' MP)</button>';
+  }).join('');
+}
+function applyItem(type, idx) {
+  document.getElementById('target-panel').classList.remove('active');
+  var target = G.party.filter(function(f){return f.alive;})[idx];
+  if (type === 'potion') { G.items.potion--; target.curHp = Math.min(target.maxHp, target.curHp + 50); addLog('🧪 '+target.name+' +50 HP!', 'heal'); }
+  else { G.items.elixir--; target.curMp = Math.min(target.maxMp, (target.curMp||0) + 25); addLog('⚡ '+target.name+' +25 MP!', 'heal'); }
+  renderBattle();
+  setTimeout(nextTurn, 500);
+}
+
+// ===== RENDER =====
+function renderBattle() {
+  document.getElementById('party-side').innerHTML = G.party.map(renderFighter).join('');
+  document.getElementById('enemy-side').innerHTML = G.enemies.map(renderFighter).join('');
+  renderLog();
+}
+function renderFighter(f) {
+  var hpPct = f.maxHp ? (f.curHp / f.maxHp * 100) : 0;
+  var hpClass = hpPct > 50 ? '' : hpPct > 25 ? 'mid' : 'low';
+  var mpPct = f.maxMp ? ((f.curMp||0) / f.maxMp * 100) : 0;
+  var cur = G.turnOrder[G.turnIdx];
+  var isActive = cur && cur === f;
+  var statIcons = f.statuses.map(function(s){var icons={burn:'🔥',stun:'⚡',confuse:'🌀'};return '<span class="status-icon">'+(icons[s.type]||'?')+'</span>';}).join('');
+  return '<div class="fighter '+ (!f.alive?'ko':'') + ' ' + (isActive?'active-turn':'') + ' ' + (f.boss?'boss-fighter':'') + '" id="f-'+(f.id||f.name)+'">' +
+    '<span class="f-emoji">'+f.emoji+'</span><div class="f-info"><div class="f-name">'+f.name+(f.defending?' 🛡️':'')+(f.shield?' ✨':'')+'</div>' +
+    '<div class="f-hp-row"><div class="f-hp-bar"><div class="f-hp-fill '+hpClass+'" style="width:'+hpPct+'%"></div></div><span class="f-hp-text">'+f.curHp+'/'+f.maxHp+'</span></div>' +
+    (f.maxMp?'<div class="f-mp-row"><div class="f-mp-bar"><div class="f-mp-fill" style="width:'+mpPct+'%"></div></div><span class="f-mp-text">'+(f.curMp||0)+'/'+f.maxMp+'</span></div>':'') +
+    '<div class="f-status">'+statIcons+'</div></div></div>';
+}
+function renderLog() {
+  var box = document.getElementById('log-box');
+  box.innerHTML = G.log.slice(-8).map(function(l){return '<div class="'+l.cls+'">'+l.text+'</div>';}).join('');
+  box.scrollTop = box.scrollHeight;
+}
+function addLog(text, cls) { G.log.push({text:text,cls:cls||'info'}); renderLog(); }
+
+// ===== INIT =====
+document.getElementById('btn-start').addEventListener('click', function() {
+  if (storyState.mode === 'free') startFreePlayBattles();
+  else {
+    G.party = picked.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    showChapterIntro();
+  }
+});
+checkSave();
 </script>
 </body>
 </html>
