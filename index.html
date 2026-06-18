@@ -2867,7 +2867,7 @@
         top: 64px;
         left: 0;
         right: 0;
-        background: var(--primary);
+        background: #1a1a2e;
         flex-direction: column;
         padding: 20px;
         gap: 4px;
@@ -3001,6 +3001,7 @@
       --bg: #0e0e1a;
       --primary: #f0efe8;
       --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      background: #0e0e1a;
       color: #e8e6df;
     }
 
@@ -3009,7 +3010,21 @@
       box-shadow: 0 2px 16px rgba(0,0,0,0.6);
     }
 
+    body.dark-mode .nav-links {
+      background: #0a0a14;
+    }
+
+    body.dark-mode .nav-dropdown-menu {
+      background: #16162a;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .lang-dropdown {
+      background: #16162a;
+    }
+
     body.dark-mode .hero { background: #0a0a14; }
+    body.dark-mode .page { background: #0e0e1a; }
 
     body.dark-mode .stats-bar { background: #0a0a14; }
     body.dark-mode .stat-number { color: var(--gold); }
@@ -3042,7 +3057,12 @@
     body.dark-mode #notifPanel,
     body.dark-mode #pollsList > div,
     body.dark-mode #reviewsList > div,
-    body.dark-mode #inboxList > div {
+    body.dark-mode #inboxList > div,
+    body.dark-mode #betsList > div,
+    body.dark-mode #usersPageList > div,
+    body.dark-mode .review-card,
+    body.dark-mode .poll-card,
+    body.dark-mode .bet-card {
       background: #16162a !important;
       color: #e8e6df;
       border-color: rgba(255,255,255,0.06) !important;
@@ -3051,6 +3071,17 @@
     body.dark-mode .section { background: transparent; }
     body.dark-mode .section-title { color: #e8e6df; }
     body.dark-mode .section-tag { color: var(--accent); }
+
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode h4,
+    body.dark-mode label,
+    body.dark-mode p,
+    body.dark-mode span,
+    body.dark-mode div {
+      color: inherit;
+    }
 
     body.dark-mode .card-title,
     body.dark-mode .card-desc,
@@ -3109,7 +3140,15 @@
     body.dark-mode .voter-name-input,
     body.dark-mode .form-group input,
     body.dark-mode .form-group textarea,
-    body.dark-mode .form-group select {
+    body.dark-mode .form-group select,
+    body.dark-mode input[type="text"],
+    body.dark-mode input[type="email"],
+    body.dark-mode input[type="number"],
+    body.dark-mode input[type="password"],
+    body.dark-mode input[type="date"],
+    body.dark-mode input[type="datetime-local"],
+    body.dark-mode textarea,
+    body.dark-mode select {
       background: #0e0e1a !important;
       color: #e8e6df !important;
       border-color: rgba(255,255,255,0.1) !important;
@@ -3162,13 +3201,26 @@
 
     body.dark-mode footer {
       background: #060610;
+      color: rgba(232,230,223,0.5);
     }
+
+    body.dark-mode footer p { color: rgba(232,230,223,0.4) !important; }
 
     body.dark-mode .apps-hero,
     body.dark-mode .rankings-hero,
     body.dark-mode .members-hero,
-    body.dark-mode .lore-hero {
-      opacity: 0.95;
+    body.dark-mode .lore-hero,
+    body.dark-mode .polls-hero,
+    body.dark-mode .reviews-hero,
+    body.dark-mode .bets-hero,
+    body.dark-mode .soundboard-hero,
+    body.dark-mode .merch-hero,
+    body.dark-mode .stickers-hero,
+    body.dark-mode .users-hero,
+    body.dark-mode .inbox-hero,
+    body.dark-mode .stats-hero,
+    body.dark-mode [class$="-hero"] {
+      background: #0a0a14 !important;
     }
 
     body.dark-mode .modal-label {
@@ -3180,12 +3232,77 @@
       border-color: rgba(255,255,255,0.1);
     }
 
+    body.dark-mode .modal-overlay {
+      background: rgba(0,0,0,0.7);
+    }
+
     body.dark-mode #notifPanel {
       border: 1px solid rgba(255,255,255,0.08);
     }
 
     body.dark-mode #notifPanel > div:first-child {
       border-bottom-color: rgba(255,255,255,0.06) !important;
+    }
+
+    body.dark-mode #loginGate {
+      background: linear-gradient(135deg, #0e0e1a 0%, #0a0a14 50%, #060610 100%) !important;
+    }
+
+    body.dark-mode #reviewerPopup,
+    body.dark-mode #myProfilePopup > div {
+      background: #16162a !important;
+      color: #e8e6df !important;
+    }
+
+    body.dark-mode button {
+      color: inherit;
+    }
+
+    body.dark-mode .quick-link-card {
+      background: #16162a !important;
+      color: #e8e6df !important;
+    }
+
+    body.dark-mode .about-block {
+      background: #0a0a14 !important;
+    }
+
+    body.dark-mode hr {
+      border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    body.dark-mode [style*="color:rgba(26,26,46"] {
+      color: rgba(232,230,223,0.6) !important;
+    }
+
+    body.dark-mode [style*="color:rgba(26,26,46,0.25)"],
+    body.dark-mode [style*="color:rgba(26,26,46,0.3)"],
+    body.dark-mode [style*="color:rgba(26,26,46,0.35)"] {
+      color: rgba(232,230,223,0.35) !important;
+    }
+
+    body.dark-mode [style*="color:rgba(26,26,46,0.4)"],
+    body.dark-mode [style*="color:rgba(26,26,46,0.5)"],
+    body.dark-mode [style*="color:rgba(26,26,46,0.55)"] {
+      color: rgba(232,230,223,0.5) !important;
+    }
+
+    body.dark-mode [style*="background:rgba(26,26,46"] {
+      background: rgba(255,255,255,0.06) !important;
+    }
+
+    body.dark-mode [style*="background:white"],
+    body.dark-mode [style*="background: white"] {
+      background: #16162a !important;
+    }
+
+    body.dark-mode [style*="border-color:rgba(26,26,46"],
+    body.dark-mode [style*="border:1px solid rgba(26,26,46"] {
+      border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    body.dark-mode [style*="border-bottom:1px solid rgba(26,26,46"] {
+      border-bottom-color: rgba(255,255,255,0.08) !important;
     }
 
     .theme-btn {
@@ -3467,7 +3584,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3603,7 +3720,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3635,7 +3752,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3655,7 +3772,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3695,7 +3812,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3730,7 +3847,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3754,7 +3871,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3780,7 +3897,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3855,7 +3972,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -3970,7 +4087,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -4052,7 +4169,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -4078,7 +4195,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -4213,7 +4330,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -4262,7 +4379,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -7750,17 +7867,11 @@
         if (!doc.exists) return;
         var data = doc.data();
         var bettors = data.bettors || {};
-        var pools = data.pools || {};
-        var totalPool = 0;
-        Object.keys(pools).forEach(function(k) { totalPool += pools[k]; });
-        var winnerPool = pools[winner] || 0;
 
-        // Pay out winners proportionally
         Object.keys(bettors).forEach(function(bettorUid) {
           var bet = bettors[bettorUid];
-          if (bet.choice === winner && winnerPool > 0) {
-            var payout = Math.round((bet.amount / winnerPool) * totalPool);
-            addCoins(bettorUid, payout);
+          if (bet.choice === winner) {
+            addCoins(bettorUid, bet.amount * 2);
           }
         });
 
@@ -9604,7 +9715,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
@@ -9626,7 +9737,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.2.6 · memes-reload-fix</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.3.0 · dark-mode-fix</p>
     </footer>
   </div>
 
