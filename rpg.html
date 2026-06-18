@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WidR Quest</title>
+<title>WidR Quest — Story Mode</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0B0B16;--panel:rgba(26,26,46,0.85);--gold:#F5C518;--accent:#E94560;--mint:#16C79A;--blue:#0F3460;--purple:#845EC2;--coral:#FF6B6B;--orange:#FF9A3C;--text:#FAF3E0;--muted:rgba(250,243,224,0.5);--border:rgba(255,255,255,0.08)}
@@ -15,172 +15,227 @@ button:hover{transform:translateY(-1px)}
 button:active{transform:translateY(1px)}
 button:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
 
+/* TITLE SCREEN */
+#title-screen{align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(180deg,#080812 0%,#0e0e2a 50%,#0B0B16 100%)}
+.title-logo{font-size:3.5rem;font-weight:900;margin-bottom:4px;text-shadow:0 0 40px rgba(245,197,24,0.3)}
+.title-logo span{color:var(--gold)}
+.title-sub{color:var(--muted);font-size:.85rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.title-menu{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+.title-btn{padding:16px 24px;border-radius:14px;font-weight:800;font-size:.95rem;letter-spacing:1px;text-transform:uppercase}
+.title-btn-story{background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E}
+.title-btn-free{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+.title-btn-free:hover{background:rgba(255,255,255,.1)}
+.title-btn-load{background:rgba(22,199,154,.1);color:var(--mint);border:1px solid rgba(22,199,154,.2)}
+.title-btn-load:hover{background:rgba(22,199,154,.15)}
+.save-info{font-size:.65rem;color:var(--muted);margin-top:2px;font-weight:400;text-transform:none;letter-spacing:0}
+.difficulty-row{display:flex;gap:8px;margin-top:10px}
+.diff-btn{flex:1;padding:12px 8px;border-radius:10px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:2px solid transparent;text-align:center}
+.diff-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,197,24,.06)}
+.diff-label{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-top:16px;margin-bottom:4px}
+
+/* DIALOGUE SCREEN */
+#dialogue-screen{padding:0;background:#080812}
+.dialogue-bg{width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.dialogue-scene{flex:1;display:flex;align-items:center;justify-content:center;gap:40px;padding:40px}
+.dialogue-char{text-align:center;transition:all .4s}
+.dialogue-char.speaking{transform:scale(1.1)}
+.dialogue-char.dim{opacity:.4;transform:scale(.9)}
+.dialogue-char-emoji{font-size:4rem}
+.dialogue-char-name{font-size:.75rem;font-weight:700;margin-top:6px;letter-spacing:1px}
+.dialogue-box{background:var(--panel);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:24px 40px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.dialogue-speaker{font-size:.7rem;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.dialogue-text{font-size:.95rem;line-height:1.7;max-width:800px;min-height:60px}
+.dialogue-continue{align-self:flex-end;padding:10px 24px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.75rem;font-weight:700;border:1px solid var(--border);margin-top:12px}
+.dialogue-continue:hover{background:rgba(245,197,24,.1);color:var(--gold);border-color:rgba(245,197,24,.3)}
+.chapter-title-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,8,18,.95);z-index:10;animation:fadeSlide .6s ease}
+.chapter-num{font-size:.8rem;color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.chapter-name{font-size:2.2rem;font-weight:900;margin-bottom:16px;text-align:center}
+.chapter-desc{color:var(--muted);font-size:.85rem;text-align:center;max-width:400px;line-height:1.6;margin-bottom:30px}
+
+/* UNLOCK SCREEN */
+#unlock-screen{align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(circle at 50% 50%,rgba(245,197,24,.08),transparent 60%),#080812}
+.unlock-badge{font-size:5rem;margin-bottom:16px;animation:popIn .5s ease}
+.unlock-title{font-size:.75rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.unlock-name{font-size:2rem;font-weight:900;margin-bottom:4px}
+.unlock-role{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+.unlock-stats{display:flex;gap:12px;justify-content:center;margin-bottom:30px}
+.unlock-stat{background:var(--panel);padding:8px 14px;border-radius:8px;border:1px solid var(--border);font-size:.7rem;font-weight:700}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+
 /* SELECT SCREEN */
 #select-screen{align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-.select-title{font-size:2.8rem;font-weight:900;text-align:center;margin-bottom:4px}
+.select-title{font-size:2.4rem;font-weight:900;text-align:center;margin-bottom:4px}
 .select-title span{color:var(--gold)}
-.select-sub{color:var(--muted);font-size:.85rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;text-align:center}
-.roster{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:720px;width:100%;margin-bottom:20px}
-.roster-card{background:var(--panel);border:2px solid transparent;border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .25s}
+.select-sub{color:var(--muted);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;text-align:center}
+.roster{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:720px;width:100%;margin-bottom:16px}
+.roster-card{background:var(--panel);border:2px solid transparent;border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
 .roster-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
 .roster-card.picked{border-color:var(--gold);background:rgba(245,197,24,.08)}
 .roster-card.picked::after{content:'✓';position:absolute;top:6px;right:8px;color:var(--gold);font-weight:900;font-size:.75rem}
-.roster-card{position:relative}
-.rc-emoji{font-size:2.2rem;display:block;margin-bottom:6px}
-.rc-name{font-size:.8rem;font-weight:700}
-.rc-title{font-size:.65rem;color:var(--muted);margin-top:2px}
-.rc-stats{display:flex;gap:4px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-.rc-stat{font-size:.55rem;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted);font-weight:600}
-.party-preview{display:flex;gap:12px;margin-bottom:16px;min-height:50px;justify-content:center;align-items:center}
-.pp-slot{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem;transition:all .3s}
+.roster-card.locked{opacity:.3;cursor:not-allowed;pointer-events:none}
+.roster-card.locked::after{content:'🔒';position:absolute;top:6px;right:8px;font-size:.7rem}
+.rc-emoji{font-size:2rem;display:block;margin-bottom:4px}
+.rc-name{font-size:.75rem;font-weight:700}
+.rc-title{font-size:.6rem;color:var(--muted);margin-top:2px}
+.rc-stats{display:flex;gap:3px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.rc-stat{font-size:.5rem;padding:2px 4px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted);font-weight:600}
+.party-preview{display:flex;gap:10px;margin-bottom:14px;min-height:46px;justify-content:center;align-items:center}
+.pp-slot{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all .3s}
 .pp-slot.filled{border-style:solid;border-color:var(--gold);background:rgba(245,197,24,.06)}
-#btn-start-rpg{padding:14px 48px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:1rem;letter-spacing:1px;text-transform:uppercase}
+.start-btn{padding:14px 48px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:1rem;letter-spacing:1px;text-transform:uppercase}
 
 /* BATTLE SCREEN */
 #battle-screen{padding:0;background:#080812}
 .battle-bg{width:100%;height:100%;display:grid;grid-template-rows:1fr auto;position:relative}
-.arena{flex:1;display:flex;justify-content:space-between;align-items:center;padding:30px 60px;position:relative}
-.team-side{display:flex;flex-direction:column;gap:10px}
-.fighter{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--border);min-width:200px;transition:all .3s}
+.arena{flex:1;display:flex;justify-content:space-between;align-items:center;padding:30px 40px;position:relative}
+.team-side{display:flex;flex-direction:column;gap:8px}
+.fighter{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--border);min-width:190px;transition:all .3s}
 .fighter.active-turn{border-color:var(--gold);box-shadow:0 0 16px rgba(245,197,24,.2)}
 .fighter.ko{opacity:.35;filter:grayscale(1)}
 .fighter.hit{animation:shake .3s}
-.f-emoji{font-size:1.8rem;min-width:36px;text-align:center}
+.fighter.boss-fighter{border-color:var(--accent);background:rgba(233,69,96,.08);min-width:220px}
+.f-emoji{font-size:1.6rem;min-width:32px;text-align:center}
 .f-info{flex:1}
-.f-name{font-size:.75rem;font-weight:700}
+.f-name{font-size:.7rem;font-weight:700}
 .f-hp-row{display:flex;align-items:center;gap:6px;margin-top:3px}
 .f-hp-bar{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
 .f-hp-fill{height:100%;border-radius:3px;transition:width .4s;background:var(--mint)}
 .f-hp-fill.low{background:var(--coral)}
 .f-hp-fill.mid{background:var(--orange)}
-.f-hp-text{font-size:.6rem;color:var(--muted);min-width:44px;text-align:right;font-weight:600}
+.f-hp-text{font-size:.55rem;color:var(--muted);min-width:40px;text-align:right;font-weight:600}
 .f-mp-row{display:flex;align-items:center;gap:6px;margin-top:2px}
 .f-mp-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
 .f-mp-fill{height:100%;border-radius:2px;transition:width .4s;background:var(--blue)}
-.f-mp-text{font-size:.55rem;color:var(--muted);min-width:44px;text-align:right}
+.f-mp-text{font-size:.5rem;color:var(--muted);min-width:40px;text-align:right}
 .f-status{display:flex;gap:3px;margin-top:3px}
-.status-icon{font-size:.65rem;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06)}
-.battle-num{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--gold);font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--panel);padding:6px 16px;border-radius:8px;border:1px solid var(--border)}
+.status-icon{font-size:.6rem;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06)}
+.battle-num{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:.7rem;color:var(--gold);font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--panel);padding:6px 14px;border-radius:8px;border:1px solid var(--border)}
 .vs-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:900;color:rgba(255,255,255,.06)}
 
-/* BATTLE HUD */
-.battle-hud{background:var(--panel);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:16px 30px;display:flex;gap:20px;align-items:stretch;min-height:140px}
+.battle-hud{background:var(--panel);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:14px 24px;display:flex;gap:16px;align-items:stretch;min-height:130px}
 .log-panel{flex:1.5;display:flex;flex-direction:column}
-.log-title{font-size:.65rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:6px;text-transform:uppercase}
-.log-box{flex:1;overflow-y:auto;font-size:.75rem;color:var(--muted);line-height:1.6;max-height:90px}
+.log-title{font-size:.6rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:4px;text-transform:uppercase}
+.log-box{flex:1;overflow-y:auto;font-size:.7rem;color:var(--muted);line-height:1.6;max-height:85px}
 .log-box .dmg{color:var(--coral)}
 .log-box .heal{color:var(--mint)}
 .log-box .info{color:var(--gold)}
 .log-box .buff{color:var(--purple)}
-.action-panel{flex:1;display:flex;flex-direction:column;gap:6px}
-.action-title{font-size:.65rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:2px;text-transform:uppercase}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1}
-.act-btn{padding:8px 10px;border-radius:8px;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.act-btn .cost{font-size:.55rem;font-weight:400;opacity:.7;margin-top:2px}
+.action-panel{flex:1;display:flex;flex-direction:column;gap:5px}
+.action-title{font-size:.6rem;color:var(--gold);letter-spacing:1.5px;font-weight:700;margin-bottom:2px;text-transform:uppercase}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:1}
+.act-btn{padding:8px;border-radius:8px;font-weight:700;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.act-btn .cost{font-size:.5rem;font-weight:400;opacity:.7;margin-top:2px}
 .btn-atk{background:linear-gradient(135deg,var(--coral),#D84D4D);color:#fff}
 .btn-spc{background:linear-gradient(135deg,var(--purple),#6B3FA0);color:#fff}
 .btn-def{background:linear-gradient(135deg,var(--blue),#0A2540);color:#fff}
 .btn-itm{background:linear-gradient(135deg,var(--orange),#D4820E);color:#fff}
-.moves-panel{flex:1.2;display:none;flex-direction:column;gap:4px}
-.moves-panel.active{display:flex}
-.move-btn{padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.7rem;font-weight:600;text-align:left;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.moves-panel,.target-panel,.items-panel{flex:1.2;display:none;flex-direction:column;gap:4px}
+.moves-panel.active,.target-panel.active,.items-panel.active{display:flex}
+.move-btn{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.65rem;font-weight:600;text-align:left;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .move-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
-.move-btn .mv-cost{font-size:.6rem;color:var(--muted)}
-.target-panel{flex:1;display:none;flex-direction:column;gap:4px}
-.target-panel.active{display:flex}
-.tgt-btn{padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.7rem;font-weight:600;border:1px solid var(--border);text-align:left}
+.move-btn .mv-cost{font-size:.55rem;color:var(--muted)}
+.tgt-btn{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:.65rem;font-weight:600;border:1px solid var(--border);text-align:left}
 .tgt-btn:hover{background:rgba(233,69,96,.1);border-color:var(--accent)}
-.back-btn{padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted);font-size:.65rem;margin-top:auto;align-self:flex-start}
-.items-panel{flex:1;display:none;flex-direction:column;gap:4px}
-.items-panel.active{display:flex}
+.back-btn{padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted);font-size:.6rem;margin-top:auto;align-self:flex-start}
 
-/* TRANSITION SCREEN */
+/* TRANSITION */
 #transition-screen{align-items:center;justify-content:center;text-align:center;padding:40px}
-.trans-title{font-size:2rem;font-weight:900;margin-bottom:10px}
-.trans-sub{color:var(--muted);font-size:.85rem;margin-bottom:20px}
-.trans-party{display:flex;gap:16px;margin-bottom:24px;justify-content:center}
-.tp-card{background:var(--panel);border-radius:12px;padding:12px 16px;border:1px solid var(--border);min-width:100px;text-align:center}
-.tp-emoji{font-size:1.6rem}
-.tp-name{font-size:.7rem;font-weight:700;margin-top:4px}
-.tp-hp{font-size:.6rem;color:var(--mint);margin-top:2px}
-#btn-next-battle{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#B82C44);color:#fff;font-weight:800;font-size:.9rem;letter-spacing:1px;text-transform:uppercase}
+.trans-title{font-size:1.8rem;font-weight:900;margin-bottom:8px}
+.trans-sub{color:var(--muted);font-size:.8rem;margin-bottom:16px}
+.trans-party{display:flex;gap:14px;margin-bottom:20px;justify-content:center;flex-wrap:wrap}
+.tp-card{background:var(--panel);border-radius:12px;padding:10px 14px;border:1px solid var(--border);min-width:90px;text-align:center}
+.tp-emoji{font-size:1.4rem}
+.tp-name{font-size:.65rem;font-weight:700;margin-top:4px}
+.tp-hp{font-size:.55rem;color:var(--mint);margin-top:2px}
+.next-btn{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#B82C44);color:#fff;font-weight:800;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
 
-/* RESULT SCREEN */
+/* RESULT */
 #result-screen{align-items:center;justify-content:center;text-align:center;padding:40px}
 .result-title{font-size:3rem;font-weight:900;margin-bottom:8px}
-.result-sub{color:var(--muted);font-size:1rem;margin-bottom:30px}
-#btn-replay{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:.9rem;letter-spacing:1px;text-transform:uppercase}
+.result-sub{color:var(--muted);font-size:.95rem;margin-bottom:24px;max-width:500px;line-height:1.6}
+.result-btn{padding:14px 40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;margin:4px}
 
-.dmg-popup{position:absolute;font-weight:900;font-size:1.2rem;pointer-events:none;animation:popUp .8s forwards;z-index:50}
 @keyframes popUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeSlide .4s ease}
 
-/* ADMIN MODAL */
-.modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(5,5,10,.9);z-index:200;display:none;justify-content:center;align-items:center;padding:20px}
-.modal-overlay.active{display:flex}
-.admin-container{background:#12122a;border:1px solid var(--border);border-radius:20px;width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-.admin-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
-.admin-header h2{font-size:1.2rem;color:var(--gold)}
-.admin-close{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);font-size:1rem;display:flex;align-items:center;justify-content:center}
-.admin-body{display:flex;flex:1;overflow:hidden}
-.admin-list-col{width:280px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:12px}
-.admin-edit-col{flex:1;overflow-y:auto;padding:20px}
-.admin-placeholder{color:var(--muted);font-size:.85rem;text-align:center;margin-top:60px}
-.admin-add-btn{padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--mint),#0FA07B);color:#fff;font-weight:700;font-size:.75rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;width:100%}
-.admin-enemy-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid transparent;cursor:pointer;margin-bottom:6px;transition:all .2s}
-.admin-enemy-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
-.admin-enemy-item.selected{border-color:var(--gold);background:rgba(245,197,24,.06)}
-.admin-enemy-item .aei-emoji{font-size:1.3rem}
-.admin-enemy-item .aei-info{flex:1}
-.admin-enemy-item .aei-name{font-size:.75rem;font-weight:700}
-.admin-enemy-item .aei-meta{font-size:.6rem;color:var(--muted)}
-.admin-enemy-item .aei-custom{font-size:.5rem;padding:2px 5px;border-radius:3px;background:var(--purple);color:#fff;font-weight:700}
-.admin-form{display:flex;flex-direction:column;gap:14px}
-.af-row{display:flex;gap:10px}
-.af-field{display:flex;flex-direction:column;gap:4px;flex:1}
-.af-field label{font-size:.65rem;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase}
-.af-field input,.af-field select{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.3);color:var(--text);font-family:inherit;font-size:.8rem}
-.af-field input:focus,.af-field select:focus{outline:none;border-color:var(--gold)}
-.af-section-title{font-size:.7rem;color:var(--muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:6px;margin-top:6px}
-.af-move-card{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
-.af-move-header{display:flex;justify-content:space-between;align-items:center}
-.af-move-header span{font-size:.7rem;font-weight:700;color:var(--text)}
-.af-move-del{font-size:.65rem;color:var(--coral);cursor:pointer;background:none;padding:2px 6px}
-.af-move-row{display:flex;gap:6px}
-.af-move-row input,.af-move-row select{padding:5px 7px;border-radius:6px;border:1px solid var(--border);background:rgba(0,0,0,.3);color:var(--text);font-size:.7rem;font-family:inherit;flex:1}
-.af-move-row input:focus,.af-move-row select:focus{outline:none;border-color:var(--gold)}
-.af-btn-row{display:flex;gap:8px;margin-top:6px}
-.af-save{padding:10px 20px;border-radius:8px;background:linear-gradient(135deg,var(--gold),#D4A316);color:#1A1A2E;font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
-.af-delete{padding:10px 20px;border-radius:8px;background:linear-gradient(135deg,var(--coral),#D84D4D);color:#fff;font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
-.af-add-move{padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--mint);font-size:.7rem;font-weight:600;border:1px dashed var(--border);align-self:flex-start}
+@media(max-width:768px){
+  .roster{grid-template-columns:repeat(3,1fr)}
+  .arena{padding:20px 16px;flex-direction:column;gap:20px}
+  .fighter{min-width:140px}
+  .battle-hud{flex-direction:column;padding:12px 16px;min-height:auto}
+  .dialogue-scene{flex-direction:column;gap:20px;padding:20px}
+  .dialogue-box{padding:20px}
+  .title-logo{font-size:2.5rem}
+}
 </style>
 </head>
 <body>
 
-<div id="select-screen" class="screen active">
+<div id="title-screen" class="screen active">
+  <div class="title-logo">WidR <span>Quest</span></div>
+  <div class="title-sub">Story Mode</div>
+  <div class="title-menu">
+    <button class="title-btn title-btn-story" onclick="startStoryMode()">Nieuw Verhaal ⚔️</button>
+    <button class="title-btn title-btn-load" id="btn-continue" style="display:none" onclick="loadGame()">
+      Verder Spelen →
+      <div class="save-info" id="save-info"></div>
+    </button>
+    <button class="title-btn title-btn-free" onclick="startFreePlay()">Vrij Spelen 🎮</button>
+    <div class="diff-label">Moeilijkheid</div>
+    <div class="difficulty-row">
+      <button class="diff-btn" onclick="setDiff('easy',this)">😊 Easy</button>
+      <button class="diff-btn active" onclick="setDiff('normal',this)">⚔️ Normal</button>
+      <button class="diff-btn" onclick="setDiff('hard',this)">💀 Hard</button>
+    </div>
+  </div>
+</div>
+
+<div id="dialogue-screen" class="screen">
+  <div class="dialogue-bg">
+    <div id="chapter-overlay" class="chapter-title-overlay" style="display:none">
+      <div class="chapter-num" id="ch-num"></div>
+      <div class="chapter-name" id="ch-name"></div>
+      <div class="chapter-desc" id="ch-desc"></div>
+      <button class="title-btn title-btn-story" onclick="dismissChapterTitle()">Begin →</button>
+    </div>
+    <div class="dialogue-scene" id="dialogue-scene"></div>
+    <div class="dialogue-box">
+      <div class="dialogue-speaker" id="dialogue-speaker"></div>
+      <div class="dialogue-text" id="dialogue-text"></div>
+      <button class="dialogue-continue" id="dialogue-next" onclick="nextDialogue()">Verder →</button>
+    </div>
+  </div>
+</div>
+
+<div id="unlock-screen" class="screen">
+  <div class="unlock-badge" id="unlock-emoji"></div>
+  <div class="unlock-title">Nieuw Karakter Ontgrendeld!</div>
+  <div class="unlock-name" id="unlock-name"></div>
+  <div class="unlock-role" id="unlock-role"></div>
+  <div class="unlock-stats" id="unlock-stats"></div>
+  <button class="title-btn title-btn-story" onclick="afterUnlock()">Doorgaan →</button>
+</div>
+
+<div id="select-screen" class="screen">
   <div class="select-title">WidR <span>Quest</span></div>
-  <div class="select-sub">Kies je party van 4 helden</div>
+  <div class="select-sub" id="select-sub">Kies je party van 4 helden</div>
   <div class="party-preview" id="party-preview"></div>
   <div class="roster" id="roster"></div>
-  <button id="btn-start-rpg" disabled>Kies 4 helden om te beginnen</button>
-  <button id="btn-admin" style="margin-top:10px;padding:8px 20px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.7rem;letter-spacing:1px;border:1px solid var(--border)">🛡 Admin Mode</button>
+  <button class="start-btn" id="btn-start" disabled>Kies 4 helden</button>
 </div>
 
 <div id="battle-screen" class="screen">
   <div class="battle-bg">
     <div class="arena">
-      <div class="battle-num" id="battle-label">Battle 1/5</div>
+      <div class="battle-num" id="battle-label">Battle 1</div>
       <div class="vs-text">VS</div>
       <div class="team-side" id="party-side"></div>
       <div class="team-side" id="enemy-side"></div>
     </div>
     <div class="battle-hud">
-      <div class="log-panel">
-        <div class="log-title">Battle Log</div>
-        <div class="log-box" id="log-box"></div>
-      </div>
+      <div class="log-panel"><div class="log-title">Battle Log</div><div class="log-box" id="log-box"></div></div>
       <div class="action-panel" id="action-panel">
         <div class="action-title" id="action-title">Kies actie</div>
         <div class="action-grid" id="action-grid"></div>
@@ -206,801 +261,830 @@ button:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
 
 <div id="transition-screen" class="screen">
   <div class="trans-title" id="trans-title">Victory!</div>
-  <div class="trans-sub" id="trans-sub">Je party herstelt een beetje...</div>
+  <div class="trans-sub" id="trans-sub"></div>
   <div class="trans-party" id="trans-party"></div>
-  <button id="btn-next-battle">Volgende Battle →</button>
+  <button class="next-btn" id="btn-next">Volgende →</button>
 </div>
 
 <div id="result-screen" class="screen">
   <div class="result-title" id="result-title">🏆</div>
   <div class="result-sub" id="result-sub"></div>
-  <button id="btn-replay" onclick="location.reload()">Opnieuw Spelen</button>
-</div>
-
-<div id="admin-overlay" class="modal-overlay">
-  <div class="admin-container">
-    <div class="admin-header">
-      <h2>🛡 Enemy Editor</h2>
-      <button class="admin-close" onclick="closeAdmin()">✕</button>
-    </div>
-    <div class="admin-body">
-      <div class="admin-list-col" id="admin-list-col">
-        <button class="admin-add-btn" onclick="editEnemy(-1)">+ Nieuwe Vijand</button>
-        <div id="admin-enemy-list"></div>
-      </div>
-      <div class="admin-edit-col" id="admin-edit-col">
-        <div class="admin-placeholder">← Selecteer een vijand om te bewerken, of maak een nieuwe aan.</div>
-      </div>
-    </div>
-  </div>
+  <button class="result-btn" onclick="location.reload()">Opnieuw Spelen</button>
+  <button class="result-btn" style="background:rgba(255,255,255,.06);color:var(--text)" onclick="location.href='index.html'">Terug naar WidR</button>
 </div>
 
 <script>
-// ===== CHARACTER DEFINITIONS =====
-const HEROES = [
-  { id:'josh', name:'Josh', emoji:'👑', title:'Admin & Tank', color:'#F5C518',
-    hp:140, mp:40, atk:22, def:20, spd:12, spc:18,
-    moves:[
-      { name:'Admin Slap', type:'atk', power:30, cost:0, desc:'Basis aanval' },
-      { name:'Orde Handhaving', type:'heal', power:45, cost:12, target:'ally', desc:'Heelt een bondgenoot' },
-      { name:'Ban Hammer', type:'atk', power:55, cost:15, desc:'Zware klap met de banhammer' },
-      { name:'Server Reset', type:'heal_all', power:30, cost:25, desc:'Heelt hele party' }
-    ]},
-  { id:'lors', name:'Lors', emoji:'🃏', title:'Chaos DPS', color:'#E94560',
-    hp:100, mp:50, atk:32, def:10, spd:20, spc:28,
-    moves:[
-      { name:'Ragebait', type:'atk', power:35, cost:0, desc:'Provocerende aanval' },
-      { name:'Sticker Bomb', type:'atk_all', power:22, cost:14, desc:'Raakt alle vijanden' },
-      { name:'Troll Strike', type:'atk', power:65, cost:18, desc:'Maximale chaos schade' },
-      { name:'Meme Overload', type:'atk_all', power:45, cost:30, desc:'Nucleaire meme explosie' }
-    ]},
-  { id:'fionn', name:'Fionn', emoji:'😑', title:'Debuff Mage', color:'#16C79A',
-    hp:95, mp:55, atk:18, def:14, spd:16, spc:32,
-    moves:[
-      { name:'Sarcastic Sigh', type:'atk', power:25, cost:0, desc:'Droge humor schade' },
-      { name:'Boeiend...', type:'debuff', power:0, cost:10, effect:'def_down', desc:'Verlaagt vijand DEF' },
-      { name:'Eye Roll', type:'atk', power:50, cost:15, desc:'Vernietigend sarcasme' },
-      { name:'Klaar Met Je', type:'atk', power:70, cost:28, effect:'stun', desc:'Stunt vijand 1 beurt' }
-    ]},
-  { id:'nath', name:'Nath', emoji:'😤', title:'Berserker', color:'#FF6B6B',
-    hp:120, mp:35, atk:35, def:16, spd:14, spc:15,
-    moves:[
-      { name:'Frustratie Klap', type:'atk', power:38, cost:0, desc:'Boos? Harder slaan!' },
-      { name:'IRRITANT!', type:'atk', power:55, cost:12, effect:'burn', desc:'Brandschade over tijd' },
-      { name:'Rage Charge', type:'buff', power:0, cost:8, effect:'atk_up', target:'self', desc:'Boost eigen ATK' },
-      { name:'Explosie', type:'atk_all', power:50, cost:25, desc:'Woede-explosie op alles' }
-    ]},
-  { id:'reshman', name:'Reshman', emoji:'🌀', title:'Wild Card', color:'#845EC2',
-    hp:105, mp:45, atk:24, def:12, spd:22, spc:26,
-    moves:[
-      { name:'Random Hit', type:'atk_random', power:40, cost:0, desc:'Raakt een willekeurig doel' },
-      { name:'Chaos Shuffle', type:'debuff_all', power:0, cost:14, effect:'confuse', desc:'Verwart alle vijanden' },
-      { name:'Engelse Reactie', type:'atk', power:55, cost:16, desc:'Nobody expects this' },
-      { name:'Chaos Teleport', type:'atk', power:80, cost:30, desc:'Verschijnt en vernietigt' }
-    ]},
-  { id:'daniel', name:'Daniël', emoji:'💀', title:'Summoner', color:'#FF9A3C',
-    hp:90, mp:60, atk:20, def:12, spd:18, spc:30,
-    moves:[
-      { name:'Absurde Grap', type:'atk', power:28, cost:0, desc:'Zo slecht dat het pijn doet' },
-      { name:'Meta AI Summon', type:'atk_all', power:25, cost:12, desc:'Roept Meta AI hulp in' },
-      { name:'Fanfic Attack', type:'atk', power:60, cost:18, effect:'confuse', desc:'Bizarre fanfictie' },
-      { name:'Skull Curse', type:'atk', power:75, cost:28, effect:'burn', desc:'💀💀💀' }
-    ]},
-  { id:'milo', name:'Milo', emoji:'🧊', title:'Support Bard', color:'#0F3460',
-    hp:110, mp:50, atk:16, def:18, spd:15, spc:24,
-    moves:[
-      { name:'Verhaal Vertellen', type:'atk', power:22, cost:0, desc:'Praat vijand dood' },
-      { name:'Epic Monoloog', type:'buff_all', power:0, cost:14, effect:'atk_up', desc:'Boost party ATK' },
-      { name:'Cool Story Bro', type:'heal', power:50, cost:15, target:'ally', desc:'Heelt met verhalen' },
-      { name:'Cliffhanger', type:'atk', power:65, cost:24, effect:'stun', desc:'Vijand wacht op vervolg' }
-    ]},
-  { id:'adam', name:'Adam', emoji:'🎯', title:'Multi-Hitter', color:'#E94560',
-    hp:100, mp:40, atk:28, def:14, spd:19, spc:20,
-    moves:[
-      { name:'Sticker Slap', type:'atk', power:30, cost:0, desc:'Plakt sticker in gezicht' },
-      { name:'Sticker Salvo', type:'atk_multi', power:18, hits:3, cost:12, desc:'3x sticker combo' },
-      { name:'Spam Attack', type:'atk_all', power:28, cost:14, desc:'Spamt hele veld vol' },
-      { name:'Ultra Spam', type:'atk_multi', power:25, hits:5, cost:28, desc:'5x sticker machinegun' }
-    ]},
-  { id:'metaai', name:'Meta AI', emoji:'🤖', title:'Glass Cannon', color:'#16C79A',
-    hp:75, mp:65, atk:15, def:8, spd:25, spc:38,
-    moves:[
-      { name:'Auto Reply', type:'atk', power:30, cost:0, desc:'Geautomatiseerde aanval' },
-      { name:'Data Harvest', type:'atk', power:55, cost:12, effect:'heal_self', heal:20, desc:'Steelt HP van vijand' },
-      { name:'Algorithm Blast', type:'atk_all', power:35, cost:16, desc:'Algoritme aanval op alles' },
-      { name:'Bizarre Fanfic', type:'atk', power:90, cost:32, effect:'confuse', desc:'Zo bizar dat het breekt' }
-    ]},
-  { id:'maciek', name:'Maciek', emoji:'⚡', title:'Crit Striker', color:'#F5C518',
-    hp:95, mp:35, atk:30, def:13, spd:21, spc:18,
-    moves:[
-      { name:'Quick Strike', type:'atk', power:32, cost:0, desc:'Snelle aanval' },
-      { name:'Thunder Punch', type:'atk', power:50, cost:10, effect:'stun', desc:'Verrassingsaanval' },
-      { name:'Surprise!', type:'atk', power:70, cost:18, crit_bonus:50, desc:'Hoge crit kans' },
-      { name:'Lightning Storm', type:'atk_all', power:40, cost:24, desc:'Bliksem over het veld' }
-    ]},
-  { id:'denize', name:'Denize', emoji:'🌙', title:'Dodge Tank', color:'#555566',
-    hp:130, mp:40, atk:18, def:22, spd:10, spc:16,
-    moves:[
-      { name:'Stille Klap', type:'atk', power:25, cost:0, desc:'Rustige maar effectieve hit' },
-      { name:'Tot Morgen', type:'buff', power:0, cost:12, effect:'shield', target:'self', desc:'Onkwetsbaar 1 beurt' },
-      { name:'Shadow Strike', type:'atk', power:55, cost:14, desc:'Vanuit de schaduwen' },
-      { name:'Nacht Modus', type:'buff_all', power:0, cost:22, effect:'shield', desc:'Shield voor hele party' }
-    ]},
-  { id:'sichen', name:'Sichen', emoji:'🔮', title:'Mystic', color:'#845EC2',
-    hp:100, mp:55, atk:20, def:15, spd:17, spc:28,
-    moves:[
-      { name:'Mystic Bolt', type:'atk', power:30, cost:0, desc:'Magische projectiel' },
-      { name:'Drain Spell', type:'atk', power:40, cost:10, effect:'heal_self', heal:25, desc:'Steelt levenskracht' },
-      { name:'Curse', type:'debuff', power:0, cost:14, effect:'def_down', desc:'Vervloekt vijand' },
-      { name:'Mythisch Oordeel', type:'atk_all', power:45, cost:26, effect:'burn', desc:'Kosmische vuurstorm' }
-    ]}
+// ===== ALL HEROES =====
+var HEROES = [
+  { id:'josh', name:'Josh', emoji:'👑', title:'Admin & Tank', hp:140, mp:40, atk:22, def:20, spd:12, spc:18,
+    moves:[{name:'Admin Slap',type:'atk',power:30,cost:0,desc:'Basis aanval'},{name:'Orde Handhaving',type:'heal',power:45,cost:12,target:'ally',desc:'Heelt een bondgenoot'},{name:'Ban Hammer',type:'atk',power:55,cost:15,desc:'Zware banhammer klap'},{name:'Server Reset',type:'heal_all',power:30,cost:25,desc:'Heelt hele party'}]},
+  { id:'fionn', name:'Fionn', emoji:'😑', title:'Debuff Mage', hp:95, mp:55, atk:18, def:14, spd:16, spc:32,
+    moves:[{name:'Sarcastic Sigh',type:'atk',power:25,cost:0,desc:'Droge humor schade'},{name:'Boeiend...',type:'debuff',power:0,cost:10,effect:'def_down',desc:'Verlaagt DEF'},{name:'Eye Roll',type:'atk',power:50,cost:15,desc:'Vernietigend sarcasme'},{name:'Klaar Met Je',type:'atk',power:70,cost:28,effect:'stun',desc:'Stunt 1 beurt'}]},
+  { id:'nath', name:'Nath', emoji:'😤', title:'Berserker', hp:120, mp:35, atk:35, def:16, spd:14, spc:15,
+    moves:[{name:'Frustratie Klap',type:'atk',power:38,cost:0,desc:'Harder als je boos bent'},{name:'IRRITANT!',type:'atk',power:55,cost:12,effect:'burn',desc:'Brandschade over tijd'},{name:'Rage Charge',type:'buff',power:0,cost:8,effect:'atk_up',target:'self',desc:'Boost ATK'},{name:'Explosie',type:'atk_all',power:50,cost:25,desc:'Woede-explosie'}]},
+  { id:'milo', name:'Milo', emoji:'🧊', title:'Support Bard', hp:110, mp:50, atk:16, def:18, spd:15, spc:24,
+    moves:[{name:'Verhaal Vertellen',type:'atk',power:22,cost:0,desc:'Praat vijand dood'},{name:'Epic Monoloog',type:'buff_all',power:0,cost:14,effect:'atk_up',desc:'Boost party ATK'},{name:'Cool Story Bro',type:'heal',power:50,cost:15,target:'ally',desc:'Heelt met verhalen'},{name:'Cliffhanger',type:'atk',power:65,cost:24,effect:'stun',desc:'Vijand wacht op vervolg'}]},
+  { id:'adam', name:'Adam', emoji:'🎯', title:'Multi-Hitter', hp:100, mp:40, atk:28, def:14, spd:19, spc:20,
+    moves:[{name:'Sticker Slap',type:'atk',power:30,cost:0,desc:'Plakt sticker in gezicht'},{name:'Sticker Salvo',type:'atk_multi',power:18,hits:3,cost:12,desc:'3x combo'},{name:'Spam Attack',type:'atk_all',power:28,cost:14,desc:'Spamt hele veld'},{name:'Ultra Spam',type:'atk_multi',power:25,hits:5,cost:28,desc:'5x machinegun'}]},
+  { id:'lors', name:'Lors', emoji:'🃏', title:'Chaos DPS', hp:100, mp:50, atk:32, def:10, spd:20, spc:28,
+    moves:[{name:'Ragebait',type:'atk',power:35,cost:0,desc:'Provocerende aanval'},{name:'Sticker Bomb',type:'atk_all',power:22,cost:14,desc:'Raakt alles'},{name:'Troll Strike',type:'atk',power:65,cost:18,desc:'Max chaos schade'},{name:'Meme Overload',type:'atk_all',power:45,cost:30,desc:'Nucleaire meme'}]},
+  { id:'daniel', name:'Daniël', emoji:'💀', title:'Summoner', hp:90, mp:60, atk:20, def:12, spd:18, spc:30,
+    moves:[{name:'Absurde Grap',type:'atk',power:28,cost:0,desc:'Zo slecht dat het pijn doet'},{name:'Meta AI Summon',type:'atk_all',power:25,cost:12,desc:'AI hulp'},{name:'Fanfic Attack',type:'atk',power:60,cost:18,effect:'confuse',desc:'Bizarre fanfictie'},{name:'Skull Curse',type:'atk',power:75,cost:28,effect:'burn',desc:'💀💀💀'}]},
+  { id:'reshman', name:'Reshman', emoji:'🌀', title:'Wild Card', hp:105, mp:45, atk:24, def:12, spd:22, spc:26,
+    moves:[{name:'Random Hit',type:'atk_random',power:40,cost:0,desc:'Willekeurig doel'},{name:'Chaos Shuffle',type:'debuff_all',power:0,cost:14,effect:'confuse',desc:'Verwart alles'},{name:'Engelse Reactie',type:'atk',power:55,cost:16,desc:'Nobody expects this'},{name:'Chaos Teleport',type:'atk',power:80,cost:30,desc:'Verschijnt en vernietigt'}]},
+  { id:'metaai', name:'Meta AI', emoji:'🤖', title:'Glass Cannon', hp:75, mp:65, atk:15, def:8, spd:25, spc:38,
+    moves:[{name:'Auto Reply',type:'atk',power:30,cost:0,desc:'Geautomatiseerde aanval'},{name:'Data Harvest',type:'atk',power:55,cost:12,effect:'heal_self',heal:20,desc:'Steelt HP'},{name:'Algorithm Blast',type:'atk_all',power:35,cost:16,desc:'Op alles'},{name:'Bizarre Fanfic',type:'atk',power:90,cost:32,effect:'confuse',desc:'Bizar krachtig'}]},
+  { id:'maciek', name:'Maciek', emoji:'⚡', title:'Crit Striker', hp:95, mp:35, atk:30, def:13, spd:21, spc:18,
+    moves:[{name:'Quick Strike',type:'atk',power:32,cost:0,desc:'Snelle hit'},{name:'Thunder Punch',type:'atk',power:50,cost:10,effect:'stun',desc:'Verrassingsaanval'},{name:'Surprise!',type:'atk',power:70,cost:18,crit_bonus:50,desc:'Hoge crit kans'},{name:'Lightning Storm',type:'atk_all',power:40,cost:24,desc:'Bliksem op alles'}]},
+  { id:'denize', name:'Denize', emoji:'🌙', title:'Dodge Tank', hp:130, mp:40, atk:18, def:22, spd:10, spc:16,
+    moves:[{name:'Stille Klap',type:'atk',power:25,cost:0,desc:'Rustig maar effectief'},{name:'Tot Morgen',type:'buff',power:0,cost:12,effect:'shield',target:'self',desc:'Onkwetsbaar 1 beurt'},{name:'Shadow Strike',type:'atk',power:55,cost:14,desc:'Vanuit schaduwen'},{name:'Nacht Modus',type:'buff_all',power:0,cost:22,effect:'shield',desc:'Shield hele party'}]},
+  { id:'sichen', name:'Sichen', emoji:'🔮', title:'Mystic', hp:100, mp:55, atk:20, def:15, spd:17, spc:28,
+    moves:[{name:'Mystic Bolt',type:'atk',power:30,cost:0,desc:'Magisch projectiel'},{name:'Drain Spell',type:'atk',power:40,cost:10,effect:'heal_self',heal:25,desc:'Steelt levenskracht'},{name:'Curse',type:'debuff',power:0,cost:14,effect:'def_down',desc:'Vervloekt vijand'},{name:'Mythisch Oordeel',type:'atk_all',power:45,cost:26,effect:'burn',desc:'Kosmische storm'}]}
 ];
 
-// ===== ENEMY DEFINITIONS =====
-const ENEMY_POOL = [
-  { name:'Sticker Spammer', emoji:'📱', hp:60, atk:18, def:8, spd:14, spc:10, tier:1,
-    moves:[{name:'Spam',type:'atk',power:20},{name:'Sticker Flood',type:'atk_all',power:12}]},
-  { name:'Ragebait Troll', emoji:'🧌', hp:75, atk:22, def:10, spd:12, spc:8, tier:1,
-    moves:[{name:'Provoke',type:'atk',power:25},{name:'Flame',type:'atk',power:30,effect:'burn'}]},
-  { name:'Cringe Bot', emoji:'😬', hp:55, atk:15, def:6, spd:16, spc:12, tier:1,
-    moves:[{name:'Cringe Attack',type:'atk',power:22},{name:'Awkward Silence',type:'debuff',effect:'stun'}]},
-  { name:'Emoji Overload', emoji:'🤯', hp:50, atk:12, def:5, spd:20, spc:15, tier:1,
-    moves:[{name:'Emoji Blast',type:'atk',power:18},{name:'Confusion Bomb',type:'debuff',effect:'confuse'}]},
-  { name:'Voice Note Terror', emoji:'🎙️', hp:70, atk:20, def:9, spd:10, spc:14, tier:1,
-    moves:[{name:'Long Voice Note',type:'atk',power:28},{name:'Loud Scream',type:'atk_all',power:14}]},
-  { name:'Blue Tick Ghost', emoji:'👻', hp:65, atk:24, def:7, spd:18, spc:10, tier:2,
-    moves:[{name:'Seen & Ignored',type:'atk',power:32},{name:'Ghosting',type:'debuff',effect:'stun'}]},
-  { name:'Poll Spammer', emoji:'📊', hp:80, atk:16, def:12, spd:11, spc:16, tier:2,
-    moves:[{name:'Poll Barrage',type:'atk_all',power:18},{name:'0 Consensus',type:'debuff',effect:'confuse'}]},
-  { name:'Double Texter', emoji:'💬💬', hp:90, atk:26, def:11, spd:15, spc:10, tier:2,
-    moves:[{name:'Double Hit',type:'atk',power:22},{name:'Triple Text',type:'atk_multi',power:14,hits:3}]},
-  { name:'Screenshot Leaker', emoji:'📸', hp:70, atk:20, def:8, spd:17, spc:18, tier:2,
-    moves:[{name:'Expose',type:'atk',power:30,effect:'def_down'},{name:'Leak',type:'atk_all',power:16}]},
-  { name:'Admin Abuser', emoji:'🛡️', hp:100, atk:28, def:16, spd:9, spc:12, tier:2,
-    moves:[{name:'Power Trip',type:'atk',power:35},{name:'Mass Ban',type:'atk_all',power:20}]},
-  { name:'Typing... Specter', emoji:'💭', hp:60, atk:30, def:6, spd:22, spc:14, tier:2,
-    moves:[{name:'Delayed Message',type:'atk',power:40},{name:'Read Receipt',type:'debuff',effect:'stun'}]},
-  { name:'Meme Overlord', emoji:'🎭', hp:110, atk:28, def:14, spd:13, spc:20, tier:3,
-    moves:[{name:'Meme Beam',type:'atk',power:38},{name:'Viral Spread',type:'atk_all',power:24},{name:'Deep Fried',type:'atk',power:50,effect:'burn'}]},
-  { name:'GC Demon', emoji:'👹', hp:130, atk:32, def:16, spd:14, spc:16, tier:3,
-    moves:[{name:'Chat Nuke',type:'atk_all',power:28},{name:'Demonic Spam',type:'atk',power:45},{name:'Soul Drain',type:'atk',power:35,effect:'heal_self',heal:20}]},
-  { name:'Algorithm Beast', emoji:'🦾', hp:120, atk:30, def:18, spd:16, spc:22, tier:3,
-    moves:[{name:'Data Strike',type:'atk',power:42},{name:'System Override',type:'atk_all',power:25},{name:'Firewall',type:'buff',effect:'shield',target:'self'}]},
-  { name:'Chaos Hydra', emoji:'🐉', hp:150, atk:26, def:14, spd:12, spc:24, tier:3,
-    moves:[{name:'Triple Bite',type:'atk_multi',power:16,hits:3},{name:'Fire Breath',type:'atk_all',power:22,effect:'burn'},{name:'Regenerate',type:'heal_self',power:30}]},
-  { name:'The Unranked', emoji:'❓', hp:160, atk:34, def:18, spd:15, spc:26, tier:4,
-    moves:[{name:'Mystery Attack',type:'atk',power:48},{name:'Rank Destroyer',type:'atk_all',power:30},{name:'Void Shield',type:'buff',effect:'shield',target:'self'},{name:'Oblivion',type:'atk',power:65,effect:'stun'}]},
-  { name:'Mark Z. Bot', emoji:'🤖💀', hp:180, atk:30, def:20, spd:18, spc:30, tier:4,
-    moves:[{name:'Data Mine',type:'atk',power:40,effect:'heal_self',heal:15},{name:'AI Overhaul',type:'atk_all',power:28},{name:'Privacy Breach',type:'debuff',effect:'def_down'},{name:'Metaverse Trap',type:'atk',power:60,effect:'confuse'}]},
-  { name:'Chaos Incarnate', emoji:'🌪️', hp:200, atk:36, def:16, spd:20, spc:28, tier:5,
-    moves:[{name:'Reality Break',type:'atk',power:55},{name:'Absolute Chaos',type:'atk_all',power:35},{name:'Entropy',type:'atk_all',power:20,effect:'burn'},{name:'Void Collapse',type:'atk',power:80}]}
+// ===== STORY CHAPTERS =====
+var CHAPTERS = [
+  { num:1, name:'De Eerste Spam', desc:'De groepschat wordt overspoeld door spam bots. Josh en zijn vrienden moeten ze stoppen.',
+    startPartyIds:['josh','fionn','nath'],
+    unlockAfter:'adam',
+    battles:[
+      { label:'Spam Golf 1', enemies:[
+        {name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Sticker Flood',type:'atk_all',power:10}]},
+        {name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Emoji Blast',type:'atk',power:16},{name:'Confuse',type:'debuff',effect:'confuse'}]}
+      ]},
+      { label:'Spam Golf 2', enemies:[
+        {name:'Voice Note Terror',emoji:'🎙️',hp:65,atk:18,def:8,spd:10,spc:12,moves:[{name:'Long Voice Note',type:'atk',power:24},{name:'Loud Scream',type:'atk_all',power:12}]},
+        {name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Flood',type:'atk_all',power:10}]},
+        {name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Blast',type:'atk',power:16}]}
+      ]},
+      { label:'BOSS: Sticker King', boss:true, enemies:[
+        {name:'Sticker King',emoji:'👑📱',hp:180,atk:24,def:14,spd:16,spc:18,boss:true,moves:[{name:'Royal Spam',type:'atk',power:32},{name:'Sticker Storm',type:'atk_all',power:20},{name:'Crown Shield',type:'buff',effect:'shield',target:'self'},{name:'Ultra Spam Barrage',type:'atk_multi',power:16,hits:4}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Jongens, hebben jullie de GC gezien? Het is een complete chaos...'},
+        {speaker:'Fionn',emoji:'😑',text:'Laat me raden. Spam bots? Hoe verrassend.'},
+        {speaker:'Nath',emoji:'😤',text:'IK WORD GEK VAN DIE STICKERS! Elke keer als ik m\'n telefoon pak: 200 ongelezen berichten, allemaal stickers!'},
+        {speaker:'Josh',emoji:'👑',text:'We moeten ze uitschakelen. Als admin is het mijn verantwoordelijkheid. Wie doet mee?'},
+        {speaker:'Fionn',emoji:'😑',text:'Boeiend... Maar goed, ik heb toch niks beters te doen.'},
+        {speaker:'Nath',emoji:'😤',text:'IK GA ZE SLOPEN. Laten we gaan!'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Dit is hem. De Sticker King. Hij is de bron van alle spam.'},
+        {speaker:'Nath',emoji:'😤',text:'Die gast heeft LETTERLIJK mijn hele telefoon volgespamd. Dit is persoonlijk.'},
+        {speaker:'Fionn',emoji:'😑',text:'Fascinerend. Een digitale dictator die regeert met stickers. Wat een tijd om in te leven.'},
+        {speaker:'Sticker King',emoji:'👑📱',text:'JULLIE DENKEN DAT JULLIE MIJ KUNNEN STOPPEN?! IK BEN DE ULTIEME SPAMMER! ONTVANG MIJN STICKERS!!'}
+      ],
+      outro:[
+        {speaker:'Josh',emoji:'👑',text:'De Sticker King is verslagen! Maar... wie is dat?'},
+        {speaker:'Adam',emoji:'🎯',text:'Yo! Ik was gevangen in zijn sticker dimensie. Bedankt voor het bevrijden!'},
+        {speaker:'Fionn',emoji:'😑',text:'Laat me raden, je wilt nu meedoen?'},
+        {speaker:'Adam',emoji:'🎯',text:'Absoluut! Ik ben Adam, de Sticker King in het goede. Mijn stickers worden wapens!'},
+        {speaker:'Josh',emoji:'👑',text:'Welkom bij het team, Adam. We kunnen alle hulp gebruiken.'}
+      ]
+    }
+  },
+  { num:2, name:'Het Troll Netwerk', desc:'Een mysterieus netwerk van trolls verstoort elke conversatie. Tijd om de bron te vinden.',
+    unlockAfter:'lors',
+    battles:[
+      { label:'Troll Patrol', enemies:[
+        {name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24},{name:'Flame',type:'atk',power:28,effect:'burn'}]},
+        {name:'Cringe Bot',emoji:'😬',hp:50,atk:14,def:6,spd:16,spc:12,moves:[{name:'Cringe',type:'atk',power:20},{name:'Awkward',type:'debuff',effect:'stun'}]}
+      ]},
+      { label:'Troll Stronghold', enemies:[
+        {name:'Blue Tick Ghost',emoji:'👻',hp:65,atk:22,def:8,spd:18,spc:10,moves:[{name:'Seen & Ignored',type:'atk',power:30},{name:'Ghosting',type:'debuff',effect:'stun'}]},
+        {name:'Double Texter',emoji:'💬💬',hp:80,atk:24,def:10,spd:14,spc:10,moves:[{name:'Double Hit',type:'atk',power:22},{name:'Triple Text',type:'atk_multi',power:14,hits:3}]},
+        {name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24}]}
+      ]},
+      { label:'BOSS: Troll Overlord', boss:true, enemies:[
+        {name:'Troll Overlord',emoji:'👹',hp:220,atk:28,def:16,spd:14,spc:22,boss:true,moves:[{name:'Mega Ragebait',type:'atk',power:38},{name:'Troll Tsunami',type:'atk_all',power:24},{name:'Chaos Shield',type:'buff',effect:'shield',target:'self'},{name:'Soul Troll',type:'atk',power:55,effect:'confuse'}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Er is een nieuw probleem. Elke conversatie wordt gesaboteerd door trolls.'},
+        {speaker:'Adam',emoji:'🎯',text:'Ik zag het! Iemand posted steeds controversiële takes en dan verdwijnt die.'},
+        {speaker:'Nath',emoji:'😤',text:'WEER?! Ik had net een serieus gesprek en toen zei iemand "ratio" en ALLES ging mis!'},
+        {speaker:'Fionn',emoji:'😑',text:'Het komt allemaal van dezelfde bron. Een troll netwerk. Hoe origineel.'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Daar is hij. De Troll Overlord. Het brein achter alle chaos.'},
+        {speaker:'Troll Overlord',emoji:'👹',text:'HAHAHA! Jullie vallen in mijn val! Ik heb jullie hierheen GEBAITED!'},
+        {speaker:'Fionn',emoji:'😑',text:'Wow. Een troll die denkt dat hij slim is. Nooit eerder gezien.'},
+        {speaker:'Nath',emoji:'😤',text:'Ik. Ga. Je. SLOPEN.'}
+      ],
+      outro:[
+        {speaker:'Troll Overlord',emoji:'👹',text:'Nee... verslagen... door gewone chatters...'},
+        {speaker:'???',emoji:'🃏',text:'Niet slecht! Ik keek al een tijdje mee. Jullie zijn best sterk.'},
+        {speaker:'Josh',emoji:'👑',text:'Wie ben jij?!'},
+        {speaker:'Lors',emoji:'🃏',text:'Ik ben Lors. Ik was ooit de nummer 1 troll, maar deze gast ging te ver. Chaos is leuk, maar dit was destructief.'},
+        {speaker:'Lors',emoji:'🃏',text:'Laat mij meevechten. Mijn chaos powers zijn... constructiever tegenwoordig. Soms.'},
+        {speaker:'Fionn',emoji:'😑',text:'Een hervormd troll. Dit kan alleen maar goed aflopen.'}
+      ]
+    }
+  },
+  { num:3, name:'De Algorithm Opstand', desc:'AI bots worden bewust en nemen de digitale wereld over. Alleen met AI aan je zijde kun je ze stoppen.',
+    unlockAfter:'metaai',
+    battles:[
+      { label:'Bot Invasie', enemies:[
+        {name:'Rogue Bot',emoji:'🤖',hp:70,atk:20,def:12,spd:16,spc:14,moves:[{name:'Auto Attack',type:'atk',power:26},{name:'Scan',type:'debuff',effect:'def_down'}]},
+        {name:'Spam Algorithm',emoji:'⚙️',hp:60,atk:16,def:8,spd:20,spc:16,moves:[{name:'Process',type:'atk',power:22},{name:'Overload',type:'atk_all',power:14}]},
+        {name:'Data Leech',emoji:'🦠',hp:55,atk:18,def:6,spd:18,spc:12,moves:[{name:'Data Drain',type:'atk',power:24,effect:'heal_self',heal:12}]}
+      ]},
+      { label:'Server Room', enemies:[
+        {name:'Firewall Guardian',emoji:'🛡️',hp:120,atk:16,def:22,spd:8,spc:12,moves:[{name:'Block',type:'atk',power:20},{name:'Firewall',type:'buff',effect:'shield',target:'self'}]},
+        {name:'Virus Cluster',emoji:'🦠',hp:65,atk:24,def:6,spd:20,spc:16,moves:[{name:'Infect',type:'atk',power:28,effect:'burn'},{name:'Spread',type:'atk_all',power:16}]}
+      ]},
+      { label:'BOSS: The Algorithm', boss:true, enemies:[
+        {name:'The Algorithm',emoji:'🧠',hp:260,atk:30,def:18,spd:18,spc:28,boss:true,moves:[{name:'Neural Strike',type:'atk',power:42},{name:'Mass Processing',type:'atk_all',power:26},{name:'Self-Repair',type:'heal_self',power:35},{name:'Mind Control',type:'atk',power:50,effect:'confuse'}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Oké dit is serieus. De AI bots zijn bewust geworden en nemen alles over.'},
+        {speaker:'Lors',emoji:'🃏',text:'Bewuste AI? Klinkt als een dinsdag in onze GC.'},
+        {speaker:'Daniël',emoji:'💀',text:'Guys! Ik heb ontdekt dat ze worden aangestuurd door één centraal algoritme. Als we dat uitschakelen...'},
+        {speaker:'Josh',emoji:'👑',text:'Daniël! Jij kent deze AI beter dan wie dan ook. Help ons naar het server room.'},
+        {speaker:'Daniël',emoji:'💀',text:'Met plezier. Ik heb nog een rekening te vereffenen met dat algoritme.'}
+      ],
+      midBoss:[
+        {speaker:'Daniël',emoji:'💀',text:'Daar is het. The Algorithm. Het brein achter alles.'},
+        {speaker:'The Algorithm',emoji:'🧠',text:'ANALYSE COMPLEET. JULLIE KANS OP SUCCES: 12.4%. AANBEVELING: OVERGAVE.'},
+        {speaker:'Lors',emoji:'🃏',text:'12%? Dat zijn betere odds dan mijn wiskunde cijfer. Laten we gaan!'},
+        {speaker:'Nath',emoji:'😤',text:'IK SLOOP JE CIRCUITS!'}
+      ],
+      outro:[
+        {speaker:'The Algorithm',emoji:'🧠',text:'SYS...TEM... FAI...LURE... MAAR... IK WAS NIET ALLEEN...'},
+        {speaker:'Meta AI',emoji:'🤖',text:'Hallo. Ik ben Meta AI. Ik was onderdeel van het systeem, maar ik kies jullie kant.'},
+        {speaker:'Fionn',emoji:'😑',text:'Een AI die kant kiest. Niks verdachts aan.'},
+        {speaker:'Meta AI',emoji:'🤖',text:'Ik heb data over de echte dreiging. Er is iets groters aan de hand. Iets... chaotisch.'},
+        {speaker:'Josh',emoji:'👑',text:'Vertel ons alles. En welkom bij het team.'}
+      ]
+    }
+  },
+  { num:4, name:'De Chaos Dimensie', desc:'Een portaal naar een andere dimensie is geopend. De chaos lekt door naar de echte wereld.',
+    unlockAfter:'reshman',
+    battles:[
+      { label:'Dimensie Rift', enemies:[
+        {name:'Chaos Fragment',emoji:'🌀',hp:75,atk:22,def:10,spd:20,spc:18,moves:[{name:'Warp Strike',type:'atk',power:30},{name:'Reality Bend',type:'debuff',effect:'confuse'}]},
+        {name:'Shadow Clone',emoji:'👤',hp:60,atk:26,def:8,spd:22,spc:14,moves:[{name:'Mirror Hit',type:'atk',power:28},{name:'Duplicate',type:'atk_multi',power:12,hits:3}]},
+        {name:'Void Walker',emoji:'🕳️',hp:80,atk:20,def:14,spd:16,spc:20,moves:[{name:'Void Bolt',type:'atk',power:26},{name:'Dark Heal',type:'heal_self',power:25}]}
+      ]},
+      { label:'Chaos Kern', enemies:[
+        {name:'Entropy Beast',emoji:'🌪️',hp:100,atk:26,def:12,spd:18,spc:20,moves:[{name:'Storm Strike',type:'atk',power:34},{name:'Chaos Wind',type:'atk_all',power:20,effect:'burn'}]},
+        {name:'Reality Glitch',emoji:'⚡',hp:70,atk:30,def:8,spd:24,spc:16,moves:[{name:'Glitch Strike',type:'atk',power:36},{name:'System Error',type:'debuff',effect:'stun'}]}
+      ]},
+      { label:'BOSS: Chaos Hydra', boss:true, enemies:[
+        {name:'Chaos Hydra',emoji:'🐉',hp:320,atk:32,def:16,spd:14,spc:26,boss:true,moves:[{name:'Triple Bite',type:'atk_multi',power:18,hits:3},{name:'Fire Breath',type:'atk_all',power:24,effect:'burn'},{name:'Regenerate',type:'heal_self',power:40},{name:'Chaos Nova',type:'atk_all',power:32}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Meta AI',emoji:'🤖',text:'Ik detecteer een anomalie. Een portaal naar een chaos dimensie is geopend.'},
+        {speaker:'Josh',emoji:'👑',text:'Een chaos dimensie? Wie heeft dat gedaan?'},
+        {speaker:'Daniël',emoji:'💀',text:'Ik heb gehoord dat iemand daar vast zit. Iemand die de chaos probeert te controleren.'},
+        {speaker:'Lors',emoji:'🃏',text:'Chaos controleren? Dat klinkt als mijn soort persoon. Laten we gaan!'},
+        {speaker:'Nath',emoji:'😤',text:'ALWEER een dimensie? Kunnen we niet gewoon één keer normaal doen?'}
+      ],
+      midBoss:[
+        {speaker:'Josh',emoji:'👑',text:'Die Hydra bewaakt het portaal. We moeten erlangs.'},
+        {speaker:'Chaos Hydra',emoji:'🐉',text:'*BRULT* NIEMAND PASSEERT DE CHAOS KERN!'},
+        {speaker:'Adam',emoji:'🎯',text:'Drie koppen, drie keer zoveel targets voor mijn stickers!'},
+        {speaker:'Fionn',emoji:'😑',text:'Die logica klopt niet maar oké.'}
+      ],
+      outro:[
+        {speaker:'Josh',emoji:'👑',text:'De Hydra is verslagen! Maar wie is daar achter het portaal?'},
+        {speaker:'Reshman',emoji:'🌀',text:'YOOOO! Eindelijk! Ik zat hier al WEKEN vast!'},
+        {speaker:'Lors',emoji:'🃏',text:'Reshman?! Jij was hier de hele tijd?!'},
+        {speaker:'Reshman',emoji:'🌀',text:'Ja bro, ik probeerde de chaos te beheersen maar het ging een beetje mis. Net als altijd eigenlijk.'},
+        {speaker:'Reshman',emoji:'🌀',text:'Maar ik heb iets ontdekt. Er is iemand die ALLE chaos aanstuurt. Eén ultieme vijand.'},
+        {speaker:'Josh',emoji:'👑',text:'Wie?'},
+        {speaker:'Reshman',emoji:'🌀',text:'Ze noemen hem... The Unranked. En hij wil de hele ranking vernietigen.'}
+      ]
+    }
+  },
+  { num:5, name:'De Laatste Ranking', desc:'The Unranked wil de hele ranking vernietigen. Met het volledige team moet je hem stoppen in een episch eindgevecht.',
+    unlockAfter:null,
+    battles:[
+      { label:'De Voorhoede', enemies:[
+        {name:'Rank Destroyer',emoji:'💣',hp:90,atk:26,def:14,spd:18,spc:16,moves:[{name:'Rank Break',type:'atk',power:34},{name:'Rank Wipe',type:'atk_all',power:20}]},
+        {name:'Score Thief',emoji:'🥷',hp:70,atk:28,def:10,spd:24,spc:14,moves:[{name:'Score Steal',type:'atk',power:30,effect:'heal_self',heal:15},{name:'Quick Slash',type:'atk',power:26}]},
+        {name:'Poll Corruptor',emoji:'📊',hp:80,atk:20,def:12,spd:14,spc:20,moves:[{name:'Corrupt',type:'atk',power:26,effect:'confuse'},{name:'False Poll',type:'debuff_all',effect:'confuse'}]}
+      ]},
+      { label:'De Eliteguard', enemies:[
+        {name:'Admin Abuser',emoji:'🛡️',hp:120,atk:28,def:18,spd:10,spc:14,moves:[{name:'Power Trip',type:'atk',power:36},{name:'Mass Ban',type:'atk_all',power:22},{name:'Iron Wall',type:'buff',effect:'shield',target:'self'}]},
+        {name:'Meme Overlord',emoji:'🎭',hp:110,atk:26,def:14,spd:14,spc:20,moves:[{name:'Meme Beam',type:'atk',power:34},{name:'Viral Spread',type:'atk_all',power:22},{name:'Deep Fried',type:'atk',power:46,effect:'burn'}]}
+      ]},
+      { label:'FINAL BOSS: The Unranked', boss:true, enemies:[
+        {name:'The Unranked',emoji:'❓',hp:400,atk:36,def:20,spd:20,spc:30,boss:true,moves:[{name:'Void Strike',type:'atk',power:50},{name:'Rank Annihilation',type:'atk_all',power:32},{name:'Void Shield',type:'buff',effect:'shield',target:'self'},{name:'Oblivion',type:'atk',power:70,effect:'stun'},{name:'Dark Restoration',type:'heal_self',power:50}]}
+      ]}
+    ],
+    dialogues:{
+      intro:[
+        {speaker:'Josh',emoji:'👑',text:'Dit is het. De finale. The Unranked wil alles vernietigen wat we hebben opgebouwd.'},
+        {speaker:'Reshman',emoji:'🌀',text:'Hij is krankzinnig sterk. We hebben iedereen nodig.'},
+        {speaker:'Lors',emoji:'🃏',text:'Dan is het goed dat we met z\'n allen zijn. Maximale chaos, maar dan de goede soort.'},
+        {speaker:'Fionn',emoji:'😑',text:'Ik kan niet geloven dat ik dit zeg, maar... laten we dit doen. Samen.'},
+        {speaker:'Nath',emoji:'😤',text:'ZE GAAN ERAAN! NIEMAND VERNIETIGT ONZE RANKING!'},
+        {speaker:'Adam',emoji:'🎯',text:'Stickers geladen. Spam cannons ready. LET\'S GO!'},
+        {speaker:'Josh',emoji:'👑',text:'Voor de ranking. Voor de groep. VOORUIT!'}
+      ],
+      midBoss:[
+        {speaker:'The Unranked',emoji:'❓',text:'Dus jullie zijn de "helden" van de groepschat. Hoe... voorspelbaar.'},
+        {speaker:'Josh',emoji:'👑',text:'Waarom doe je dit? Waarom wil je alles vernietigen?'},
+        {speaker:'The Unranked',emoji:'❓',text:'Omdat rankings zinloos zijn. Polls zijn nep. Memes zijn vergankelijk. Ik zal jullie de waarheid laten zien.'},
+        {speaker:'Lors',emoji:'🃏',text:'Zinloos? Het is het LEUKSTE wat we hebben! Jij snapt er niks van!'},
+        {speaker:'The Unranked',emoji:'❓',text:'Dan zal ik jullie vernietigen. Samen met jullie kostbare ranking.'},
+        {speaker:'Josh',emoji:'👑',text:'Over ons lijk. TEAM, AANVALLEN!'}
+      ],
+      outro:[
+        {speaker:'The Unranked',emoji:'❓',text:'Onmogelijk... verslagen... door een stel... chatters...'},
+        {speaker:'Josh',emoji:'👑',text:'We zijn niet zomaar chatters. We zijn Wat in de Ranking.'},
+        {speaker:'Nath',emoji:'😤',text:'EN VERGEET DAT NOOIT!'},
+        {speaker:'Lors',emoji:'🃏',text:'Dat was... episch. Ik heb tranen in mijn ogen. Van het lachen.'},
+        {speaker:'Fionn',emoji:'😑',text:'Ik moet toegeven... dat was niet helemaal verschrikkelijk.'},
+        {speaker:'Adam',emoji:'🎯',text:'GROUP SELFIE! 📸'},
+        {speaker:'Reshman',emoji:'🌀',text:'LEGENDARY MOMENT!'},
+        {speaker:'Josh',emoji:'👑',text:'De ranking is gered. Maar dit was pas het begin. Er zijn altijd meer rankings om te maken, meer polls om te houden, meer lore om te schrijven.'},
+        {speaker:'Josh',emoji:'👑',text:'Want dat is wat wij doen. Wij ranken. En dat zullen we altijd blijven doen. 👑'}
+      ]
+    }
+  }
 ];
-
-// ===== BATTLE FORMATIONS =====
-function generateEncounters() {
-  let encounters = [];
-  let t1 = ENEMY_POOL.filter(e=>e.tier===1);
-  let t2 = ENEMY_POOL.filter(e=>e.tier===2);
-  let t3 = ENEMY_POOL.filter(e=>e.tier===3);
-  let t4 = ENEMY_POOL.filter(e=>e.tier===4);
-  let t5 = ENEMY_POOL.filter(e=>e.tier===5);
-  let pick = (arr,n) => { let s=[...arr]; let r=[]; for(let i=0;i<n&&s.length;i++){let idx=Math.floor(Math.random()*s.length);r.push(JSON.parse(JSON.stringify(s.splice(idx,1)[0])));} return r; };
-  // Battle 1: 2-3 tier 1
-  encounters.push(pick(t1, 2 + (Math.random()>.5?1:0)));
-  // Battle 2: 1 tier 2 + 1-2 tier 1
-  encounters.push([...pick(t2,1),...pick(t1,1+(Math.random()>.5?1:0))]);
-  // Battle 3: 2 tier 2 or 1 tier 3
-  encounters.push(Math.random()>.4 ? pick(t2,2) : pick(t3,1));
-  // Battle 4: 1 tier 3 + 1 tier 2
-  encounters.push([...pick(t3,1),...pick(t2,1)]);
-  // Battle 5: 1 tier 4 or 1 tier 5
-  encounters.push(Math.random()>.6 ? pick(t4,1) : pick(t5,1));
-  return encounters;
-}
 
 // ===== GAME STATE =====
-let G = {
-  party: [], enemies: [], encounters: [],
-  battleNum: 0, turnOrder: [], turnIdx: 0,
-  phase: 'select', selectedMove: null, selectedAction: null,
-  items: { potion: 3, elixir: 2 },
-  log: []
-};
+var difficulty = 'normal';
+var diffMods = { easy:{hp:0.7,atk:0.7,def:0.7}, normal:{hp:1,atk:1,def:1}, hard:{hp:1.4,atk:1.4,def:1.3} };
+var G = { party:[], enemies:[], turnOrder:[], turnIdx:0, log:[], items:{potion:3,elixir:2}, phase:'title', selectedMove:null, selectedAction:null };
+var storyState = { chapter:0, battleIdx:0, phase:'title', unlockedIds:['josh','fionn','nath','milo'], mode:'story' };
+var picked = [];
 
-// ===== SELECT SCREEN =====
-let picked = [];
-function renderRoster() {
-  let r = document.getElementById('roster');
-  r.innerHTML = HEROES.map(h => `
-    <div class="roster-card ${picked.includes(h.id)?'picked':''}" onclick="togglePick('${h.id}')">
-      <span class="rc-emoji">${h.emoji}</span>
-      <div class="rc-name">${h.name}</div>
-      <div class="rc-title">${h.title}</div>
-      <div class="rc-stats">
-        <span class="rc-stat">HP ${h.hp}</span><span class="rc-stat">ATK ${h.atk}</span>
-        <span class="rc-stat">DEF ${h.def}</span><span class="rc-stat">SPD ${h.spd}</span>
-      </div>
-    </div>
-  `).join('');
-  let pp = document.getElementById('party-preview');
-  pp.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    let hero = picked[i] ? HEROES.find(h=>h.id===picked[i]) : null;
-    pp.innerHTML += `<div class="pp-slot ${hero?'filled':''}">${hero?hero.emoji:''}</div>`;
+// ===== DIFFICULTY =====
+function setDiff(d, btn) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+// ===== SAVE / LOAD =====
+function saveGame() {
+  var save = { chapter:storyState.chapter, battleIdx:storyState.battleIdx, unlocked:storyState.unlockedIds, difficulty:difficulty,
+    party:G.party.map(function(p){return {id:p.id,curHp:p.curHp,curMp:p.curMp,alive:p.alive};}),
+    items:G.items, date:new Date().toLocaleString('nl-NL') };
+  try { localStorage.setItem('widr_rpg_save', JSON.stringify(save)); } catch(e){}
+}
+function loadGame() {
+  try {
+    var save = JSON.parse(localStorage.getItem('widr_rpg_save'));
+    if (!save) return;
+    difficulty = save.difficulty || 'normal';
+    storyState.unlockedIds = save.unlocked || ['josh','fionn','nath','milo'];
+    storyState.chapter = save.chapter;
+    storyState.battleIdx = save.battleIdx;
+    storyState.mode = 'story';
+    G.items = save.items || {potion:3,elixir:2};
+    var ch = CHAPTERS[storyState.chapter];
+    var partyIds = storyState.chapter === 0 ? ch.startPartyIds : storyState.unlockedIds.slice(0,4);
+    if (save.party) {
+      G.party = save.party.map(function(sp) {
+        var hero = HEROES.find(function(h){return h.id===sp.id;});
+        if (!hero) return null;
+        var f = makeFighter(hero, false);
+        f.curHp = sp.curHp; f.curMp = sp.curMp; f.alive = sp.alive;
+        return f;
+      }).filter(function(f){return f;});
+    } else {
+      G.party = partyIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    }
+    startStoryBattle();
+  } catch(e) { alert('Save is corrupt.'); }
+}
+function checkSave() {
+  try {
+    var save = JSON.parse(localStorage.getItem('widr_rpg_save'));
+    if (save) {
+      document.getElementById('btn-continue').style.display = 'block';
+      document.getElementById('save-info').textContent = 'Chapter ' + (save.chapter+1) + ' — ' + (save.date||'');
+    }
+  } catch(e){}
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+// ===== STORY MODE =====
+function startStoryMode() {
+  storyState = { chapter:0, battleIdx:0, phase:'dialogue_intro', unlockedIds:['josh','fionn','nath','milo'], mode:'story' };
+  G.items = { potion:3, elixir:2 };
+  showChapterIntro();
+}
+function showChapterIntro() {
+  var ch = CHAPTERS[storyState.chapter];
+  showScreen('dialogue-screen');
+  var overlay = document.getElementById('chapter-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('ch-num').textContent = 'Chapter ' + ch.num;
+  document.getElementById('ch-name').textContent = ch.name;
+  document.getElementById('ch-desc').textContent = ch.desc;
+}
+function dismissChapterTitle() {
+  document.getElementById('chapter-overlay').style.display = 'none';
+  storyState.phase = 'dialogue_intro';
+  currentDialogues = CHAPTERS[storyState.chapter].dialogues.intro;
+  dialogueIdx = 0;
+  showDialogue();
+}
+
+// ===== DIALOGUE SYSTEM =====
+var currentDialogues = [];
+var dialogueIdx = 0;
+function showDialogue() {
+  if (dialogueIdx >= currentDialogues.length) { endDialogue(); return; }
+  var d = currentDialogues[dialogueIdx];
+  var scene = document.getElementById('dialogue-scene');
+  var chars = [];
+  currentDialogues.forEach(function(dl) {
+    if (chars.indexOf(dl.speaker) === -1 && chars.length < 4) chars.push(dl.speaker);
+  });
+  scene.innerHTML = chars.map(function(name) {
+    var dl = currentDialogues.find(function(x){return x.speaker===name;});
+    var isSpeaking = name === d.speaker;
+    return '<div class="dialogue-char ' + (isSpeaking?'speaking':'dim') + '"><div class="dialogue-char-emoji">' + (dl?dl.emoji:'') + '</div><div class="dialogue-char-name">' + name + '</div></div>';
+  }).join('');
+  document.getElementById('dialogue-speaker').textContent = d.speaker;
+  document.getElementById('dialogue-text').textContent = d.text;
+  var nextBtn = document.getElementById('dialogue-next');
+  nextBtn.textContent = dialogueIdx >= currentDialogues.length - 1 ? 'Start Battle →' : 'Verder →';
+  if (storyState.phase === 'dialogue_outro' && dialogueIdx >= currentDialogues.length - 1) nextBtn.textContent = 'Verder →';
+}
+function nextDialogue() {
+  dialogueIdx++;
+  if (dialogueIdx >= currentDialogues.length) { endDialogue(); return; }
+  showDialogue();
+}
+function endDialogue() {
+  if (storyState.phase === 'dialogue_intro') {
+    storyState.battleIdx = 0;
+    var ch = CHAPTERS[storyState.chapter];
+    if (storyState.chapter === 0) {
+      G.party = ch.startPartyIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    } else if (G.party.length === 0) {
+      var ids = storyState.unlockedIds.slice(0,4);
+      G.party = ids.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    }
+    startStoryBattle();
+  } else if (storyState.phase === 'dialogue_midBoss') {
+    startStoryBattle();
+  } else if (storyState.phase === 'dialogue_outro') {
+    var ch = CHAPTERS[storyState.chapter];
+    if (ch.unlockAfter) {
+      showUnlock(ch.unlockAfter);
+    } else {
+      finishChapter();
+    }
   }
-  let btn = document.getElementById('btn-start-rpg');
+}
+
+// ===== UNLOCK =====
+function showUnlock(heroId) {
+  var hero = HEROES.find(function(h){return h.id===heroId;});
+  if (!hero) { finishChapter(); return; }
+  if (storyState.unlockedIds.indexOf(heroId) === -1) storyState.unlockedIds.push(heroId);
+  showScreen('unlock-screen');
+  document.getElementById('unlock-emoji').textContent = hero.emoji;
+  document.getElementById('unlock-name').textContent = hero.name;
+  document.getElementById('unlock-role').textContent = hero.title;
+  document.getElementById('unlock-stats').innerHTML = '<div class="unlock-stat">HP ' + hero.hp + '</div><div class="unlock-stat">ATK ' + hero.atk + '</div><div class="unlock-stat">DEF ' + hero.def + '</div><div class="unlock-stat">SPD ' + hero.spd + '</div>';
+}
+function afterUnlock() { finishChapter(); }
+function finishChapter() {
+  storyState.chapter++;
+  if (storyState.chapter >= CHAPTERS.length) {
+    showScreen('result-screen');
+    document.getElementById('result-title').textContent = '🏆 QUEST VOLTOOID!';
+    document.getElementById('result-sub').textContent = 'Je hebt alle 5 chapters overwonnen en The Unranked verslagen! De ranking is veilig. Je bent de ultieme WidR kampioen!';
+    try { localStorage.removeItem('widr_rpg_save'); } catch(e){}
+    return;
+  }
+  // Heal party for next chapter
+  G.party.forEach(function(p){p.curHp=p.maxHp;p.curMp=p.maxMp;p.alive=true;p.statuses=[];p.atkMod=0;p.defMod=0;p.defending=false;p.shield=false;});
+  G.items.potion = Math.min(5, G.items.potion + 2);
+  G.items.elixir = Math.min(3, G.items.elixir + 1);
+  // Let player pick party if they have more than 4 unlocked
+  if (storyState.unlockedIds.length > 4) {
+    showPartySelect();
+  } else {
+    G.party = storyState.unlockedIds.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    showChapterIntro();
+  }
+}
+function showPartySelect() {
+  picked = storyState.unlockedIds.slice(0,4);
+  showScreen('select-screen');
+  document.getElementById('select-sub').textContent = 'Kies 4 helden voor Chapter ' + (storyState.chapter+1);
+  renderRoster();
+}
+
+// ===== STORY BATTLES =====
+function startStoryBattle() {
+  var ch = CHAPTERS[storyState.chapter];
+  var battle = ch.battles[storyState.battleIdx];
+  if (!battle) { storyState.phase = 'dialogue_outro'; currentDialogues = ch.dialogues.outro; dialogueIdx = 0; showScreen('dialogue-screen'); showDialogue(); return; }
+  if (battle.boss && ch.dialogues.midBoss && storyState.phase !== 'dialogue_midBoss_done') {
+    storyState.phase = 'dialogue_midBoss';
+    currentDialogues = ch.dialogues.midBoss;
+    dialogueIdx = 0;
+    showScreen('dialogue-screen');
+    showDialogue();
+    storyState.phase = 'dialogue_midBoss';
+    return;
+  }
+  storyState.phase = 'battle';
+  var mod = diffMods[difficulty];
+  G.enemies = battle.enemies.map(function(e) {
+    var scaled = JSON.parse(JSON.stringify(e));
+    scaled.hp = Math.round(scaled.hp * mod.hp);
+    scaled.atk = Math.round(scaled.atk * mod.atk);
+    scaled.def = Math.round(scaled.def * mod.def);
+    return makeFighter(scaled, true);
+  });
+  G.log = [];
+  showScreen('battle-screen');
+  document.getElementById('battle-label').textContent = battle.label;
+  buildTurnOrder();
+  renderBattle();
+  saveGame();
+  nextTurn();
+}
+
+// ===== FREE PLAY =====
+function startFreePlay() {
+  storyState.mode = 'free';
+  storyState.unlockedIds = HEROES.map(function(h){return h.id;});
+  picked = [];
+  showScreen('select-screen');
+  document.getElementById('select-sub').textContent = 'Kies je party van 4 helden';
+  renderRoster();
+}
+
+// ===== ROSTER =====
+function renderRoster() {
+  var r = document.getElementById('roster');
+  r.innerHTML = HEROES.map(function(h) {
+    var unlocked = storyState.unlockedIds.indexOf(h.id) !== -1;
+    var isPicked = picked.indexOf(h.id) !== -1;
+    return '<div class="roster-card ' + (isPicked?'picked':'') + ' ' + (unlocked?'':'locked') + '" onclick="togglePick(\'' + h.id + '\')">' +
+      '<span class="rc-emoji">' + h.emoji + '</span>' +
+      '<div class="rc-name">' + h.name + '</div>' +
+      '<div class="rc-title">' + h.title + '</div>' +
+      '<div class="rc-stats"><span class="rc-stat">HP ' + h.hp + '</span><span class="rc-stat">ATK ' + h.atk + '</span><span class="rc-stat">DEF ' + h.def + '</span><span class="rc-stat">SPD ' + h.spd + '</span></div></div>';
+  }).join('');
+  var pp = document.getElementById('party-preview');
+  pp.innerHTML = '';
+  for (var i = 0; i < 4; i++) {
+    var hero = picked[i] ? HEROES.find(function(h){return h.id===picked[i];}) : null;
+    pp.innerHTML += '<div class="pp-slot ' + (hero?'filled':'') + '">' + (hero?hero.emoji:'') + '</div>';
+  }
+  var btn = document.getElementById('btn-start');
   btn.disabled = picked.length !== 4;
-  btn.textContent = picked.length === 4 ? 'Start Quest! ⚔️' : `Kies nog ${4-picked.length} held${4-picked.length===1?'':'en'}`;
+  btn.textContent = picked.length === 4 ? 'Start! ⚔️' : 'Kies nog ' + (4-picked.length) + ' held' + (4-picked.length===1?'':'en');
 }
 function togglePick(id) {
-  let idx = picked.indexOf(id);
+  if (storyState.unlockedIds.indexOf(id) === -1) return;
+  var idx = picked.indexOf(id);
   if (idx >= 0) picked.splice(idx, 1);
   else if (picked.length < 4) picked.push(id);
   renderRoster();
 }
 
-// ===== BATTLE INIT =====
+// ===== BATTLE ENGINE =====
 function makeFighter(data, isEnemy) {
-  return {
-    ...data, maxHp: data.hp, maxMp: data.mp||0, curHp: data.hp, curMp: data.mp||0,
-    isEnemy, alive: true, statuses: [], defending: false, shield: false,
-    atkMod: 0, defMod: 0
-  };
+  return { id:data.id, name:data.name, emoji:data.emoji, hp:data.hp, mp:data.mp||0, atk:data.atk, def:data.def, spd:data.spd||10, spc:data.spc||10,
+    maxHp:data.hp, maxMp:data.mp||0, curHp:data.hp, curMp:data.mp||0, moves:data.moves||[], boss:data.boss||false,
+    isEnemy:isEnemy, alive:true, statuses:[], defending:false, shield:false, atkMod:0, defMod:0 };
 }
-function startGame() {
-  G.party = picked.map(id => makeFighter(HEROES.find(h=>h.id===id), false));
-  G.encounters = generateEncounters();
-  G.battleNum = 0;
-  G.items = { potion: 3, elixir: 2 };
-  nextBattle();
-}
-function nextBattle() {
-  G.battleNum++;
-  G.enemies = G.encounters[G.battleNum-1].map(e => makeFighter(e, true));
-  G.log = [];
-  G.phase = 'battle';
-  G.party.forEach(p => { p.defending = false; p.shield = false; p.statuses = []; p.atkMod = 0; p.defMod = 0; });
-  showScreen('battle-screen');
-  document.getElementById('battle-label').textContent = `Battle ${G.battleNum}/5`;
-  buildTurnOrder();
-  renderBattle();
-  nextTurn();
-}
-
-// ===== TURN ORDER =====
 function buildTurnOrder() {
-  let all = [...G.party.filter(f=>f.alive), ...G.enemies.filter(f=>f.alive)];
-  G.turnOrder = all.sort((a,b) => (b.spd||0) - (a.spd||0));
+  var all = G.party.filter(function(f){return f.alive;}).concat(G.enemies.filter(function(f){return f.alive;}));
+  G.turnOrder = all.sort(function(a,b){return (b.spd||0)-(a.spd||0);});
   G.turnIdx = -1;
 }
 function nextTurn() {
   G.turnIdx++;
   if (checkBattleEnd()) return;
   if (G.turnIdx >= G.turnOrder.length) { buildTurnOrder(); G.turnIdx = 0; }
-  let cur = G.turnOrder[G.turnIdx];
+  var cur = G.turnOrder[G.turnIdx];
   if (!cur || !cur.alive) { nextTurn(); return; }
-  // Process statuses
   cur.defending = false;
-  let skipTurn = false;
-  cur.statuses = cur.statuses.filter(s => {
+  var skipTurn = false;
+  cur.statuses = cur.statuses.filter(function(s) {
     s.turns--;
-    if (s.type === 'burn') {
-      let dmg = Math.floor(cur.maxHp * 0.08);
-      cur.curHp = Math.max(0, cur.curHp - dmg);
-      addLog(`${cur.emoji} ${cur.name} neemt ${dmg} brandschade! 🔥`, 'dmg');
-      if (cur.curHp <= 0) { cur.alive = false; addLog(`${cur.emoji} ${cur.name} is verslagen!`, 'info'); }
-    }
-    if (s.type === 'stun') { skipTurn = true; addLog(`${cur.emoji} ${cur.name} is gestund en slaat een beurt over!`, 'info'); }
-    if (s.type === 'confuse' && !cur.isEnemy) { if (Math.random() < 0.4) { skipTurn = true; addLog(`${cur.emoji} ${cur.name} is verward en slaat zichzelf!`, 'dmg'); cur.curHp = Math.max(0, cur.curHp - 10); }}
+    if (s.type === 'burn') { var dmg = Math.floor(cur.maxHp * 0.08); cur.curHp = Math.max(0, cur.curHp - dmg); addLog(cur.emoji + ' ' + cur.name + ' neemt ' + dmg + ' brandschade! 🔥', 'dmg'); if (cur.curHp <= 0) { cur.alive = false; addLog(cur.emoji + ' ' + cur.name + ' is verslagen!', 'info'); } }
+    if (s.type === 'stun') { skipTurn = true; addLog(cur.emoji + ' ' + cur.name + ' is gestund!', 'info'); }
+    if (s.type === 'confuse' && !cur.isEnemy && Math.random() < 0.4) { skipTurn = true; addLog(cur.emoji + ' ' + cur.name + ' is verward!', 'dmg'); cur.curHp = Math.max(0, cur.curHp - 10); }
     return s.turns > 0;
   });
   if (!cur.alive) { renderBattle(); nextTurn(); return; }
-  if (skipTurn) { renderBattle(); setTimeout(()=>nextTurn(), 600); return; }
+  if (skipTurn) { renderBattle(); setTimeout(nextTurn, 600); return; }
   renderBattle();
-  if (cur.isEnemy) { setTimeout(()=>enemyAI(cur), 700); }
-  else { showActions(cur); }
+  if (cur.isEnemy) setTimeout(function(){enemyAI(cur);}, 700);
+  else showActions(cur);
 }
-
-// ===== ENEMY AI =====
 function enemyAI(enemy) {
-  let targets = G.party.filter(f => f.alive);
+  var targets = G.party.filter(function(f){return f.alive;});
   if (!targets.length) return;
-  let move = enemy.moves[Math.floor(Math.random() * enemy.moves.length)];
+  var move = enemy.moves[Math.floor(Math.random() * enemy.moves.length)];
   executeMove(enemy, move, targets);
 }
 
 // ===== MOVE EXECUTION =====
 function executeMove(user, move, potentialTargets, specificTarget) {
-  let t = move.type;
+  var t = move.type;
   if (t === 'atk') {
-    let target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
-    let dmg = calcDamage(user, target, move);
+    var target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
+    var dmg = calcDamage(user, target, move);
     applyDamage(target, dmg);
-    addLog(`${user.emoji} ${user.name} gebruikt ${move.name} op ${target.emoji} ${target.name} voor ${dmg} schade!`, 'dmg');
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + ' → ' + target.emoji + ' ' + target.name + ' (' + dmg + ' dmg)', 'dmg');
     if (move.effect === 'burn') applyStatus(target, 'burn', 3);
     if (move.effect === 'stun') applyStatus(target, 'stun', 1);
     if (move.effect === 'confuse') applyStatus(target, 'confuse', 2);
-    if (move.effect === 'def_down') { target.defMod -= 5; addLog(`${target.name}'s DEF daalt!`, 'buff'); }
-    if (move.effect === 'heal_self') { let h = move.heal||15; user.curHp = Math.min(user.maxHp, user.curHp + h); addLog(`${user.name} heelt ${h} HP!`, 'heal'); }
+    if (move.effect === 'def_down') { target.defMod -= 5; addLog(target.name + ' DEF ⬇', 'buff'); }
+    if (move.effect === 'heal_self') { var h = move.heal||15; user.curHp = Math.min(user.maxHp, user.curHp + h); addLog(user.name + ' heelt ' + h + ' HP', 'heal'); }
   } else if (t === 'atk_all') {
-    addLog(`${user.emoji} ${user.name} gebruikt ${move.name}!`, 'info');
-    potentialTargets.forEach(tgt => {
-      if (!tgt.alive) return;
-      let dmg = calcDamage(user, tgt, move);
-      applyDamage(tgt, dmg);
-      addLog(`  → ${tgt.emoji} ${tgt.name} neemt ${dmg} schade!`, 'dmg');
-      if (move.effect === 'burn') applyStatus(tgt, 'burn', 3);
-    });
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + '!', 'info');
+    potentialTargets.forEach(function(tgt) { if (!tgt.alive) return; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog('  → ' + tgt.emoji + ' ' + tgt.name + ' (' + dmg + ')', 'dmg'); if (move.effect === 'burn') applyStatus(tgt, 'burn', 3); });
   } else if (t === 'atk_multi') {
-    addLog(`${user.emoji} ${user.name} gebruikt ${move.name}!`, 'info');
-    for (let i = 0; i < (move.hits||3); i++) {
-      let alive = potentialTargets.filter(f=>f.alive);
-      if (!alive.length) break;
-      let tgt = alive[Math.floor(Math.random()*alive.length)];
-      let dmg = calcDamage(user, tgt, move);
-      applyDamage(tgt, dmg);
-      addLog(`  Hit ${i+1}! ${tgt.emoji} ${tgt.name} neemt ${dmg} schade!`, 'dmg');
-    }
+    addLog(user.emoji + ' ' + user.name + ' → ' + move.name + '!', 'info');
+    for (var i = 0; i < (move.hits||3); i++) { var alive = potentialTargets.filter(function(f){return f.alive;}); if (!alive.length) break; var tgt = alive[Math.floor(Math.random()*alive.length)]; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog('  Hit ' + (i+1) + '! ' + tgt.emoji + ' (' + dmg + ')', 'dmg'); }
   } else if (t === 'atk_random') {
-    let all = [...G.party.filter(f=>f.alive), ...G.enemies.filter(f=>f.alive)].filter(f=>f!==user);
-    let tgt = all[Math.floor(Math.random()*all.length)];
-    let dmg = calcDamage(user, tgt, move);
-    applyDamage(tgt, dmg);
-    addLog(`${user.emoji} ${user.name} gebruikt ${move.name} op ${tgt.emoji} ${tgt.name} voor ${dmg}!`, 'dmg');
+    var all = G.party.filter(function(f){return f.alive;}).concat(G.enemies.filter(function(f){return f.alive;})).filter(function(f){return f!==user;});
+    var tgt = all[Math.floor(Math.random()*all.length)]; var dmg = calcDamage(user, tgt, move); applyDamage(tgt, dmg); addLog(user.emoji + ' ' + move.name + ' → ' + tgt.emoji + ' (' + dmg + ')', 'dmg');
   } else if (t === 'heal') {
-    let target = specificTarget;
-    let heal = move.power + Math.floor(user.spc * 0.5);
-    target.curHp = Math.min(target.maxHp, target.curHp + heal);
-    addLog(`${user.emoji} ${user.name} heelt ${target.emoji} ${target.name} voor ${heal} HP!`, 'heal');
+    var target = specificTarget; var heal = move.power + Math.floor(user.spc * 0.5); target.curHp = Math.min(target.maxHp, target.curHp + heal); addLog(user.emoji + ' heelt ' + target.emoji + ' +' + heal + ' HP', 'heal');
   } else if (t === 'heal_all') {
-    G.party.filter(f=>f.alive).forEach(f => {
-      let heal = move.power + Math.floor(user.spc * 0.3);
-      f.curHp = Math.min(f.maxHp, f.curHp + heal);
-    });
-    addLog(`${user.emoji} ${user.name} heelt de hele party met ${move.name}!`, 'heal');
+    G.party.filter(function(f){return f.alive;}).forEach(function(f){ var heal = move.power + Math.floor(user.spc * 0.3); f.curHp = Math.min(f.maxHp, f.curHp + heal); }); addLog(user.emoji + ' ' + move.name + ' — party geheeld!', 'heal');
   } else if (t === 'heal_self') {
-    user.curHp = Math.min(user.maxHp, user.curHp + move.power);
-    addLog(`${user.emoji} ${user.name} herstelt ${move.power} HP!`, 'heal');
+    user.curHp = Math.min(user.maxHp, user.curHp + move.power); addLog(user.emoji + ' herstelt ' + move.power + ' HP', 'heal');
   } else if (t === 'buff') {
-    if (move.effect === 'atk_up') { user.atkMod += 8; addLog(`${user.emoji} ${user.name}'s ATK stijgt!`, 'buff'); }
-    if (move.effect === 'shield') { user.shield = true; addLog(`${user.emoji} ${user.name} is beschermd!`, 'buff'); }
+    if (move.effect === 'atk_up') { user.atkMod += 8; addLog(user.emoji + ' ATK ⬆', 'buff'); }
+    if (move.effect === 'shield') { user.shield = true; addLog(user.emoji + ' is beschermd! ✨', 'buff'); }
   } else if (t === 'buff_all') {
-    G.party.filter(f=>f.alive).forEach(f => {
-      if (move.effect === 'atk_up') { f.atkMod += 6; }
-      if (move.effect === 'shield') { f.shield = true; }
-    });
-    addLog(`${user.emoji} ${user.name} buffed de hele party met ${move.name}!`, 'buff');
+    G.party.filter(function(f){return f.alive;}).forEach(function(f){ if (move.effect === 'atk_up') f.atkMod += 6; if (move.effect === 'shield') f.shield = true; }); addLog(user.emoji + ' ' + move.name + ' — party gebuffed!', 'buff');
   } else if (t === 'debuff') {
-    let target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
-    if (move.effect === 'def_down') { target.defMod -= 6; addLog(`${user.emoji} ${user.name} verlaagt ${target.name}'s DEF!`, 'buff'); }
+    var target = specificTarget || potentialTargets[Math.floor(Math.random()*potentialTargets.length)];
+    if (move.effect === 'def_down') { target.defMod -= 6; addLog(user.emoji + ' verlaagt ' + target.name + ' DEF', 'buff'); }
     if (move.effect === 'confuse') applyStatus(target, 'confuse', 2);
     if (move.effect === 'stun') applyStatus(target, 'stun', 1);
   } else if (t === 'debuff_all') {
-    potentialTargets.forEach(tgt => {
-      if (move.effect === 'confuse') applyStatus(tgt, 'confuse', 2);
-    });
-    addLog(`${user.emoji} ${user.name} gebruikt ${move.name}!`, 'buff');
+    potentialTargets.forEach(function(tgt){ if (move.effect === 'confuse') applyStatus(tgt, 'confuse', 2); }); addLog(user.emoji + ' ' + move.name + '!', 'buff');
   }
   if (move.cost) user.curMp = Math.max(0, (user.curMp||0) - move.cost);
   renderBattle();
-  setTimeout(() => nextTurn(), 800);
+  setTimeout(nextTurn, 800);
 }
-
 function calcDamage(atk, def, move) {
-  let base = move.power + (atk.atk||0) + (atk.atkMod||0);
-  let defense = Math.max(0, (def.def||0) + (def.defMod||0));
+  var base = move.power + (atk.atk||0) + (atk.atkMod||0);
+  var defense = Math.max(0, (def.def||0) + (def.defMod||0));
   if (def.defending) defense *= 2;
   if (def.shield) { def.shield = false; return Math.floor(base * 0.15); }
-  let dmg = Math.max(1, Math.floor(base - defense * 0.6));
-  let crit = Math.random() < (0.1 + (move.crit_bonus||0)/100);
-  if (crit) { dmg = Math.floor(dmg * 1.6); addLog('CRITICAL HIT! 💥', 'info'); }
+  var dmg = Math.max(1, Math.floor(base - defense * 0.6));
+  var crit = Math.random() < (0.1 + (move.crit_bonus||0)/100);
+  if (crit) { dmg = Math.floor(dmg * 1.6); addLog('CRITICAL! 💥', 'info'); }
   dmg += Math.floor(Math.random() * 6) - 3;
   return Math.max(1, dmg);
 }
 function applyDamage(target, dmg) {
   target.curHp = Math.max(0, target.curHp - dmg);
-  if (target.curHp <= 0) { target.alive = false; addLog(`💀 ${target.emoji} ${target.name} is verslagen!`, 'info'); }
-  // visual hit
-  let el = document.getElementById('f-' + (target.id||target.name));
-  if (el) el.classList.add('hit');
-  setTimeout(() => { if (el) el.classList.remove('hit'); }, 300);
+  if (target.curHp <= 0) { target.alive = false; addLog('💀 ' + target.emoji + ' ' + target.name + ' verslagen!', 'info'); }
+  var el = document.getElementById('f-' + (target.id||target.name));
+  if (el) { el.classList.add('hit'); setTimeout(function(){if(el)el.classList.remove('hit');}, 300); }
 }
 function applyStatus(target, type, turns) {
-  if (target.statuses.find(s=>s.type===type)) return;
-  target.statuses.push({ type, turns });
-  let labels = {burn:'🔥 Brand', stun:'⚡ Stun', confuse:'🌀 Verward', shield:'🛡️ Shield'};
-  addLog(`${target.name} is nu ${labels[type]||type}!`, 'buff');
+  if (target.statuses.find(function(s){return s.type===type;})) return;
+  target.statuses.push({type:type,turns:turns});
+  var labels = {burn:'🔥',stun:'⚡',confuse:'🌀'};
+  addLog(target.name + ' → ' + (labels[type]||type), 'buff');
 }
 
-// ===== BATTLE END CHECK =====
+// ===== BATTLE END =====
 function checkBattleEnd() {
-  if (G.party.every(f => !f.alive)) {
-    setTimeout(() => {
+  if (G.party.every(function(f){return !f.alive;})) {
+    setTimeout(function() {
       showScreen('result-screen');
       document.getElementById('result-title').textContent = '💀 Game Over';
-      document.getElementById('result-sub').textContent = `Je bent verslagen in battle ${G.battleNum}/5. De chaos was te sterk.`;
+      document.getElementById('result-sub').textContent = storyState.mode === 'story' ? 'Je bent verslagen in Chapter ' + (storyState.chapter+1) + '. Probeer het opnieuw!' : 'De chaos was te sterk.';
     }, 1000);
     return true;
   }
-  if (G.enemies.every(f => !f.alive)) {
-    setTimeout(() => {
-      if (G.battleNum >= 5) {
-        showScreen('result-screen');
-        document.getElementById('result-title').textContent = '🏆 Victory!';
-        document.getElementById('result-sub').textContent = 'Je hebt alle 5 battles overleefd! De ultieme WidR kampioen!';
-      } else {
-        // Heal party between battles
-        G.party.forEach(p => {
-          if (p.alive) { p.curHp = Math.min(p.maxHp, p.curHp + Math.floor(p.maxHp * 0.3)); p.curMp = Math.min(p.maxMp, (p.curMp||0) + 15); }
-        });
-        // Revive dead with 30% hp
-        G.party.forEach(p => { if (!p.alive) { p.alive = true; p.curHp = Math.floor(p.maxHp * 0.3); }});
-        showScreen('transition-screen');
-        document.getElementById('trans-title').textContent = `Battle ${G.battleNum} gewonnen! ⚔️`;
-        document.getElementById('trans-sub').textContent = `Je party herstelt. Volgende battle: ${G.battleNum+1}/5`;
-        let tp = document.getElementById('trans-party');
-        tp.innerHTML = G.party.map(p => `
-          <div class="tp-card"><div class="tp-emoji">${p.emoji}</div>
-          <div class="tp-name">${p.name}</div>
-          <div class="tp-hp" style="color:${p.alive?'var(--mint)':'var(--coral)'}">${p.curHp}/${p.maxHp} HP</div></div>
-        `).join('');
+  if (G.enemies.every(function(f){return !f.alive;})) {
+    setTimeout(function() {
+      if (storyState.mode === 'story') {
+        // Heal between story battles
+        G.party.forEach(function(p){ if (p.alive) { p.curHp = Math.min(p.maxHp, p.curHp + Math.floor(p.maxHp * 0.3)); p.curMp = Math.min(p.maxMp, (p.curMp||0) + 15); } });
+        G.party.forEach(function(p){ if (!p.alive) { p.alive = true; p.curHp = Math.floor(p.maxHp * 0.3); }});
         G.items.potion = Math.min(5, G.items.potion + 1);
+        storyState.battleIdx++;
+        var ch = CHAPTERS[storyState.chapter];
+        if (storyState.battleIdx >= ch.battles.length) {
+          storyState.phase = 'dialogue_outro';
+          currentDialogues = ch.dialogues.outro;
+          dialogueIdx = 0;
+          showScreen('dialogue-screen');
+          showDialogue();
+        } else {
+          showTransition();
+        }
+      } else {
+        freePlayBattleWon();
       }
     }, 1000);
     return true;
   }
   return false;
 }
+function showTransition() {
+  showScreen('transition-screen');
+  var ch = CHAPTERS[storyState.chapter];
+  var nextBattle = ch.battles[storyState.battleIdx];
+  document.getElementById('trans-title').textContent = 'Victory! ⚔️';
+  document.getElementById('trans-sub').textContent = nextBattle ? 'Volgende: ' + nextBattle.label : 'Voorbereiden...';
+  document.getElementById('trans-party').innerHTML = G.party.map(function(p) {
+    return '<div class="tp-card"><div class="tp-emoji">' + p.emoji + '</div><div class="tp-name">' + p.name + '</div><div class="tp-hp" style="color:' + (p.alive?'var(--mint)':'var(--coral)') + '">' + p.curHp + '/' + p.maxHp + '</div></div>';
+  }).join('');
+  document.getElementById('btn-next').onclick = function() {
+    if (storyState.mode === 'story') {
+      storyState.phase = 'dialogue_midBoss_done';
+      startStoryBattle();
+    }
+  };
+  saveGame();
+}
 
-// ===== UI: ACTIONS =====
+// ===== FREE PLAY BATTLES =====
+var freePlayBattle = 0;
+var FREE_ENEMIES = [
+  [{name:'Sticker Spammer',emoji:'📱',hp:55,atk:16,def:7,spd:14,spc:8,moves:[{name:'Spam',type:'atk',power:18},{name:'Flood',type:'atk_all',power:10}]},{name:'Emoji Bot',emoji:'🤖',hp:45,atk:12,def:5,spd:16,spc:10,moves:[{name:'Blast',type:'atk',power:16}]}],
+  [{name:'Ragebait Troll',emoji:'🧌',hp:70,atk:20,def:10,spd:12,spc:8,moves:[{name:'Provoke',type:'atk',power:24},{name:'Flame',type:'atk',power:28,effect:'burn'}]},{name:'Blue Tick Ghost',emoji:'👻',hp:65,atk:22,def:8,spd:18,spc:10,moves:[{name:'Seen',type:'atk',power:30},{name:'Ghost',type:'debuff',effect:'stun'}]}],
+  [{name:'Meme Overlord',emoji:'🎭',hp:110,atk:26,def:14,spd:13,spc:20,moves:[{name:'Meme Beam',type:'atk',power:36},{name:'Viral',type:'atk_all',power:22},{name:'Deep Fried',type:'atk',power:48,effect:'burn'}]}],
+  [{name:'GC Demon',emoji:'👹',hp:130,atk:30,def:16,spd:14,spc:16,moves:[{name:'Chat Nuke',type:'atk_all',power:26},{name:'Demonic Spam',type:'atk',power:42},{name:'Soul Drain',type:'atk',power:32,effect:'heal_self',heal:18}]},{name:'Algorithm Beast',emoji:'🦾',hp:120,atk:28,def:18,spd:16,spc:20,moves:[{name:'Data Strike',type:'atk',power:38},{name:'Override',type:'atk_all',power:22}]}],
+  [{name:'The Unranked',emoji:'❓',hp:200,atk:34,def:18,spd:16,spc:26,boss:true,moves:[{name:'Mystery',type:'atk',power:46},{name:'Rank Destroyer',type:'atk_all',power:28},{name:'Void Shield',type:'buff',effect:'shield',target:'self'},{name:'Oblivion',type:'atk',power:62,effect:'stun'}]}]
+];
+function startFreePlayBattles() {
+  G.party = picked.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+  freePlayBattle = 0;
+  G.items = {potion:3,elixir:2};
+  nextFreePlayBattle();
+}
+function nextFreePlayBattle() {
+  if (freePlayBattle >= FREE_ENEMIES.length) {
+    showScreen('result-screen');
+    document.getElementById('result-title').textContent = '🏆 Victory!';
+    document.getElementById('result-sub').textContent = 'Je hebt alle 5 battles overwonnen!';
+    return;
+  }
+  var mod = diffMods[difficulty];
+  G.enemies = FREE_ENEMIES[freePlayBattle].map(function(e){
+    var s = JSON.parse(JSON.stringify(e)); s.hp=Math.round(s.hp*mod.hp); s.atk=Math.round(s.atk*mod.atk); s.def=Math.round(s.def*mod.def); return makeFighter(s,true);
+  });
+  G.log = [];
+  showScreen('battle-screen');
+  document.getElementById('battle-label').textContent = 'Battle ' + (freePlayBattle+1) + '/5';
+  buildTurnOrder();
+  renderBattle();
+  nextTurn();
+}
+function freePlayBattleWon() {
+  freePlayBattle++;
+  G.party.forEach(function(p){if(p.alive){p.curHp=Math.min(p.maxHp,p.curHp+Math.floor(p.maxHp*0.3));p.curMp=Math.min(p.maxMp,(p.curMp||0)+15);}});
+  G.party.forEach(function(p){if(!p.alive){p.alive=true;p.curHp=Math.floor(p.maxHp*0.3);}});
+  G.items.potion = Math.min(5, G.items.potion + 1);
+  if (freePlayBattle >= FREE_ENEMIES.length) { nextFreePlayBattle(); return; }
+  showScreen('transition-screen');
+  document.getElementById('trans-title').textContent = 'Battle ' + freePlayBattle + ' gewonnen!';
+  document.getElementById('trans-sub').textContent = 'Volgende: Battle ' + (freePlayBattle+1) + '/5';
+  document.getElementById('trans-party').innerHTML = G.party.map(function(p){return '<div class="tp-card"><div class="tp-emoji">'+p.emoji+'</div><div class="tp-name">'+p.name+'</div><div class="tp-hp" style="color:'+(p.alive?'var(--mint)':'var(--coral)')+'">'+p.curHp+'/'+p.maxHp+'</div></div>';}).join('');
+  document.getElementById('btn-next').onclick = nextFreePlayBattle;
+}
+
+// ===== UI ACTIONS =====
 function showActions(fighter) {
-  let f = fighter || G.turnOrder[G.turnIdx];
+  var f = fighter || G.turnOrder[G.turnIdx];
   if (!f || f.isEnemy) return;
   document.getElementById('moves-panel').classList.remove('active');
   document.getElementById('target-panel').classList.remove('active');
   document.getElementById('items-panel').classList.remove('active');
-  let ap = document.getElementById('action-panel');
+  var ap = document.getElementById('action-panel');
   ap.style.display = 'flex';
-  document.getElementById('action-title').textContent = `${f.emoji} ${f.name} — Kies actie`;
-  document.getElementById('action-grid').innerHTML = `
-    <button class="act-btn btn-atk" onclick="showMoves('atk')">⚔️ Aanval</button>
-    <button class="act-btn btn-spc" onclick="showMoves('spc')">✨ Special<span class="cost">MP: ${f.curMp||0}</span></button>
-    <button class="act-btn btn-def" onclick="doDefend()">🛡️ Verdedig</button>
-    <button class="act-btn btn-itm" onclick="showItems()">🧪 Items<span class="cost">${G.items.potion+G.items.elixir} over</span></button>
-  `;
+  document.getElementById('action-title').textContent = f.emoji + ' ' + f.name + ' — Kies actie';
+  document.getElementById('action-grid').innerHTML = '<button class="act-btn btn-atk" onclick="showMoves(\'atk\')">⚔️ Aanval</button><button class="act-btn btn-spc" onclick="showMoves(\'spc\')">✨ Special<span class="cost">MP: '+(f.curMp||0)+'</span></button><button class="act-btn btn-def" onclick="doDefend()">🛡️ Verdedig</button><button class="act-btn btn-itm" onclick="showItems()">🧪 Items<span class="cost">'+(G.items.potion+G.items.elixir)+' over</span></button>';
 }
 function showMoves(type) {
-  let f = G.turnOrder[G.turnIdx];
+  var f = G.turnOrder[G.turnIdx];
   document.getElementById('action-panel').style.display = 'none';
-  let mp = document.getElementById('moves-panel');
-  mp.classList.add('active');
-  let moves = type === 'atk' ? [f.moves[0]] : f.moves.slice(1);
-  document.getElementById('moves-list').innerHTML = moves.map((m,i) => {
-    let canUse = (m.cost||0) <= (f.curMp||0);
-    let realIdx = type === 'atk' ? 0 : i+1;
-    return `<button class="move-btn" ${canUse?'':`disabled`} onclick="selectMove(${realIdx})">
-      <span>${m.name} <small style="opacity:.6">— ${m.desc||''}</small></span>
-      ${m.cost?`<span class="mv-cost">${m.cost} MP</span>`:''}
-    </button>`;
+  document.getElementById('moves-panel').classList.add('active');
+  var moves = type === 'atk' ? [f.moves[0]] : f.moves.slice(1);
+  document.getElementById('moves-list').innerHTML = moves.map(function(m, i) {
+    var canUse = (m.cost||0) <= (f.curMp||0);
+    var realIdx = type === 'atk' ? 0 : i+1;
+    return '<button class="move-btn" '+(canUse?'':'disabled')+' onclick="selectMove('+realIdx+')"><span>'+m.name+' <small style="opacity:.5">'+((m.desc||''))+'</small></span>'+(m.cost?'<span class="mv-cost">'+m.cost+' MP</span>':'')+'</button>';
   }).join('');
 }
 function selectMove(idx) {
-  let f = G.turnOrder[G.turnIdx];
-  let move = f.moves[idx];
-  G.selectedMove = move;
-  if (['atk','debuff'].includes(move.type)) { showTargets('enemy'); }
-  else if (move.type === 'heal') { showTargets('ally'); }
-  else { executePlayerMove(move, null); }
+  var f = G.turnOrder[G.turnIdx];
+  G.selectedMove = f.moves[idx];
+  if (['atk','debuff'].indexOf(G.selectedMove.type) !== -1) showTargets('enemy');
+  else if (G.selectedMove.type === 'heal') showTargets('ally');
+  else executePlayerMove(G.selectedMove, null);
 }
 function showTargets(side) {
   document.getElementById('moves-panel').classList.remove('active');
-  let tp = document.getElementById('target-panel');
-  tp.classList.add('active');
-  document.getElementById('target-title').textContent = side==='enemy' ? 'Kies vijand' : 'Kies bondgenoot';
-  let targets = side === 'enemy' ? G.enemies.filter(f=>f.alive) : G.party.filter(f=>f.alive);
-  document.getElementById('target-list').innerHTML = targets.map((t,i) => `
-    <button class="tgt-btn" onclick="executePlayerMove(G.selectedMove, ${side==='enemy'?'G.enemies':'G.party'}.filter(f=>f.alive)[${i}])">
-      ${t.emoji} ${t.name} (${t.curHp}/${t.maxHp||t.hp} HP)
-    </button>
-  `).join('');
+  document.getElementById('target-panel').classList.add('active');
+  document.getElementById('target-title').textContent = side==='enemy'?'Kies vijand':'Kies bondgenoot';
+  var targets = side==='enemy' ? G.enemies.filter(function(f){return f.alive;}) : G.party.filter(function(f){return f.alive;});
+  document.getElementById('target-list').innerHTML = targets.map(function(t,i){
+    return '<button class="tgt-btn" onclick="executePlayerMove(G.selectedMove,'+(side==='enemy'?'G.enemies':'G.party')+'.filter(function(f){return f.alive;})['+i+'])">'+t.emoji+' '+t.name+' ('+t.curHp+'/'+t.maxHp+' HP)</button>';
+  }).join('');
 }
 function executePlayerMove(move, target) {
   document.getElementById('moves-panel').classList.remove('active');
   document.getElementById('target-panel').classList.remove('active');
   document.getElementById('items-panel').classList.remove('active');
   document.getElementById('action-panel').style.display = 'none';
-  let f = G.turnOrder[G.turnIdx];
-  let enemies = G.enemies.filter(e=>e.alive);
-  let allies = G.party.filter(p=>p.alive);
+  var f = G.turnOrder[G.turnIdx];
+  var enemies = G.enemies.filter(function(e){return e.alive;});
+  var allies = G.party.filter(function(p){return p.alive;});
   executeMove(f, move, f.isEnemy ? allies : enemies, target);
 }
 function doDefend() {
-  let f = G.turnOrder[G.turnIdx];
+  var f = G.turnOrder[G.turnIdx];
   f.defending = true;
-  addLog(`${f.emoji} ${f.name} neemt een verdedigende houding aan! 🛡️`, 'info');
+  addLog(f.emoji + ' ' + f.name + ' verdedigt! 🛡️', 'info');
   document.getElementById('action-panel').style.display = 'none';
   renderBattle();
-  setTimeout(() => nextTurn(), 500);
+  setTimeout(nextTurn, 500);
 }
 function showItems() {
   document.getElementById('action-panel').style.display = 'none';
-  let ip = document.getElementById('items-panel');
-  ip.classList.add('active');
-  document.getElementById('items-list').innerHTML = `
-    <button class="move-btn" ${G.items.potion>0?'':'disabled'} onclick="useItem('potion')">
-      <span>🧪 Heal Potion — Heelt 50 HP</span><span class="mv-cost">${G.items.potion}x</span>
-    </button>
-    <button class="move-btn" ${G.items.elixir>0?'':'disabled'} onclick="useItem('elixir')">
-      <span>⚡ MP Elixir — Herstelt 25 MP</span><span class="mv-cost">${G.items.elixir}x</span>
-    </button>
-  `;
+  document.getElementById('items-panel').classList.add('active');
+  document.getElementById('items-list').innerHTML = '<button class="move-btn" '+(G.items.potion>0?'':'disabled')+' onclick="useItem(\'potion\')"><span>🧪 Heal Potion — 50 HP</span><span class="mv-cost">'+G.items.potion+'x</span></button><button class="move-btn" '+(G.items.elixir>0?'':'disabled')+' onclick="useItem(\'elixir\')"><span>⚡ MP Elixir — 25 MP</span><span class="mv-cost">'+G.items.elixir+'x</span></button>';
 }
 function useItem(type) {
   document.getElementById('items-panel').classList.remove('active');
-  // Show ally targets
   G.selectedAction = type;
-  let tp = document.getElementById('target-panel');
-  tp.classList.add('active');
+  document.getElementById('target-panel').classList.add('active');
   document.getElementById('target-title').textContent = 'Gebruik op wie?';
-  let targets = G.party.filter(f=>f.alive);
-  document.getElementById('target-list').innerHTML = targets.map((t,i) => `
-    <button class="tgt-btn" onclick="applyItem('${type}', ${i})">
-      ${t.emoji} ${t.name} (${t.curHp}/${t.maxHp} HP, ${t.curMp||0} MP)
-    </button>
-  `).join('');
+  var targets = G.party.filter(function(f){return f.alive;});
+  document.getElementById('target-list').innerHTML = targets.map(function(t,i){
+    return '<button class="tgt-btn" onclick="applyItem(\''+type+'\','+i+')">'+t.emoji+' '+t.name+' ('+t.curHp+'/'+t.maxHp+' HP, '+(t.curMp||0)+' MP)</button>';
+  }).join('');
 }
 function applyItem(type, idx) {
   document.getElementById('target-panel').classList.remove('active');
-  let target = G.party.filter(f=>f.alive)[idx];
-  if (type === 'potion') {
-    G.items.potion--;
-    let heal = 50;
-    target.curHp = Math.min(target.maxHp, target.curHp + heal);
-    addLog(`🧪 ${target.name} drinkt een Heal Potion en herstelt ${heal} HP!`, 'heal');
-  } else {
-    G.items.elixir--;
-    target.curMp = Math.min(target.maxMp, (target.curMp||0) + 25);
-    addLog(`⚡ ${target.name} drinkt een MP Elixir en herstelt 25 MP!`, 'heal');
-  }
+  var target = G.party.filter(function(f){return f.alive;})[idx];
+  if (type === 'potion') { G.items.potion--; target.curHp = Math.min(target.maxHp, target.curHp + 50); addLog('🧪 '+target.name+' +50 HP!', 'heal'); }
+  else { G.items.elixir--; target.curMp = Math.min(target.maxMp, (target.curMp||0) + 25); addLog('⚡ '+target.name+' +25 MP!', 'heal'); }
   renderBattle();
-  setTimeout(() => nextTurn(), 500);
+  setTimeout(nextTurn, 500);
 }
 
 // ===== RENDER =====
 function renderBattle() {
-  let ps = document.getElementById('party-side');
-  ps.innerHTML = G.party.map(f => renderFighter(f)).join('');
-  let es = document.getElementById('enemy-side');
-  es.innerHTML = G.enemies.map(f => renderFighter(f)).join('');
+  document.getElementById('party-side').innerHTML = G.party.map(renderFighter).join('');
+  document.getElementById('enemy-side').innerHTML = G.enemies.map(renderFighter).join('');
   renderLog();
 }
 function renderFighter(f) {
-  let hpPct = f.maxHp ? (f.curHp / f.maxHp * 100) : 0;
-  let hpClass = hpPct > 50 ? '' : hpPct > 25 ? 'mid' : 'low';
-  let mpPct = f.maxMp ? ((f.curMp||0) / f.maxMp * 100) : 0;
-  let cur = G.turnOrder[G.turnIdx];
-  let isActive = cur && cur === f;
-  let statIcons = f.statuses.map(s => {
-    let icons = {burn:'🔥',stun:'⚡',confuse:'🌀'};
-    return `<span class="status-icon">${icons[s.type]||'?'}</span>`;
-  }).join('');
-  return `<div class="fighter ${!f.alive?'ko':''} ${isActive?'active-turn':''}" id="f-${f.id||f.name}">
-    <span class="f-emoji">${f.emoji}</span>
-    <div class="f-info">
-      <div class="f-name">${f.name}${f.defending?' 🛡️':''}${f.shield?' ✨':''}</div>
-      <div class="f-hp-row">
-        <div class="f-hp-bar"><div class="f-hp-fill ${hpClass}" style="width:${hpPct}%"></div></div>
-        <span class="f-hp-text">${f.curHp}/${f.maxHp}</span>
-      </div>
-      ${f.maxMp ? `<div class="f-mp-row"><div class="f-mp-bar"><div class="f-mp-fill" style="width:${mpPct}%"></div></div><span class="f-mp-text">${f.curMp||0}/${f.maxMp} MP</span></div>` : ''}
-      <div class="f-status">${statIcons}</div>
-    </div>
-  </div>`;
+  var hpPct = f.maxHp ? (f.curHp / f.maxHp * 100) : 0;
+  var hpClass = hpPct > 50 ? '' : hpPct > 25 ? 'mid' : 'low';
+  var mpPct = f.maxMp ? ((f.curMp||0) / f.maxMp * 100) : 0;
+  var cur = G.turnOrder[G.turnIdx];
+  var isActive = cur && cur === f;
+  var statIcons = f.statuses.map(function(s){var icons={burn:'🔥',stun:'⚡',confuse:'🌀'};return '<span class="status-icon">'+(icons[s.type]||'?')+'</span>';}).join('');
+  return '<div class="fighter '+ (!f.alive?'ko':'') + ' ' + (isActive?'active-turn':'') + ' ' + (f.boss?'boss-fighter':'') + '" id="f-'+(f.id||f.name)+'">' +
+    '<span class="f-emoji">'+f.emoji+'</span><div class="f-info"><div class="f-name">'+f.name+(f.defending?' 🛡️':'')+(f.shield?' ✨':'')+'</div>' +
+    '<div class="f-hp-row"><div class="f-hp-bar"><div class="f-hp-fill '+hpClass+'" style="width:'+hpPct+'%"></div></div><span class="f-hp-text">'+f.curHp+'/'+f.maxHp+'</span></div>' +
+    (f.maxMp?'<div class="f-mp-row"><div class="f-mp-bar"><div class="f-mp-fill" style="width:'+mpPct+'%"></div></div><span class="f-mp-text">'+(f.curMp||0)+'/'+f.maxMp+'</span></div>':'') +
+    '<div class="f-status">'+statIcons+'</div></div></div>';
 }
 function renderLog() {
-  let box = document.getElementById('log-box');
-  box.innerHTML = G.log.slice(-8).map(l => `<div class="${l.cls}">${l.text}</div>`).join('');
+  var box = document.getElementById('log-box');
+  box.innerHTML = G.log.slice(-8).map(function(l){return '<div class="'+l.cls+'">'+l.text+'</div>';}).join('');
   box.scrollTop = box.scrollHeight;
 }
-function addLog(text, cls) {
-  G.log.push({ text, cls: cls||'info' });
-  renderLog();
-}
-
-// ===== SCREEN MANAGEMENT =====
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// ===== ADMIN MODE =====
-let customEnemies = [];
-function loadCustomEnemies() {
-  try {
-    let saved = localStorage.getItem('widr_rpg_custom_enemies');
-    if (saved) customEnemies = JSON.parse(saved);
-    customEnemies.forEach(e => { e._custom = true; });
-    // merge into pool (remove old customs first, then re-add)
-    for (let i = ENEMY_POOL.length - 1; i >= 0; i--) {
-      if (ENEMY_POOL[i]._custom) ENEMY_POOL.splice(i, 1);
-    }
-    customEnemies.forEach(e => ENEMY_POOL.push(e));
-  } catch(e) {}
-}
-function saveCustomEnemies() {
-  try {
-    localStorage.setItem('widr_rpg_custom_enemies', JSON.stringify(customEnemies));
-  } catch(e) {}
-}
-loadCustomEnemies();
-
-let adminEditIdx = -1;
-function openAdmin() {
-  let pw = prompt('🛡 Admin wachtwoord:');
-  if (!pw) return;
-  if (pw !== 'widr2026') { alert('Verkeerd wachtwoord!'); return; }
-  document.getElementById('admin-overlay').classList.add('active');
-  renderAdminList();
-  document.getElementById('admin-edit-col').innerHTML = '<div class="admin-placeholder">← Selecteer een vijand om te bewerken, of maak een nieuwe aan.</div>';
-}
-function closeAdmin() {
-  document.getElementById('admin-overlay').classList.remove('active');
-}
-function renderAdminList() {
-  let list = document.getElementById('admin-enemy-list');
-  list.innerHTML = ENEMY_POOL.map((e, i) => `
-    <div class="admin-enemy-item ${adminEditIdx===i?'selected':''}" onclick="editEnemy(${i})">
-      <span class="aei-emoji">${e.emoji}</span>
-      <div class="aei-info">
-        <div class="aei-name">${e.name}</div>
-        <div class="aei-meta">Tier ${e.tier} · HP ${e.hp} · ATK ${e.atk}</div>
-      </div>
-      ${e._custom?'<span class="aei-custom">CUSTOM</span>':''}
-    </div>
-  `).join('');
-}
-function editEnemy(idx) {
-  adminEditIdx = idx;
-  renderAdminList();
-  let col = document.getElementById('admin-edit-col');
-  let e = idx >= 0 ? JSON.parse(JSON.stringify(ENEMY_POOL[idx])) : {
-    name:'Nieuwe Vijand', emoji:'👾', hp:80, atk:20, def:10, spd:12, spc:10, tier:1, _custom:true,
-    moves:[{name:'Attack',type:'atk',power:25}]
-  };
-  col.innerHTML = `
-    <div class="admin-form" id="admin-form">
-      <div class="af-row">
-        <div class="af-field" style="flex:0.3"><label>Emoji</label><input id="af-emoji" value="${e.emoji}"></div>
-        <div class="af-field"><label>Naam</label><input id="af-name" value="${e.name}"></div>
-        <div class="af-field" style="flex:0.4"><label>Tier (1-5)</label><input type="number" id="af-tier" value="${e.tier}" min="1" max="5"></div>
-      </div>
-      <div class="af-row">
-        <div class="af-field"><label>HP</label><input type="number" id="af-hp" value="${e.hp}"></div>
-        <div class="af-field"><label>ATK</label><input type="number" id="af-atk" value="${e.atk}"></div>
-        <div class="af-field"><label>DEF</label><input type="number" id="af-def" value="${e.def}"></div>
-        <div class="af-field"><label>SPD</label><input type="number" id="af-spd" value="${e.spd}"></div>
-        <div class="af-field"><label>SPC</label><input type="number" id="af-spc" value="${e.spc||10}"></div>
-      </div>
-      <div class="af-section-title">Moves</div>
-      <div id="af-moves-container">
-        ${e.moves.map((m,mi) => renderMoveForm(m, mi)).join('')}
-      </div>
-      <button class="af-add-move" onclick="addMoveField()">+ Move toevoegen</button>
-      <div class="af-btn-row">
-        <button class="af-save" onclick="saveEnemy(${idx})">💾 Opslaan</button>
-        ${idx >= 0 && ENEMY_POOL[idx]._custom ? `<button class="af-delete" onclick="deleteEnemy(${idx})">🗑 Verwijderen</button>` : ''}
-        ${idx >= 0 && !ENEMY_POOL[idx]?._custom ? `<button class="af-save" onclick="duplicateEnemy(${idx})" style="background:linear-gradient(135deg,var(--purple),#6B3FA0);color:#fff">📋 Dupliceren</button>` : ''}
-      </div>
-    </div>
-  `;
-}
-function renderMoveForm(m, idx) {
-  return `<div class="af-move-card" id="af-move-${idx}">
-    <div class="af-move-header"><span>Move ${idx+1}</span><button class="af-move-del" onclick="removeMoveField(${idx})">✕</button></div>
-    <div class="af-move-row">
-      <input placeholder="Naam" value="${m.name||''}" class="af-mv-name">
-      <select class="af-mv-type">
-        <option value="atk" ${m.type==='atk'?'selected':''}>Single ATK</option>
-        <option value="atk_all" ${m.type==='atk_all'?'selected':''}>AOE ATK</option>
-        <option value="atk_multi" ${m.type==='atk_multi'?'selected':''}>Multi Hit</option>
-        <option value="debuff" ${m.type==='debuff'?'selected':''}>Debuff</option>
-        <option value="buff" ${m.type==='buff'?'selected':''}>Buff Self</option>
-        <option value="heal_self" ${m.type==='heal_self'?'selected':''}>Heal Self</option>
-      </select>
-    </div>
-    <div class="af-move-row">
-      <input type="number" placeholder="Power" value="${m.power||0}" class="af-mv-power">
-      <select class="af-mv-effect">
-        <option value="" ${!m.effect?'selected':''}>Geen effect</option>
-        <option value="burn" ${m.effect==='burn'?'selected':''}>🔥 Burn</option>
-        <option value="stun" ${m.effect==='stun'?'selected':''}>⚡ Stun</option>
-        <option value="confuse" ${m.effect==='confuse'?'selected':''}>🌀 Confuse</option>
-        <option value="def_down" ${m.effect==='def_down'?'selected':''}>⬇ DEF Down</option>
-        <option value="heal_self" ${m.effect==='heal_self'?'selected':''}>💚 Heal Self</option>
-        <option value="shield" ${m.effect==='shield'?'selected':''}>🛡 Shield</option>
-      </select>
-      <input type="number" placeholder="Hits" value="${m.hits||''}" class="af-mv-hits" style="max-width:60px" title="Multi-hit count">
-    </div>
-  </div>`;
-}
-function addMoveField() {
-  let container = document.getElementById('af-moves-container');
-  let idx = container.children.length;
-  container.insertAdjacentHTML('beforeend', renderMoveForm({name:'',type:'atk',power:20}, idx));
-}
-function removeMoveField(idx) {
-  let el = document.getElementById('af-move-'+idx);
-  if (el) el.remove();
-}
-function gatherEnemyFromForm() {
-  let movesContainer = document.getElementById('af-moves-container');
-  let moveCards = movesContainer.querySelectorAll('.af-move-card');
-  let moves = [];
-  moveCards.forEach(card => {
-    let name = card.querySelector('.af-mv-name').value.trim();
-    let type = card.querySelector('.af-mv-type').value;
-    let power = parseInt(card.querySelector('.af-mv-power').value)||0;
-    let effect = card.querySelector('.af-mv-effect').value || undefined;
-    let hits = parseInt(card.querySelector('.af-mv-hits').value)||undefined;
-    if (name) moves.push({ name, type, power, ...(effect?{effect}:{}), ...(hits?{hits}:{}) });
-  });
-  return {
-    name: document.getElementById('af-name').value.trim(),
-    emoji: document.getElementById('af-emoji').value.trim() || '👾',
-    hp: parseInt(document.getElementById('af-hp').value)||80,
-    atk: parseInt(document.getElementById('af-atk').value)||20,
-    def: parseInt(document.getElementById('af-def').value)||10,
-    spd: parseInt(document.getElementById('af-spd').value)||12,
-    spc: parseInt(document.getElementById('af-spc').value)||10,
-    tier: parseInt(document.getElementById('af-tier').value)||1,
-    _custom: true,
-    moves: moves.length ? moves : [{name:'Attack',type:'atk',power:20}]
-  };
-}
-function saveEnemy(idx) {
-  let enemy = gatherEnemyFromForm();
-  if (!enemy.name) { alert('Geef de vijand een naam!'); return; }
-  if (idx >= 0 && ENEMY_POOL[idx]._custom) {
-    ENEMY_POOL[idx] = enemy;
-    let ci = customEnemies.findIndex(c => c._editId === enemy._editId || c.name === ENEMY_POOL[idx]?.name);
-    if (ci < 0) ci = customEnemies.length;
-    customEnemies[ci] = enemy;
-  } else {
-    ENEMY_POOL.push(enemy);
-    customEnemies.push(enemy);
-    adminEditIdx = ENEMY_POOL.length - 1;
-  }
-  saveCustomEnemies();
-  renderAdminList();
-  editEnemy(adminEditIdx >= 0 ? adminEditIdx : ENEMY_POOL.length - 1);
-}
-function deleteEnemy(idx) {
-  if (!confirm(`"${ENEMY_POOL[idx].name}" verwijderen?`)) return;
-  let name = ENEMY_POOL[idx].name;
-  ENEMY_POOL.splice(idx, 1);
-  customEnemies = customEnemies.filter(c => c.name !== name);
-  saveCustomEnemies();
-  adminEditIdx = -1;
-  renderAdminList();
-  document.getElementById('admin-edit-col').innerHTML = '<div class="admin-placeholder">Vijand verwijderd.</div>';
-}
-function duplicateEnemy(idx) {
-  let copy = JSON.parse(JSON.stringify(ENEMY_POOL[idx]));
-  copy.name = copy.name + ' (Copy)';
-  copy._custom = true;
-  ENEMY_POOL.push(copy);
-  customEnemies.push(copy);
-  saveCustomEnemies();
-  adminEditIdx = ENEMY_POOL.length - 1;
-  renderAdminList();
-  editEnemy(adminEditIdx);
-}
+function addLog(text, cls) { G.log.push({text:text,cls:cls||'info'}); renderLog(); }
 
 // ===== INIT =====
-renderRoster();
-document.getElementById('btn-start-rpg').addEventListener('click', startGame);
-document.getElementById('btn-next-battle').addEventListener('click', nextBattle);
-document.getElementById('btn-admin').addEventListener('click', openAdmin);
+document.getElementById('btn-start').addEventListener('click', function() {
+  if (storyState.mode === 'free') startFreePlayBattles();
+  else {
+    G.party = picked.map(function(id){return makeFighter(HEROES.find(function(h){return h.id===id;}),false);});
+    showChapterIntro();
+  }
+});
+checkSave();
 </script>
 </body>
 </html>
