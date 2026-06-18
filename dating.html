@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WidR Love Story 💕</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a0a1e;--panel:rgba(40,15,50,0.92);--pink:#FF6B9D;--gold:#F5C518;--red:#E94560;--mint:#16C79A;--blue:#4A90D9;--purple:#845EC2;--text:#FAF3E0;--muted:rgba(250,243,224,0.5);--border:rgba(255,255,255,0.08)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+.screen{display:none;width:100vw;height:100vh;position:absolute;top:0;left:0;flex-direction:column}
+.screen.active{display:flex}
+button{font-family:inherit;cursor:pointer;border:none;transition:all .25s}
+button:hover{transform:translateY(-2px)}
+button:active{transform:translateY(0)}
+
+#title-screen{align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(180deg,#1a0a1e 0%,#2d1040 40%,#1a0a1e 100%)}
+.title-hearts{font-size:2rem;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.title-logo{font-size:2.8rem;font-weight:900;margin-bottom:4px;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.title-sub{color:var(--muted);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px}
+.title-cast{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;max-width:400px}
+.cast-chip{background:rgba(255,255,255,.05);padding:6px 14px;border-radius:20px;font-size:.7rem;font-weight:600;border:1px solid var(--border)}
+.start-btn{padding:16px 48px;border-radius:16px;background:linear-gradient(135deg,var(--pink),var(--red));color:white;font-weight:800;font-size:1rem;letter-spacing:1px;text-transform:uppercase;box-shadow:0 8px 30px rgba(255,107,157,0.3)}
+.start-btn:hover{box-shadow:0 12px 40px rgba(255,107,157,0.5)}
+
+#game-screen{flex-direction:column;background:linear-gradient(180deg,#12081a,#1a0a1e)}
+.game-top{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(0,0,0,.3)}
+.day-label{font-size:.7rem;color:var(--pink);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.time-label{font-size:.65rem;color:var(--muted);font-weight:600}
+.hearts-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.hb-item{display:flex;align-items:center;gap:3px;font-size:.6rem;font-weight:700;color:var(--muted);padding:3px 8px;border-radius:12px;background:rgba(255,255,255,.04)}
+.hb-item .hb-hearts{color:var(--pink)}
+
+.scene-area{flex:1;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.scene-bg{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.15;font-size:8rem;pointer-events:none}
+.scene-chars{display:flex;justify-content:center;gap:30px;padding:20px 40px;align-items:flex-end;min-height:200px}
+.scene-char{text-align:center;transition:all .4s;opacity:.4;transform:scale(.85)}
+.scene-char.active{opacity:1;transform:scale(1)}
+.scene-char.highlight{opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 20px rgba(255,107,157,0.4))}
+.sc-emoji{font-size:3.5rem;display:block}
+.sc-name{font-size:.65rem;font-weight:700;margin-top:4px;letter-spacing:1px}
+.sc-hearts-display{font-size:.6rem;color:var(--pink);margin-top:2px}
+
+.dialogue-area{background:var(--panel);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:20px 28px;min-height:180px;display:flex;flex-direction:column}
+.narrator-text{font-size:.8rem;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:12px}
+.speaker-name{font-size:.65rem;color:var(--pink);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.dialogue-text{font-size:.9rem;line-height:1.7;margin-bottom:14px;min-height:40px}
+.choices{display:flex;flex-direction:column;gap:6px}
+.choice-btn{padding:12px 18px;border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-size:.8rem;font-weight:600;text-align:left;border:1px solid var(--border);line-height:1.4}
+.choice-btn:hover{background:rgba(255,107,157,.1);border-color:rgba(255,107,157,.3)}
+.continue-btn{align-self:flex-end;padding:10px 24px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.7rem;font-weight:700;border:1px solid var(--border);margin-top:8px}
+.continue-btn:hover{background:rgba(255,107,157,.1);color:var(--pink);border-color:rgba(255,107,157,.3)}
+
+.heart-popup{position:fixed;font-size:1.8rem;pointer-events:none;animation:heartFloat 1.2s forwards;z-index:100}
+@keyframes heartFloat{0%{opacity:1;transform:translateY(0) scale(0.5)}30%{transform:translateY(-20px) scale(1.2)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}
+
+.reaction-bubble{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:2px solid var(--pink);border-radius:16px;padding:16px 24px;font-size:.85rem;font-weight:600;text-align:center;z-index:90;animation:popIn .4s ease;pointer-events:none}
+@keyframes popIn{0%{transform:translate(-50%,-50%) scale(0)}60%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(1)}}
+
+#ending-screen{align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(circle at 50% 40%,rgba(255,107,157,.1),transparent 60%),linear-gradient(180deg,#1a0a1e,#2d1040)}
+.ending-emoji{font-size:5rem;margin-bottom:12px;animation:float 2s ease-in-out infinite}
+.ending-title{font-size:2rem;font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ending-sub{color:var(--muted);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.ending-text{font-size:.9rem;line-height:1.8;max-width:500px;color:var(--text);margin-bottom:28px}
+.ending-hearts{font-size:1.5rem;margin-bottom:24px}
+
+@media(max-width:768px){
+  .scene-chars{gap:16px;padding:12px 16px}
+  .sc-emoji{font-size:2.5rem}
+  .dialogue-area{padding:16px 20px;min-height:160px}
+  .title-logo{font-size:2rem}
+  .hearts-bar{gap:6px}
+  .hb-item{font-size:.5rem;padding:2px 6px}
+}
+</style>
+</head>
+<body>
+
+<div id="title-screen" class="screen active">
+  <div class="title-hearts">💕✨💕</div>
+  <div class="title-logo">WidR Love Story</div>
+  <div class="title-sub">Een Visual Novel</div>
+  <div class="title-cast">
+    <span class="cast-chip">👑 Josh</span>
+    <span class="cast-chip">🃏 Lors</span>
+    <span class="cast-chip">🧊 Milo</span>
+    <span class="cast-chip">😤 Nathan</span>
+    <span class="cast-chip">🎯 Adam</span>
+    <span class="cast-chip">😑 Fionn</span>
+    <span class="cast-chip">💀 Daniël</span>
+    <span class="cast-chip">🌀 Reshman</span>
+  </div>
+  <button class="start-btn" onclick="startGame()">Begin Verhaal 💕</button>
+  <div style="margin-top:20px;font-size:.6rem;color:var(--muted)">5 dagen · 8 karakters · meerdere eindes</div>
+</div>
+
+<div id="game-screen" class="screen">
+  <div class="game-top">
+    <div><div class="day-label" id="dayLabel">Dag 1</div><div class="time-label" id="timeLabel">Ochtend</div></div>
+    <div class="hearts-bar" id="heartsBar"></div>
+  </div>
+  <div class="scene-area">
+    <div class="scene-bg" id="sceneBg"></div>
+    <div class="scene-chars" id="sceneChars"></div>
+  </div>
+  <div class="dialogue-area" id="dialogueArea"></div>
+</div>
+
+<div id="ending-screen" class="screen">
+  <div class="ending-emoji" id="endEmoji"></div>
+  <div class="ending-title" id="endTitle"></div>
+  <div class="ending-sub" id="endSub"></div>
+  <div class="ending-text" id="endText"></div>
+  <div class="ending-hearts" id="endHearts"></div>
+  <button class="start-btn" onclick="location.reload()">Opnieuw Spelen 💕</button>
+  <button style="margin-top:10px;padding:10px 24px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted);font-size:.7rem" onclick="location.href='index.html'">Terug naar WidR</button>
+</div>
+
+<script>
+var CHARS = {
+  josh: { name:'Josh', emoji:'👑', color:'#F5C518', trait:'leider' },
+  lors: { name:'Lors', emoji:'🃏', color:'#E94560', trait:'troller' },
+  milo: { name:'Milo', emoji:'🧊', color:'#0F3460', trait:'storyteller' },
+  nath: { name:'Nathan', emoji:'😤', color:'#FF6B6B', trait:'ongeduldig' },
+  adam: { name:'Adam', emoji:'🎯', color:'#E94560', trait:'sticker king' },
+  fionn: { name:'Fionn', emoji:'😑', color:'#16C79A', trait:'sarcastisch' },
+  daniel: { name:'Daniël', emoji:'💀', color:'#FF9A3C', trait:'absurdist' },
+  reshman: { name:'Reshman', emoji:'🌀', color:'#845EC2', trait:'chaotisch' }
+};
+
+var hearts = { josh:0, lors:0, milo:0, nath:0, adam:0, fionn:0, daniel:0, reshman:0 };
+var currentScene = 0;
+var currentStep = 0;
+
+var STORY = [
+  // ===== DAG 1 =====
+  { day:1, time:'Ochtend', bg:'🏫', title:'De Eerste Schooldag',
+    chars:['josh','fionn','nath'],
+    steps:[
+      { type:'narrate', text:'Het is je eerste dag op een nieuwe school. Je loopt door de drukke gang en ziet een groepje bij de lockers staan.' },
+      { type:'dialogue', speaker:'josh', text:'Hey! Ben jij nieuw hier? Ik ben Josh, ik run een beetje de boel hier. Welkom!' },
+      { type:'dialogue', speaker:'fionn', text:'...hij "runt" helemaal niks. Maar welkom, denk ik.' },
+      { type:'dialogue', speaker:'nath', text:'Yo! Nog iemand erbij. Hopelijk ben je niet zo irritant als de rest.' },
+      { type:'choice', text:'Hoe reageer je?', options:[
+        { text:'😊 "Dankjewel Josh! Fijn om iemand te ontmoeten die de leiding heeft."', effects:{josh:2,fionn:-1} },
+        { text:'😏 "Runt hij niks? Vertel me meer, Fionn."', effects:{fionn:2,josh:-1} },
+        { text:'💪 "Irritant? Nee man, ik ben de beste toevoeging aan deze school."', effects:{nath:2} }
+      ]},
+      { type:'dialogue', speaker:'josh', text:'Laat me je de school laten zien. We hebben een groepschat, "Wat in de Ranking". Daar ranken we letterlijk alles.' },
+      { type:'narrate', text:'Josh laat je zijn telefoon zien. De groepschat heeft duizenden berichten, stickers, en polls over alles van "Beste Docent" tot "Slechtste Excuus".' }
+    ]
+  },
+  { day:1, time:'Middag', bg:'🍽️', title:'Lunchpauze Chaos',
+    chars:['lors','adam','daniel'],
+    steps:[
+      { type:'narrate', text:'In de kantine is het een complete chaos. Iemand gooit een sticker in de groepschat en binnen seconden escaleert alles.' },
+      { type:'dialogue', speaker:'lors', text:'HAHAHA! Ik heb net een poll gemaakt: "Wie heeft de slechtste lunchbox?" en Nath staat op nummer 1! 😂' },
+      { type:'dialogue', speaker:'adam', text:'*stuurt 47 stickers in 3 seconden* Yo wie is de nieuwe? 👀' },
+      { type:'dialogue', speaker:'daniel', text:'Fun fact: als je "broodje kaas" achterwaarts spelt krijg je "saak ejdoorb" en dat klinkt als een Egyptische god.' },
+      { type:'choice', text:'Je zit aan hun tafel. Wat doe je?', options:[
+        { text:'🃏 Meedoen met Lors en een nog betere troll poll maken', effects:{lors:2,nath:-1} },
+        { text:'🎯 Adam\'s stickers complimenteren en vragen hoe hij ze maakt', effects:{adam:2} },
+        { text:'💀 Daniël\'s bizarre theorie serieus nemen en doorvragen', effects:{daniel:2} }
+      ]},
+      { type:'dialogue', speaker:'lors', text:'Hé, deze nieuwe is best cool. Meestal schrikken mensen van mijn energy.' },
+      { type:'dialogue', speaker:'adam', text:'Wacht, ik maak een welkomst-sticker speciaal voor jou! 🎨' },
+      { type:'narrate', text:'Daniel tekent ondertussen een diagram op een servet dat "bewijst" dat de schoolkantine eigenlijk een portaal naar een andere dimensie is.' }
+    ]
+  },
+  { day:1, time:'Avond', bg:'🌙', title:'Eerste Avond in de GC',
+    chars:['milo','reshman'],
+    steps:[
+      { type:'narrate', text:'Je zit thuis en checkt de groepschat. Er zijn al 300 nieuwe berichten. Milo vertelt een lang verhaal en Reshman reageert met willekeurige memes.' },
+      { type:'dialogue', speaker:'milo', text:'...en TOEN zei de docent: "Milo, je werkstuk over de Romeinen hoeft niet in versvorm." Maar het was al te laat. 47 pagina\'s in dichtvorm.' },
+      { type:'dialogue', speaker:'reshman', text:'BRO HAHAHA. Wacht. Random vraag. Als je één kaas mocht zijn, welke kaas zou je zijn? 🧀' },
+      { type:'choice', text:'De groepschat is wild. Hoe spring je erin?', options:[
+        { text:'📖 Reageer op Milo\'s verhaal: "Ik wil die 47 pagina\'s lezen, stuur ze!"', effects:{milo:2} },
+        { text:'🌀 Ga mee met Reshman: "Gouda, want ik ben Dutch en cheesy"', effects:{reshman:2} },
+        { text:'👋 Stuur een chill introductie naar de hele groep', effects:{josh:1,fionn:1,nath:1} }
+      ]},
+      { type:'dialogue', speaker:'milo', text:'Eindelijk iemand die cultuur apprecieert! De rest stuurt alleen maar "tl;dr" 😤' },
+      { type:'dialogue', speaker:'reshman', text:'GOUDA?! Dat is de beste kaas-keuze die ik ooit heb gehoord. Je bent nu mijn kaas-soulmate. 🧀💕' },
+      { type:'narrate', text:'Je valt in slaap met je telefoon in je hand. De groepschat tikt door. Dit wordt een interessant jaar.' }
+    ]
+  },
+
+  // ===== DAG 2 =====
+  { day:2, time:'Ochtend', bg:'📚', title:'De Groepswerk Ramp',
+    chars:['josh','fionn'],
+    steps:[
+      { type:'narrate', text:'De docent deelt groepjes in voor een project. Jij, Josh en Fionn worden in een groep gezet.' },
+      { type:'dialogue', speaker:'josh', text:'Perfect, ik maak meteen een planning! Ik verdeel de taken eerlijk. Fionn, jij doet het onderzoek—' },
+      { type:'dialogue', speaker:'fionn', text:'Ik doe het onderzoek? Waarom altijd ik? Waarom doe JIJ niet een keer het moeilijke werk, Josh?' },
+      { type:'dialogue', speaker:'josh', text:'Ik... ik organiseer alles! Dat IS het moeilijke werk!' },
+      { type:'narrate', text:'Het wordt stil. Ze kijken allebei naar jou.' },
+      { type:'choice', text:'Hoe los je dit op?', options:[
+        { text:'👑 "Josh heeft gelijk, organiseren is ook belangrijk. Maar laten we het samen doen."', effects:{josh:2,fionn:1} },
+        { text:'😑 "Fionn maakt een punt. Josh, doe jij het onderzoek en Fionn organiseert."', effects:{fionn:3,josh:-1} },
+        { text:'🤝 "Laten we alle drie het onderzoek verdelen. Niemand is de baas."', effects:{josh:1,fionn:2} }
+      ]},
+      { type:'dialogue', speaker:'fionn', text:'...hm. Oké. Dat is eigenlijk best redelijk.' },
+      { type:'dialogue', speaker:'josh', text:'*glimlacht* Jij bent goed in dit soort dingen. Misschien moet je in de GC ook bemiddelen.' }
+    ]
+  },
+  { day:2, time:'Middag', bg:'⚽', title:'De Gymles',
+    chars:['nath','adam','reshman'],
+    steps:[
+      { type:'narrate', text:'Gymles. Het regent, dus jullie spelen zaalvoetbal. Nathan neemt het veel te serieus.' },
+      { type:'dialogue', speaker:'nath', text:'KOMOP! WIE SCHOPT ER NOU ZO?! Dit is ZAALVOETBAL, niet RANDOM TRAPPEN!' },
+      { type:'dialogue', speaker:'adam', text:'Bro chill, het is gymles, niet de Champions League 😂' },
+      { type:'dialogue', speaker:'reshman', text:'*scoort per ongeluk in eigen doel* OEPS. Maar het was een mooie goal toch? Technisch gezien?' },
+      { type:'dialogue', speaker:'nath', text:'RESHMAN! HOE KAN JE IN JE EIGEN GOAL SCHIETEN?!' },
+      { type:'choice', text:'De situatie escaleert. Wat doe je?', options:[
+        { text:'😤 Nathan kalmeren: "Hé, het is maar een spelletje. Adem in, adem uit."', effects:{nath:3} },
+        { text:'🎯 Adam een high-five geven en meelachen', effects:{adam:2,nath:-1} },
+        { text:'🌀 Met Reshman meedoen en expres ook in eigen doel schieten', effects:{reshman:3,nath:-1} }
+      ]},
+      { type:'dialogue', speaker:'nath', text:'...*diepe zucht* ...oké. Oké. Het is maar gymles. Sorry dat ik zo deed.' },
+      { type:'narrate', text:'Na de gymles staat Nathan naast je bij de waterfontein. "Bedankt," zegt hij zachtjes. "Niemand probeert me ooit te kalmeren. Ze lachen me meestal uit."' }
+    ]
+  },
+  { day:2, time:'Avond', bg:'🎮', title:'Game Night',
+    chars:['lors','daniel','milo'],
+    steps:[
+      { type:'narrate', text:'De groep organiseert een game night via Discord. Lors host en het is al chaos voordat het begint.' },
+      { type:'dialogue', speaker:'lors', text:'WELKOM BIJ LORS GAME NIGHT! Regel 1: er zijn geen regels. Regel 2: ik win altijd. Regel 3: zie regel 1.' },
+      { type:'dialogue', speaker:'daniel', text:'Ik heb een theorie dat als je in Minecraft een huis bouwt van alleen glass panes, je de matrix kunt zien.' },
+      { type:'dialogue', speaker:'milo', text:'Ik ga een kasteel bouwen en het verhaal van elke kamer documenteren. Kamer 1: de balzaal waar de prins zijn eerste dans had—' },
+      { type:'dialogue', speaker:'lors', text:'Milo. Het is een SURVIVAL server. Er zijn ZOMBIES. Bouw een MUUR.' },
+      { type:'choice', text:'Wat doe je in de game?', options:[
+        { text:'🃏 Team up met Lors en samen iedereen grieven', effects:{lors:3} },
+        { text:'💀 Help Daniël met zijn bizarre glas-huis experiment', effects:{daniel:3} },
+        { text:'📖 Bouw samen met Milo het epische kasteel', effects:{milo:3} }
+      ]},
+      { type:'narrate', text:'De game night duurt tot 2 uur \'s nachts. Je hebt meer gelachen dan de hele week. De groepschat is daarna vol met inside jokes die alleen jullie begrijpen.' }
+    ]
+  },
+
+  // ===== DAG 3 =====
+  { day:3, time:'Ochtend', bg:'☀️', title:'Het Geheim',
+    chars:['josh','fionn','nath','lors'],
+    steps:[
+      { type:'narrate', text:'Voor schooltijd sta je bij het fietsenhok. Josh komt naar je toe, alleen. Hij lijkt nerveus.' },
+      { type:'dialogue', speaker:'josh', text:'Hey... kan ik je iets vertellen? Niet in de groepschat. Gewoon... tussen ons.' },
+      { type:'dialogue', speaker:'josh', text:'Soms voelt het alsof ik alles bij elkaar moet houden. De groep, de ranking, alles. En niemand ziet hoeveel moeite dat kost.' },
+      { type:'choice', text:'Josh is kwetsbaar. Hoe reageer je?', options:[
+        { text:'💕 "Ik zie het wel, Josh. Je doet meer dan je denkt. Ik waardeer het."', effects:{josh:4} },
+        { text:'🤝 "Je hoeft niet alles alleen te doen. Ik help je."', effects:{josh:3} },
+        { text:'📱 "Vertel dit in de groepschat, de rest moet dit ook horen."', effects:{josh:-2,fionn:1} }
+      ]},
+      { type:'dialogue', speaker:'josh', text:'...dankjewel. Echt. Dat betekent meer dan je denkt.' },
+      { type:'narrate', text:'Even is het stil. Josh glimlacht — niet zijn "admin-glimlach", maar echt. Dan komen de anderen eraan en het moment is voorbij.' }
+    ]
+  },
+  { day:3, time:'Middag', bg:'🎵', title:'De Talentshow',
+    chars:['adam','milo','daniel','reshman'],
+    steps:[
+      { type:'narrate', text:'De school organiseert een talentshow. De groep wil meedoen maar niemand is het eens over wat ze gaan doen.' },
+      { type:'dialogue', speaker:'adam', text:'Wij doen een sticker-expositie! Ik print al mijn beste creaties uit op A3 formaat!' },
+      { type:'dialogue', speaker:'milo', text:'Nee, we doen een toneelstuk! Ik heb al een script van 30 pagina\'s geschreven over een ridder die—' },
+      { type:'dialogue', speaker:'daniel', text:'We doen een wetenschappelijke presentatie over waarom pizza technisch gezien een groente is.' },
+      { type:'dialogue', speaker:'reshman', text:'FREESTYLE RAP BATTLE! Ik begin: "Yo, wij zijn WidR, we ranken het allemaal, van kaas tot—" nee wacht dat rijmt niet.' },
+      { type:'choice', text:'Ze kijken allemaal naar jou voor de doorslag.', options:[
+        { text:'🎯 "Adam\'s sticker-kunst is eigenlijk echt indrukwekkend. Laten we dat doen."', effects:{adam:3} },
+        { text:'🧊 "Milo\'s toneelstuk maar dan korter. 5 minuten max."', effects:{milo:3} },
+        { text:'💀 "Daniël\'s pizza-presentatie is zo absurd dat we WINNEN."', effects:{daniel:3} },
+        { text:'🌀 "Reshman\'s rap maar dan als groep. Iedereen een vers."', effects:{reshman:3} }
+      ]},
+      { type:'narrate', text:'Jullie oefenen de hele middag. Het is een ramp, maar op de leukste manier mogelijk. Iedereen lacht zo hard dat de docent komt kijken of alles oké is.' }
+    ]
+  },
+  { day:3, time:'Avond', bg:'🌃', title:'Het Balkon',
+    chars:['fionn'],
+    steps:[
+      { type:'narrate', text:'Na schooltijd loop je langs het park. Op een bankje zit Fionn, alleen, met oortjes in. Hij ziet er anders uit dan normaal — niet sarcastisch, maar... stil.' },
+      { type:'dialogue', speaker:'fionn', text:'Oh. Jij. *haalt een oortje uit* Ik zit gewoon... na te denken. Doe ik soms.' },
+      { type:'dialogue', speaker:'fionn', text:'Iedereen denkt dat ik overal schijt aan heb. Maar... soms is het makkelijker om sarcastisch te zijn dan om te laten zien dat je je ergens druk om maakt.' },
+      { type:'choice', text:'Een zeldzaam eerlijk moment van Fionn.', options:[
+        { text:'💕 Ga naast hem zitten zonder iets te zeggen. Soms is stilte genoeg.', effects:{fionn:4} },
+        { text:'😑 "Welk nummer luister je? Laat horen."', effects:{fionn:3} },
+        { text:'🗣️ "Je mag best laten zien dat je je ergens om geeft, weet je."', effects:{fionn:2} }
+      ]},
+      { type:'dialogue', speaker:'fionn', text:'...je bent anders dan de rest. Niet zo luid. Dat is... niet verschrikkelijk.' },
+      { type:'narrate', text:'Van Fionn is dat het mooiste compliment dat je ooit zult krijgen.' }
+    ]
+  },
+
+  // ===== DAG 4 =====
+  { day:4, time:'Ochtend', bg:'🎪', title:'De Schooltrip',
+    chars:['josh','lors','nath','fionn','adam','milo','daniel','reshman'],
+    steps:[
+      { type:'narrate', text:'Schoolreisje naar een pretpark! De hele groep is er. In de bus zit je vast tussen twee mensen. Je mag kiezen waar je gaat zitten.' },
+      { type:'choice', text:'Naast wie ga je zitten in de bus?', options:[
+        { text:'👑 Josh — hij bewaakt een plek voor je', effects:{josh:2} },
+        { text:'🃏 Lors — hij heeft snoep en chaos', effects:{lors:2} },
+        { text:'😤 Nathan — hij heeft niemand naast zich', effects:{nath:3} },
+        { text:'😑 Fionn — hij heeft een extra oortje voor je', effects:{fionn:2} }
+      ]},
+      { type:'narrate', text:'De busrit is 2 uur. Jullie praten, lachen, en delen muziek. De rest van de groep is luid op de achterbank.' },
+      { type:'dialogue', speaker:'lors', text:'ACHTBAAN COMPETITIE! Wie er het hardst schreeuwt WINT!' },
+      { type:'dialogue', speaker:'nath', text:'Dat is GEEN competitie, Lors. Dat is gewoon schreeuwen.' },
+      { type:'dialogue', speaker:'adam', text:'Ik ga van elke attractie een sticker maken! 📸' },
+      { type:'dialogue', speaker:'reshman', text:'Wist je dat als je in de achtbaan ACHTERWAARTS zit je door de tijd reist? Mijn neef zei dat.' }
+    ]
+  },
+  { day:4, time:'Middag', bg:'🎢', title:'De Achtbaan',
+    chars:['lors','adam','daniel','reshman'],
+    steps:[
+      { type:'narrate', text:'Bij de grootste achtbaan splitst de groep zich op. Sommigen willen, anderen niet.' },
+      { type:'dialogue', speaker:'lors', text:'Wie durft?! VOORSTE RIJ! Alleen echte G\'s zitten vooraan!' },
+      { type:'dialogue', speaker:'daniel', text:'Statistisch gezien is de achterste rij het engst vanwege de zweep-kracht. Maar de voorste rij is het engst psychologisch. Kies je gif.' },
+      { type:'dialogue', speaker:'adam', text:'Ik ga naast je zitten! Dan kan ik je reactie filmen voor een sticker! 😂' },
+      { type:'dialogue', speaker:'reshman', text:'Ik zit in de middelste rij. Perfect gebalanceerd, zoals alle dingen zouden moeten zijn. *Thanos stem*' },
+      { type:'choice', text:'De achtbaan wacht...', options:[
+        { text:'🃏 Voorste rij met Lors — YOLO', effects:{lors:3} },
+        { text:'🎯 Naast Adam — laat hem die sticker maar maken', effects:{adam:3} },
+        { text:'💀 Achterste rij met Daniël — voor de wetenschap', effects:{daniel:3} },
+        { text:'🌀 Middelste rij met Reshman — perfect gebalanceerd', effects:{reshman:3} }
+      ]},
+      { type:'narrate', text:'De achtbaan is INTENS. Iedereen schreeuwt. Lors het hardst. Daniël analyseert de G-krachten mid-ride. Reshman zingt een lied. Het is perfect.' }
+    ]
+  },
+  { day:4, time:'Avond', bg:'🎡', title:'Het Reuzenrad',
+    chars:['josh','fionn','milo','nath'],
+    steps:[
+      { type:'narrate', text:'Het park sluit bijna. Het reuzenrad draait langzaam in het avondlicht. Er is nog plek voor twee in een gondel.' },
+      { type:'choice', text:'Met wie stap je in het reuzenrad?', options:[
+        { text:'👑 Josh — hij staat al te wachten bij de ingang', effects:{josh:4} },
+        { text:'😑 Fionn — hij doet alsof het hem niks kan schelen maar hij kijkt steeds naar je', effects:{fionn:4} },
+        { text:'🧊 Milo — hij wil je het uitzicht beschrijven als een gedicht', effects:{milo:4} },
+        { text:'😤 Nathan — hij staat alleen en kijkt naar de zonsondergang', effects:{nath:4} }
+      ]},
+      { type:'narrate', text:'Bovenin het reuzenrad is het stil. Alleen de wind en het verre geluid van het park. Het uitzicht is prachtig — de hele stad, badend in oranje licht.' },
+      { type:'narrate', text:'"Dit was een goede dag," fluistert je metgezel. En je weet dat ze het menen.' }
+    ]
+  },
+
+  // ===== DAG 5 =====
+  { day:5, time:'Ochtend', bg:'🌸', title:'De Laatste Dag',
+    chars:['josh','lors','nath','fionn','adam','milo','daniel','reshman'],
+    steps:[
+      { type:'narrate', text:'Het is vrijdag. De laatste dag van de week. In de groepschat is er een poll: "Beste Moment Van De Week?" Jouw naam komt in meerdere antwoorden voor.' },
+      { type:'narrate', text:'Je loopt door de gang en realiseert je dat je in één week een hele vriendengroep hebt gevonden. Maar er is iemand die je extra is opgevallen...' },
+      { type:'narrate', text:'De bel gaat. De dag begint. Maar je weet dat dit niet zomaar een vrijdag is. Vandaag verandert alles.' }
+    ]
+  },
+  { day:5, time:'Middag', bg:'💌', title:'De Boodschap',
+    chars:[],
+    steps:[
+      { type:'narrate', text:'Tijdens de lunchpauze vind je een briefje in je locker. Er staat: "Kom na school naar het dak. Ik moet je iets vertellen." Geen naam. Alleen een klein hartje.' },
+      { type:'narrate', text:'Je hart slaat over. Wie heeft dit geschreven? Je kijkt de kantine rond. Iedereen gedraagt zich normaal — of niet?' }
+    ]
+  },
+  { day:5, time:'Avond', bg:'🌅', title:'Het Dak', ending:true,
+    chars:[],
+    steps:[]
+  }
+];
+
+function startGame() {
+  hearts = { josh:0, lors:0, milo:0, nath:0, adam:0, fionn:0, daniel:0, reshman:0 };
+  currentScene = 0;
+  currentStep = 0;
+  showScreen('game-screen');
+  renderScene();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+function renderScene() {
+  var scene = STORY[currentScene];
+  if (!scene) { showEnding(); return; }
+  if (scene.ending) { showEnding(); return; }
+
+  document.getElementById('dayLabel').textContent = 'Dag ' + scene.day;
+  document.getElementById('timeLabel').textContent = scene.time + ' — ' + scene.title;
+  document.getElementById('sceneBg').textContent = scene.bg;
+
+  updateHeartsBar();
+  renderChars(scene.chars, null);
+  renderStep();
+}
+
+function renderChars(charIds, activeId) {
+  var el = document.getElementById('sceneChars');
+  el.innerHTML = charIds.map(function(id) {
+    var c = CHARS[id];
+    var cls = id === activeId ? 'highlight' : (activeId ? '' : 'active');
+    var h = hearts[id] || 0;
+    var heartStr = '';
+    for (var i = 0; i < Math.min(h, 10); i++) heartStr += '♥';
+    return '<div class="scene-char '+cls+'"><span class="sc-emoji">'+c.emoji+'</span><div class="sc-name" style="color:'+c.color+'">'+c.name+'</div>'+(h>0?'<div class="sc-hearts-display">'+heartStr+'</div>':'')+'</div>';
+  }).join('');
+}
+
+function renderStep() {
+  var scene = STORY[currentScene];
+  var step = scene.steps[currentStep];
+  if (!step) { nextScene(); return; }
+
+  var area = document.getElementById('dialogueArea');
+
+  if (step.type === 'narrate') {
+    renderChars(scene.chars, null);
+    area.innerHTML = '<div class="narrator-text">'+step.text+'</div><button class="continue-btn" onclick="advanceStep()">Verder →</button>';
+  }
+  else if (step.type === 'dialogue') {
+    renderChars(scene.chars, step.speaker);
+    var c = CHARS[step.speaker];
+    area.innerHTML = '<div class="speaker-name" style="color:'+c.color+'">'+c.emoji+' '+c.name+'</div><div class="dialogue-text">'+step.text+'</div><button class="continue-btn" onclick="advanceStep()">Verder →</button>';
+  }
+  else if (step.type === 'choice') {
+    area.innerHTML = '<div class="dialogue-text" style="font-weight:700;">'+step.text+'</div><div class="choices">'+step.options.map(function(o,i){
+      return '<button class="choice-btn" onclick="makeChoice('+currentScene+','+currentStep+','+i+')">'+o.text+'</button>';
+    }).join('')+'</div>';
+  }
+}
+
+function advanceStep() {
+  currentStep++;
+  var scene = STORY[currentScene];
+  if (currentStep >= scene.steps.length) { nextScene(); return; }
+  renderStep();
+}
+
+function nextScene() {
+  currentScene++;
+  currentStep = 0;
+  renderScene();
+}
+
+function makeChoice(sceneIdx, stepIdx, optIdx) {
+  var step = STORY[sceneIdx].steps[stepIdx];
+  var option = step.options[optIdx];
+  var effects = option.effects || {};
+
+  Object.keys(effects).forEach(function(id) {
+    var amt = effects[id];
+    hearts[id] = Math.max(0, (hearts[id]||0) + amt);
+    if (amt > 0) spawnHearts(amt);
+    if (amt > 0) showReaction(id, amt);
+  });
+
+  updateHeartsBar();
+  advanceStep();
+}
+
+function spawnHearts(count) {
+  for (var i = 0; i < count; i++) {
+    setTimeout(function() {
+      var h = document.createElement('div');
+      h.className = 'heart-popup';
+      h.textContent = '💕';
+      h.style.left = (30 + Math.random()*40) + '%';
+      h.style.top = (40 + Math.random()*20) + '%';
+      document.body.appendChild(h);
+      setTimeout(function(){h.remove();}, 1200);
+    }, i * 200);
+  }
+}
+
+function showReaction(charId, amount) {
+  var c = CHARS[charId];
+  var reactions = [c.emoji+' +'+amount+' ♥', c.name+' vindt dit leuk! ♥', c.emoji+' ♥♥♥'];
+  var bubble = document.createElement('div');
+  bubble.className = 'reaction-bubble';
+  bubble.textContent = reactions[Math.min(amount-1, reactions.length-1)];
+  document.body.appendChild(bubble);
+  setTimeout(function(){bubble.remove();}, 1500);
+}
+
+function updateHeartsBar() {
+  var bar = document.getElementById('heartsBar');
+  var sorted = Object.keys(hearts).filter(function(k){return hearts[k]>0;}).sort(function(a,b){return hearts[b]-hearts[a];});
+  bar.innerHTML = sorted.map(function(id) {
+    var c = CHARS[id];
+    var h = hearts[id];
+    var str = '';
+    for (var i = 0; i < Math.min(h, 8); i++) str += '♥';
+    return '<div class="hb-item">'+c.emoji+' <span class="hb-hearts">'+str+'</span></div>';
+  }).join('');
+}
+
+// ===== ENDING =====
+var ENDINGS = {
+  josh: { title:'De Admin & Jij', text:'Josh staat op het dak, leunend tegen het hek. Als hij je ziet, glimlacht hij — die echte glimlach, niet zijn admin-glimlach.\n\n"Ik heb iets bedacht," zegt hij. "Ik rank alles, toch? Films, docentjes, excuses. Maar er is één ding dat ik nooit heb gerankt."\n\n"Wat dan?"\n\n"De mensen die belangrijk voor me zijn. Maar als ik het zou doen... zou jij op nummer 1 staan. Altijd."\n\nHij pakt je hand. De zon gaat onder achter de stad. In de groepschat stuurt Lors: "Waar zijn Josh en de nieuwe?! 👀"\n\nMaar dat maakt nu even niet uit. 💕' },
+  lors: { title:'Chaos & Liefde', text:'Lors zit op het dak met een tas vol snoep en een bluetooth speaker die veel te hard staat.\n\n"DAAR BEN JE! Ik wachtte al. Kijk, ik heb iets voor je." Hij haalt een zelfgemaakte poll tevoorschijn op zijn telefoon.\n\nDe poll: "Wil je met Lors chillen? Forever?" Opties: "Ja ❤️" en "Absoluut ja 💕"\n\n"Ik weet dat ik chaotisch ben," zegt hij, opeens serieus. "Maar bij jou wil ik... een andere soort chaos. De goede soort."\n\nHij zet het volume harder. "Dit is ons liedje nu. Ik heb het net besloten."\n\nHet is het meest Lors-achtige liefdeverklaring ooit. En het is perfect. 💕' },
+  milo: { title:'Een Verhaal Voor Twee', text:'Op het dak ligt een deken met kussens. Milo zit er al, met een notitieboekje.\n\n"Ik heb een verhaal geschreven," zegt hij. "Het gaat over twee mensen die elkaar ontmoeten in een groepschat vol chaos. En langzaam, zonder dat ze het doorhebben, worden ze het belangrijkste deel van elkaars dag."\n\nHij geeft je het boekje. De laatste pagina is leeg.\n\n"Die pagina is voor ons," fluistert hij. "Want dit verhaal heeft nog geen einde. En ik wil het samen met jou schrijven."\n\nDe zon kleurt de hemel oranje en roze, alsof het universum meedoet met het moment. 💕' },
+  nath: { title:'Rustig Naast Jou', text:'Nathan staat op het dak, zijn handen in zijn zakken. Hij draait zich om als hij je hoort.\n\n"Hey. Ik... ik ben niet goed in dit soort dingen. Dus ik ga het gewoon zeggen."\n\nHij haalt diep adem. "Alles irriteert me. Mensen, school, de groepschat. Alles. Maar bij jou... bij jou ben ik rustig. Voor het eerst in... ik weet niet hoe lang."\n\nZijn ogen zijn een beetje rood. "Jij maakt me niet gek. Jij maakt me... normaal. En dat is het beste gevoel ter wereld."\n\nHij steekt zijn hand uit. "Dus... wil je naast me staan? Niet alleen nu. Maar... altijd?"\n\nJe pakt zijn hand. Hij glimlacht. Echt glimlacht. 💕' },
+  adam: { title:'De Perfecte Sticker', text:'Het dak is versierd met prints van Adam\'s beste stickers. In het midden hangt een grote, nieuwe sticker die je nog nooit hebt gezien.\n\nHet is een tekening van jullie twee. Samen. Met hartjes.\n\n"Ik heb de hele nacht eraan gewerkt," zegt Adam. "Het is mijn beste werk ooit. Want het is de enige sticker die echt iets BETEKENT."\n\nHij pakt je handen. "Elke sticker die ik maak is grappig of random. Maar deze... deze is echt. Net als wat ik voor je voel."\n\n"Wil je mijn permanente sticker-partner zijn? In de chat en... daarbuiten?"\n\nJe knikt. Hij stuurt de sticker naar de groepschat. Iedereen reageert met 🔥🔥🔥. 💕' },
+  fionn: { title:'Niet Verschrikkelijk', text:'Fionn zit op de rand van het dak, benen bungelend. Hij heeft zijn oortjes in maar haalt er eentje uit als je komt.\n\n"...ik wist dat jij het was," zegt hij. Zijn stem is zachter dan normaal.\n\n"Ik ga iets zeggen en ik wil dat je weet dat ik dit NOOIT doe. Oké? Nooit."\n\nStilte.\n\n"Jij bent niet irritant. Jij bent niet saai. Jij bent niet zoals de rest." Hij kijkt je aan. "Jij bent... de enige persoon bij wie ik mezelf kan zijn. Niet de sarcastische versie. Gewoon... ik."\n\nHij geeft je het andere oortje. "Luister mee. En... blijf. Als je wilt."\n\nJullie zitten samen op het dak, delend in de muziek en de stilte. En voor het eerst is Fionn\'s stilte niet koud — het is warm. 💕' },
+  daniel: { title:'De Bizarre Waarheid', text:'Op het dak heeft Daniël een "wetenschappelijke opstelling" gemaakt met kaarsjes en een whiteboard.\n\nOp het whiteboard staat een ingewikkeld diagram met pijlen, formules, en in het midden: een hartje.\n\n"Volgens mijn berekeningen," begint hij plechtig, "is er een 97.3% kans dat ik verliefd op je ben. De foutmarge is 2.7%, maar dat komt door Lors die steeds mijn data saboteert."\n\nHij wijst naar het diagram. "Zie je deze pijl? Dat ben jij. En deze? Dat ben ik. En als je de coördinaten berekent... komen we precies bij elkaar uit."\n\nHij laat het whiteboard zakken. "Maar echt, zonder de onzin: jij maakt mijn wereld minder absurd. Of eigenlijk, je maakt de absurditeit de moeite waard."\n\nHij steekt een kaarsje aan. Het waait meteen uit. "...dat was poëtischer in mijn hoofd." 💕' },
+  reshman: { title:'Chaos Soulmates', text:'Je hoort muziek voordat je het dak bereikt. Reshman staat daar met een draagbare speaker, dansend in zijn eentje.\n\n"YOOOO! Je bent er!" Hij rent naar je toe. "Oké, oké, wacht. Ik heb dit geoefend."\n\nHij haalt diep adem en probeert serieus te kijken. Het lukt ongeveer 3 seconden.\n\n"Jij bent mijn kaas-soulmate. Maar ook mijn echte soulmate. Ik weet dat ik random ben en chaotisch en soms te veel en—"\n\n"Reshman."\n\n"Ja?"\n\n"Ik vind je chaos leuk."\n\nZijn gezicht licht op als een kerstboom. "ECHT?! Want ik heb MEER chaos. Zoveel meer. We kunnen samen chaotisch zijn! CHAOS COUPLE! We—"\n\nJe kust hem op zijn wang om hem stil te krijgen. Het werkt. Voor precies 0.5 seconden.\n\n"DIT IS HET BESTE MOMENT VAN MIJN LEVEN!" 💕' },
+  nobody: { title:'De Groep', text:'Je gaat naar het dak, maar niemand is er. Dan hoor je voetstappen — ze komen ALLEMAAL het dak op.\n\n"SURPRISE!" schreeuwt Lors. Josh heeft taart. Adam plakt stickers overal. Milo leest een gedicht voor. Nathan probeert niet te huilen (hij faalt). Fionn doet alsof het hem niks doet (hij faalt ook). Daniël heeft een theorie over waarom groepsvriendschap wetenschappelijk bewezen de beste relatie is. Reshman danst.\n\n"Je bent onderdeel van ons nu," zegt Josh. "Wat in de Ranking is niet compleet zonder jou."\n\nGeen romantiek. Iets beters: een groep die je accepteert zoals je bent.\n\nEn in de groepschat? Jij staat op #1 in de poll "Beste Nieuw Lid Ooit." 💕' }
+};
+
+function showEnding() {
+  var maxChar = 'nobody';
+  var maxHearts = 0;
+  Object.keys(hearts).forEach(function(id) {
+    if (hearts[id] > maxHearts) { maxHearts = hearts[id]; maxChar = id; }
+  });
+  if (maxHearts < 3) maxChar = 'nobody';
+
+  var ending = ENDINGS[maxChar];
+  var c = maxChar !== 'nobody' ? CHARS[maxChar] : null;
+
+  showScreen('ending-screen');
+  document.getElementById('endEmoji').textContent = c ? c.emoji : '👑';
+  document.getElementById('endTitle').textContent = ending.title;
+  document.getElementById('endSub').textContent = maxChar !== 'nobody' ? maxHearts + ' hartjes verzameld' : 'Vriendschap Einde';
+
+  var paragraphs = ending.text.split('\n\n');
+  document.getElementById('endText').innerHTML = paragraphs.map(function(p){return '<p style="margin-bottom:12px">'+p+'</p>';}).join('');
+
+  var heartStr = '';
+  for (var i = 0; i < Math.min(maxHearts, 15); i++) heartStr += '💕';
+  document.getElementById('endHearts').textContent = heartStr || '💕';
+}
+</script>
+</body>
+</html>
