@@ -3414,6 +3414,7 @@
           <a href="#lore" onclick="navigate('lore');closeNavDrops()">📜 Lore</a>
           <a href="#soundboard" onclick="navigate('soundboard');closeNavDrops()">🔊 Soundboard</a>
           <a href="#stickers" onclick="navigate('stickers');closeNavDrops()">🎨 Stickers</a>
+          <a href="#leaderboard" onclick="navigate('leaderboard');closeNavDrops()">🏅 Leaderboard</a>
           <a href="#stats" onclick="navigate('stats');closeNavDrops()">📊 Chat Stats</a>
         </div>
       </div>
@@ -3590,7 +3591,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3726,7 +3727,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3758,7 +3759,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3778,7 +3779,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3818,7 +3819,39 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
+    </footer>
+  </div>
+
+  <!-- LEADERBOARD PAGE -->
+  <div class="page" id="page-leaderboard">
+    <div style="max-width:900px;margin:0 auto;padding:40px 24px 80px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <h1 style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Leaderboard 🏅</h1>
+        <p style="color:rgba(26,26,46,0.4);font-size:0.85rem;">Wie is de GOAT van Wat in de Ranking?</p>
+      </div>
+
+      <div id="playerOfWeek" style="background:linear-gradient(135deg,rgba(245,197,24,0.1),rgba(233,69,96,0.05));border:2px solid var(--gold);border-radius:20px;padding:24px;text-align:center;margin-bottom:24px;display:none;">
+        <div style="font-size:0.65rem;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">⭐ Speler van de Week</div>
+        <div id="powName" style="font-size:1.4rem;font-weight:900;"></div>
+        <div id="powReason" style="font-size:0.75rem;color:rgba(26,26,46,0.5);margin-top:4px;"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;" id="leaderboardGrid">
+        <div style="text-align:center;padding:40px;color:rgba(26,26,46,0.3);font-size:0.85rem;">Laden...</div>
+      </div>
+
+      <div id="achievementsSection" style="margin-top:40px;">
+        <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:16px;">🏆 Jouw Achievements</h2>
+        <div id="myAchievements" style="display:flex;flex-wrap:wrap;gap:8px;">
+          <div style="color:rgba(26,26,46,0.3);font-size:0.8rem;">Log in om je achievements te zien</div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-logo">Wat in de <span>Ranking</span></div>
+      <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3853,7 +3886,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3877,7 +3910,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3903,7 +3936,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -3978,7 +4011,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4096,7 +4129,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4178,7 +4211,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4204,7 +4237,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4339,7 +4372,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4388,7 +4421,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -4720,6 +4753,7 @@
       if (page === 'inbox') { try { loadInbox(); } catch(e) {} }
       if (page === 'lore') { try { loadStories(); } catch(e) {} try { loadMemes(); } catch(e) {} }
       if (page === 'members' && !membersLoaded) { try { loadMembers(); loadSections(); membersLoaded = true; } catch(e) {} }
+      if (page === 'leaderboard') { try { loadLeaderboard(); } catch(e) {} }
       if (page === 'stats') {}
     }
 
@@ -7544,12 +7578,13 @@
           (r.day || r.period ? '<div style="display:flex;gap:8px;margin-bottom:8px;">' + (r.day ? '<span style="display:inline-block;padding:3px 10px;background:rgba(15,52,96,0.08);border-radius:100px;font-size:0.7rem;font-weight:700;color:var(--blue);">📅 ' + r.day + '</span>' : '') + (r.period ? '<span style="display:inline-block;padding:3px 10px;background:rgba(245,197,24,0.12);border-radius:100px;font-size:0.7rem;font-weight:700;color:#b8960f;">🕐 ' + r.period + '</span>' : '') + '</div>' : '') +
           '<div style="font-size:0.85rem;color:rgba(26,26,46,0.6);line-height:1.6;margin-bottom:10px;">' + simpleMarkdown(r.text) + '</div>' +
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-            '<div style="display:flex;align-items:center;gap:4px;">' +
+            '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' +
               '<div style="display:inline-flex;align-items:center;background:rgba(26,26,46,0.04);border-radius:100px;overflow:hidden;">' +
                 '<button onclick="likeReview(\'' + r.id + '\',\'like\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'like' ? 'var(--blue)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'like' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👍 ' + (r.likes || 0) + '</button>' +
                 '<div style="width:1px;height:20px;background:rgba(26,26,46,0.08);"></div>' +
                 '<button onclick="likeReview(\'' + r.id + '\',\'dislike\')" style="padding:6px 12px;border:none;background:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'var(--accent)' : 'transparent') + ';color:' + (uid && r.likedBy && r.likedBy[uid] === 'dislike' ? 'white' : 'rgba(26,26,46,0.5)') + ';cursor:pointer;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:4px;transition:all 0.2s;">👎 ' + (r.dislikes || 0) + '</button>' +
               '</div>' +
+              buildReactionBar(r) +
               '<div style="font-size:0.7rem;color:rgba(26,26,46,0.3);margin-left:8px;display:flex;align-items:center;gap:6px;">Door <span onclick="showReviewerPopup(\'' + (r.uid || '') + '\',\'' + (r.author || '').replace(/'/g, "\\'") + '\',event)" style="color:var(--blue);cursor:pointer;font-weight:600;text-decoration:underline;">' + r.author + '</span> · ' + time +
               (r.uid && currentUser && r.uid !== currentUser.uid ? ' <button onclick="event.stopPropagation();toggleFollow(\'' + r.uid + '\',\'' + (r.author || '').replace(/'/g, "\\'") + '\')" style="background:' + (isFollowing(r.uid) ? 'var(--gold)' : 'rgba(26,26,46,0.06)') + ';color:' + (isFollowing(r.uid) ? 'var(--primary)' : 'rgba(26,26,46,0.4)') + ';border:none;padding:2px 8px;border-radius:100px;font-size:0.6rem;font-weight:700;cursor:pointer;">' + (isFollowing(r.uid) ? '⭐ Volgend' : '+ Volgen') + '</button>' : '') +
               '</div>' +
@@ -7577,6 +7612,181 @@
         r.pinned = newPinned;
         renderReviews(); try { renderAllComments(); } catch(e) {}
       }).catch(function() {});
+    }
+
+    // ===== REACTION EMOJIS =====
+    var REACTIONS = ['😂','🔥','💀','❤️','😮','💯'];
+
+    function buildReactionBar(r) {
+      var reactions = r.reactions || {};
+      var uid = currentUser ? currentUser.uid : null;
+      var html = '<div style="display:inline-flex;align-items:center;gap:2px;margin-left:4px;">';
+      REACTIONS.forEach(function(emoji) {
+        var users = reactions[emoji] || [];
+        var count = users.length;
+        var iReacted = uid && users.indexOf(uid) !== -1;
+        if (count > 0 || uid) {
+          html += '<button onclick="toggleReaction(\'' + r.id + '\',\'' + emoji + '\')" style="padding:3px 6px;border:none;background:' + (iReacted ? 'rgba(245,197,24,0.15)' : 'rgba(26,26,46,0.04)') + ';border-radius:100px;cursor:pointer;font-size:0.65rem;display:flex;align-items:center;gap:2px;transition:all 0.2s;border:1px solid ' + (iReacted ? 'var(--gold)' : 'transparent') + ';">' + emoji + (count > 0 ? '<span style="font-size:0.55rem;font-weight:700;color:rgba(26,26,46,0.5);">' + count + '</span>' : '') + '</button>';
+        }
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function toggleReaction(reviewId, emoji) {
+      if (!currentUser || isGuest) { alert('Log in om te reageren.'); return; }
+      var uid = currentUser.uid;
+      var r = allReviews.find(function(x) { return x.id === reviewId; });
+      if (!r) return;
+      if (!r.reactions) r.reactions = {};
+      if (!r.reactions[emoji]) r.reactions[emoji] = [];
+      var idx = r.reactions[emoji].indexOf(uid);
+      if (idx !== -1) {
+        r.reactions[emoji].splice(idx, 1);
+        if (r.reactions[emoji].length === 0) delete r.reactions[emoji];
+      } else {
+        r.reactions[emoji].push(uid);
+      }
+      db.collection('reviews').doc(reviewId).update({ reactions: r.reactions }).catch(function() {});
+      renderReviews(); try { renderAllComments(); } catch(e) {}
+    }
+
+    // ===== ACHIEVEMENTS =====
+    var ACHIEVEMENTS = [
+      { id:'first_review', icon:'📝', name:'Eerste Review', desc:'Schrijf je eerste review', check: function(d) { return d.reviews >= 1; } },
+      { id:'5_reviews', icon:'✍️', name:'Reviewmaker', desc:'Schrijf 5 reviews', check: function(d) { return d.reviews >= 5; } },
+      { id:'10_reviews', icon:'📚', name:'Criticus', desc:'Schrijf 10 reviews', check: function(d) { return d.reviews >= 10; } },
+      { id:'25_reviews', icon:'🏆', name:'Review GOAT', desc:'Schrijf 25 reviews', check: function(d) { return d.reviews >= 25; } },
+      { id:'first_like', icon:'👍', name:'Eerste Like', desc:'Krijg je eerste like', check: function(d) { return d.totalLikes >= 1; } },
+      { id:'10_likes', icon:'💙', name:'Populair', desc:'Krijg 10 likes', check: function(d) { return d.totalLikes >= 10; } },
+      { id:'50_likes', icon:'🌟', name:'Superster', desc:'Krijg 50 likes', check: function(d) { return d.totalLikes >= 50; } },
+      { id:'first_coin', icon:'🪙', name:'Eerste Coin', desc:'Verdien je eerste coin', check: function(d) { return d.coins >= 1; } },
+      { id:'100_coins', icon:'💰', name:'Rijkaard', desc:'Verzamel 100 coins', check: function(d) { return d.coins >= 100; } },
+      { id:'controversial', icon:'🌶️', name:'Controversieel', desc:'Krijg 5+ dislikes op één review', check: function(d) { return d.maxDislikes >= 5; } },
+      { id:'5star', icon:'⭐', name:'Perfectie', desc:'Geef een 5-sterren review', check: function(d) { return d.gave5Star; } },
+      { id:'1star', icon:'💣', name:'Sloopkogel', desc:'Geef een 1-ster review', check: function(d) { return d.gave1Star; } },
+      { id:'all_teachers', icon:'🎓', name:'Alle Docenten', desc:'Review 5+ verschillende docenten', check: function(d) { return d.uniqueTeachers >= 5; } },
+      { id:'reactor', icon:'😂', name:'Reactor', desc:'Geef 10 reactie-emoji\'s', check: function(d) { return d.reactionCount >= 10; } },
+      { id:'follower', icon:'⭐', name:'Fan', desc:'Volg 3 reviewers', check: function(d) { return d.followCount >= 3; } }
+    ];
+
+    function calculateUserAchievements(uid) {
+      var myReviews = allReviews.filter(function(r) { return r.uid === uid; });
+      var totalLikes = myReviews.reduce(function(s, r) { return s + (r.likes || 0); }, 0);
+      var maxDislikes = myReviews.reduce(function(max, r) { return Math.max(max, r.dislikes || 0); }, 0);
+      var uniqueTeachers = {};
+      myReviews.forEach(function(r) { uniqueTeachers[r.teacher] = true; });
+      var gave5Star = myReviews.some(function(r) { return r.rating === 5; });
+      var gave1Star = myReviews.some(function(r) { return r.rating === 1; });
+      var reactionCount = 0;
+      allReviews.forEach(function(r) {
+        var reactions = r.reactions || {};
+        Object.keys(reactions).forEach(function(emoji) {
+          if (reactions[emoji].indexOf(uid) !== -1) reactionCount++;
+        });
+      });
+      var follows = [];
+      try { follows = JSON.parse(localStorage.getItem('widr_following') || '[]'); } catch(e) {}
+
+      return {
+        reviews: myReviews.length,
+        totalLikes: totalLikes,
+        maxDislikes: maxDislikes,
+        coins: 0,
+        uniqueTeachers: Object.keys(uniqueTeachers).length,
+        gave5Star: gave5Star,
+        gave1Star: gave1Star,
+        reactionCount: reactionCount,
+        followCount: follows.length
+      };
+    }
+
+    function renderMyAchievements() {
+      var el = document.getElementById('myAchievements');
+      if (!el || !currentUser) return;
+      var uid = currentUser.uid;
+      var data = calculateUserAchievements(uid);
+      db.collection('users').doc(uid).get().then(function(doc) {
+        if (doc.exists) data.coins = doc.data().coins || 0;
+        el.innerHTML = ACHIEVEMENTS.map(function(a) {
+          var unlocked = a.check(data);
+          return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:' + (unlocked ? 'rgba(245,197,24,0.08)' : 'rgba(26,26,46,0.03)') + ';border-radius:12px;border:1px solid ' + (unlocked ? 'rgba(245,197,24,0.2)' : 'rgba(26,26,46,0.06)') + ';min-width:200px;' + (unlocked ? '' : 'opacity:0.4;') + '">' +
+            '<div style="font-size:1.4rem;">' + a.icon + '</div>' +
+            '<div><div style="font-weight:700;font-size:0.75rem;">' + a.name + '</div><div style="font-size:0.6rem;color:rgba(26,26,46,0.4);">' + a.desc + '</div></div>' +
+            (unlocked ? '<div style="margin-left:auto;color:var(--gold);font-size:0.7rem;font-weight:700;">✓</div>' : '') +
+          '</div>';
+        }).join('');
+      }).catch(function() {});
+    }
+
+    // ===== LEADERBOARD =====
+    function loadLeaderboard() {
+      var grid = document.getElementById('leaderboardGrid');
+      if (!grid) return;
+
+      db.collection('users').get().then(function(snapshot) {
+        var users = [];
+        snapshot.forEach(function(doc) { var d = doc.data(); d.id = doc.id; users.push(d); });
+
+        var leaderData = users.map(function(u) {
+          var myRevs = allReviews.filter(function(r) { return r.uid === u.id; });
+          var totalLikes = myRevs.reduce(function(s, r) { return s + (r.likes || 0); }, 0);
+          var totalDislikes = myRevs.reduce(function(s, r) { return s + (r.dislikes || 0); }, 0);
+          var avgRating = myRevs.length > 0 ? myRevs.reduce(function(s, r) { return s + (r.rating || 0); }, 0) / myRevs.length : 0;
+          var data = calculateUserAchievements(u.id);
+          data.coins = u.coins || 0;
+          var achievementCount = ACHIEVEMENTS.filter(function(a) { return a.check(data); }).length;
+          return {
+            name: u.name || 'Onbekend',
+            email: u.email || '',
+            coins: u.coins || 0,
+            reviews: myRevs.length,
+            totalLikes: totalLikes,
+            totalDislikes: totalDislikes,
+            avgRating: avgRating,
+            verified: u.verified || false,
+            achievements: achievementCount
+          };
+        }).filter(function(u) { return u.reviews > 0 || u.coins > 0; });
+
+        var categories = [
+          { title:'🪙 Meeste Coins', key:'coins', emoji:'🪙', color:'#F5C518' },
+          { title:'📝 Meeste Reviews', key:'reviews', emoji:'📝', color:'#0F3460' },
+          { title:'👍 Meeste Likes', key:'totalLikes', emoji:'👍', color:'#16C79A' },
+          { title:'⭐ Hoogste Gem. Rating', key:'avgRating', emoji:'⭐', color:'#FF9A3C', decimal:true },
+          { title:'🏆 Meeste Achievements', key:'achievements', emoji:'🏆', color:'#845EC2' },
+          { title:'🌶️ Meeste Dislikes', key:'totalDislikes', emoji:'🌶️', color:'#E94560' }
+        ];
+
+        grid.innerHTML = categories.map(function(cat) {
+          var sorted = leaderData.slice().sort(function(a, b) { return (b[cat.key]||0) - (a[cat.key]||0); });
+          var top5 = sorted.slice(0, 5);
+          return '<div style="background:white;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.06);">' +
+            '<div style="font-weight:800;font-size:0.85rem;margin-bottom:12px;display:flex;align-items:center;gap:6px;">' + cat.title + '</div>' +
+            top5.map(function(u, i) {
+              var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
+              var val = cat.decimal ? (u[cat.key] || 0).toFixed(1) : (u[cat.key] || 0);
+              return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;' + (i < top5.length - 1 ? 'border-bottom:1px solid rgba(26,26,46,0.04);' : '') + '">' +
+                '<div style="font-size:0.9rem;width:24px;text-align:center;">' + medal + '</div>' +
+                '<div style="flex:1;font-size:0.8rem;font-weight:' + (i === 0 ? '800' : '600') + ';">' + u.name + '</div>' +
+                '<div style="font-size:0.75rem;font-weight:800;color:' + cat.color + ';">' + val + '</div>' +
+              '</div>';
+            }).join('') +
+            (top5.length === 0 ? '<div style="font-size:0.75rem;color:rgba(26,26,46,0.3);text-align:center;padding:12px;">Nog geen data</div>' : '') +
+          '</div>';
+        }).join('');
+
+        // Player of the Week: highest combined score this week
+        if (leaderData.length > 0) {
+          var best = leaderData.sort(function(a, b) { return (b.totalLikes + b.reviews + b.coins) - (a.totalLikes + a.reviews + a.coins); })[0];
+          var pow = document.getElementById('playerOfWeek');
+          pow.style.display = 'block';
+          document.getElementById('powName').textContent = '👑 ' + best.name;
+          document.getElementById('powReason').textContent = best.reviews + ' reviews · ' + best.totalLikes + ' likes · ' + best.coins + ' coins';
+        }
+
+        renderMyAchievements();
+      }).catch(function() { grid.innerHTML = '<div style="text-align:center;color:rgba(26,26,46,0.3);">Kon leaderboard niet laden</div>'; });
     }
 
     function likeReview(id, action) {
@@ -9905,7 +10115,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
@@ -9927,7 +10137,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.4.7 · markdown-reviews</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.0 · leaderboard-achievements-reactions</p>
     </footer>
   </div>
 
