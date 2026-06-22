@@ -3334,6 +3334,11 @@
     <div style="text-align:center;max-width:420px;width:100%;">
       <div style="font-size:3rem;font-weight:900;color:var(--gold);letter-spacing:-2px;margin-bottom:4px;">Wat in de <span style="color:var(--accent);">Ranking</span></div>
       <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">Alleen voor leden</div>
+      <div id="pendingApprovalMsg" style="display:none;background:rgba(245,197,24,0.12);border:1px solid rgba(245,197,24,0.3);border-radius:16px;padding:20px 24px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">⏳</div>
+        <div style="font-weight:800;color:var(--gold);font-size:1rem;margin-bottom:6px;">Wachten op goedkeuring</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.5;">Je account is aangemaakt maar moet goedgekeurd worden door een admin voordat je de site kunt gebruiken.</div>
+      </div>
       <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px;backdrop-filter:blur(12px);">
         <div style="font-size:1.2rem;font-weight:800;color:white;margin-bottom:6px;">Inloggen</div>
         <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:24px;">Log in met Google of e-mail om toegang te krijgen</div>
@@ -3361,9 +3366,7 @@
           <button onclick="resetPassword()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:0.75rem;cursor:pointer;font-family:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Wachtwoord vergeten?</button>
         </div>
 
-        <div style="margin-top:8px;text-align:center;">
-          <button onclick="loginAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Doorgaan als gast (alleen kijken)</button>
-        </div>
+
       </div>
       <div style="margin-top:20px;font-size:0.7rem;color:rgba(255,255,255,0.2);">Gebruik je school- of persoonlijke e-mail</div>
     </div>
@@ -3378,7 +3381,7 @@
       <button id="navLogoutBtn" onclick="logoutGroup()" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.75rem;cursor:pointer;transition:all 0.3s;display:none;" onmouseover="this.style.background='rgba(233,69,96,0.2)';this.style.color='var(--accent)'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">Uitloggen</button>
     </div>
     <button id="notifBell" onclick="toggleNotifPanel()" style="position:relative;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:1.1rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;" title="Notificaties">🔔<span id="notifBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--accent);color:white;font-size:0.55rem;font-weight:800;min-width:16px;height:16px;border-radius:50%;line-height:16px;text-align:center;">0</span></button>
-    <button id="onlineBtn" onclick="navigate('users')" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:0.7rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;font-weight:700;" title="Online gebruikers">🟢 <span id="onlineCountNav">0</span></button>
+    <button id="onlineBtn" onclick="openUsersPopup()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);font-size:0.7rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all 0.3s;display:none;font-weight:700;" title="Online gebruikers">🟢 <span id="onlineCountNav">0</span></button>
     <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">🌙</button>
     <div class="lang-switcher">
       <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">🇳🇱 NL</button>
@@ -3439,7 +3442,6 @@
       </div>
 
       <a href="#merch" onclick="navigate('merch')" style="display:flex;align-items:center;gap:4px;">🛍️ Merch</a>
-      <a href="#users" onclick="navigate('users')" style="display:flex;align-items:center;gap:4px;">👤 Users</a>
     </ul>
   </nav>
 
@@ -3591,7 +3593,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3610,7 +3612,6 @@
 
         <div class="preset-row" id="presetRow">
           <button class="preset-btn" onclick="loadPreset('leden')">👑 Groepsleden</button>
-          <button class="preset-btn" onclick="loadPreset('docenten')">🎓 Docenten</button>
           <button class="preset-btn-add" onclick="openCategoryModal()">+ Nieuwe Categorie</button>
         </div>
 
@@ -3727,7 +3728,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3759,7 +3760,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3779,7 +3780,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3819,7 +3820,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3851,7 +3852,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3886,7 +3887,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3910,7 +3911,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -3936,7 +3937,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4011,7 +4012,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4129,7 +4130,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4211,7 +4212,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4237,7 +4238,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4372,7 +4373,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4421,7 +4422,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -4669,6 +4670,35 @@
               el.style.display = 'block';
               return;
             }
+            // Approval check: new users must be approved unless they're the owner
+            if (!isSiteOwner && !(doc.exists && doc.data().approved)) {
+              // Auto-approve verified users (backwards compatibility) 
+              var isAlreadyVerified = doc.exists && doc.data().verified;
+              if (!isAlreadyVerified) {
+                // New unapproved user — send to waiting screen
+                if (!doc.data().approvalRequested) {
+                  db.collection('users').doc(user.uid).update({ approvalRequested: true, approvalRequestedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){});
+                  // Notify owner
+                  db.collection('users').where('email', '==', 'joshibrahim903@gmail.com').limit(1).get().then(function(snapshot) {
+                    snapshot.forEach(function(ownerDoc) {
+                      db.collection('messages').add({
+                        to: ownerDoc.id, fromUid: 'system', fromName: '🔔 Systeem',
+                        text: '🆕 Nieuwe gebruiker wacht op goedkeuring!\n\n' + (user.displayName || user.email.split('@')[0]) + ' (' + user.email + ') heeft zich aangemeld.\n\nGa naar Admin Panel → Gebruikers & Rollen om te goedkeuren.',
+                        read: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                      }).catch(function(){});
+                    });
+                  }).catch(function(){});
+                }
+                auth.signOut();
+                document.getElementById('loginGate').style.display = 'flex';
+                document.getElementById('pendingApprovalMsg').style.display = 'block';
+                var loginForm = document.querySelector('#loginGate > div > div[style*="background:rgba"]');
+                if (loginForm) loginForm.style.display = 'none';
+                return;
+              }
+              // Already verified — silently approve and continue
+              db.collection('users').doc(user.uid).update({ approved: true }).catch(function(){});
+            }
             if (doc.exists && doc.data().roles) {
               userRoles = doc.data().roles;
             } else {
@@ -4682,7 +4712,7 @@
             if (userRoles.indexOf('master') !== -1) {
               isAdmin = true;
               adminRole = 'master';
-              ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.add('perm-' + p); });
+              ['lore','leden','ranking','berichten','soundboard','merch','widr'].forEach(function(p) { document.body.classList.add('perm-' + p); });
             } else if (userRoles.length > 0) {
               userRoles.forEach(function(r) {
                 document.body.classList.add('perm-' + r);
@@ -4720,6 +4750,29 @@
 
     // ===== NAVIGATION =====
     function navigate(page) {
+      // Check page access
+      if (page !== 'home') {
+        checkPageAccess(page, function(allowed) {
+          if (!allowed) {
+            // Show locked page message
+            var existing = document.getElementById('pageLockedPopup');
+            if (existing) existing.remove();
+            var popup = document.createElement('div');
+            popup.id = 'pageLockedPopup';
+            popup.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--primary);color:white;border-radius:14px;padding:14px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;animation:fadeIn 0.3s ease;';
+            popup.innerHTML = '<div style="font-size:1.5rem;">🔒</div><div><div style="font-weight:800;font-size:0.9rem;">Geen toegang</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5);">Je hebt niet de juiste rol voor deze pagina</div></div>';
+            document.body.appendChild(popup);
+            setTimeout(function() { if (popup.parentNode) popup.remove(); }, 3500);
+            return;
+          }
+          _doNavigate(page);
+        });
+        return;
+      }
+      _doNavigate(page);
+    }
+
+    function _doNavigate(page) {
       document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-links a').forEach(function(a) { a.classList.remove('active'); });
 
@@ -5048,13 +5101,11 @@
     var completedBracketMatches = 0;
 
     var presets = {
-      leden: ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'Daniël', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping'],
-      docenten: ['Burgmans', 'Doremalen', 'Gelder', 'De Groot', 'Ploeg', 'Prins', 'Riep', 'De Roode', 'Sahin', 'De Vos', 'Wijnants', 'Zilfhout', 'Keeren', 'Hugens', 'De Jong', 'Goff', 'Otten', 'Blokland', 'Salemink', 'Profoost', 'Peters', 'Verlee', 'Steltman', 'Roshdi', 'Rijnenberg', 'Koobs', 'Abdullah', 'Van der Meer', 'Groenland', 'Seghedi', 'De Boer', 'Duiven']
+      leden: ['Josh Ibrahim', 'Lors Jocohobo', 'Adam', 'Fionn', 'Nathananiel', 'Reshman', 'Daniël', 'Milo', 'Meta AI', 'Maciek', 'Denize', 'Sichen Ping']
     };
 
     var builtinMeta = {
-      leden: { name: 'Groepsleden', emoji: '👑' },
-      docenten: { name: 'Docenten', emoji: '🎓' }
+      leden: { name: 'Groepsleden', emoji: '👑' }
     };
 
     var activePresetCategory = null;
@@ -9267,6 +9318,18 @@
         </div>
 
         <div style="margin-top:20px;padding-top:20px;border-top:2px solid rgba(26,26,46,0.06);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--orange);margin-bottom:4px;">⏳ Goedkeuring Wachtlijst</div>
+          <div style="font-size:0.65rem;color:rgba(26,26,46,0.35);margin-bottom:12px;">Gebruikers die wachten op toegang tot de site</div>
+          <div id="pendingUsersList" style="font-size:0.8rem;color:rgba(26,26,46,0.5);">Laden...</div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:2px solid rgba(26,26,46,0.06);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--blue);margin-bottom:8px;">🔑 Pagina Toegang Per Rol</div>
+          <div style="font-size:0.65rem;color:rgba(26,26,46,0.35);margin-bottom:12px;">Stel per pagina in welke rol nodig is om die te zien. Geverifieerd = minimaal ✅ verified. WidR = alleen WidR Members.</div>
+          <div id="pageAccessList">Laden...</div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:2px solid rgba(26,26,46,0.06);">
           <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--purple);margin-bottom:12px;">⚙️ Site Instellingen</div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(26,26,46,0.03);border-radius:12px;">
             <div>
@@ -9286,6 +9349,7 @@
   <script>
     var adminRoles = {
       master: { label: '👑 Master Admin', desc: 'Volledige toegang', perms: ['all'] },
+      widr: { label: '🎖️ WidR Member', desc: 'Groepslid — toegang tot afgesloten paginas', perms: ['widr'] },
       lore: { label: '📜 Lore Admin', desc: 'Verhalen & memes beheren', perms: ['lore'] },
       leden: { label: '👥 Leden Admin', desc: 'Leden toevoegen/bewerken', perms: ['leden'] },
       ranking: { label: '🏆 Ranking Admin', desc: 'Categorieën & stemmen', perms: ['ranking'] },
@@ -9305,6 +9369,11 @@
       }).catch(function() {});
     }
     try { loadSiteSettings(); } catch(e) {}
+    try {
+      db.collection('config').doc('pageAccess').get().then(function(doc) {
+        pageAccessConfig = (doc.exists && doc.data()) || {};
+      }).catch(function(){});
+    } catch(e) {}
 
     function updateNameLockBtn() {
       var btn = document.getElementById('nameLockToggle');
@@ -9517,7 +9586,7 @@
       isAdmin = false;
       adminRole = null;
       document.body.classList.remove('admin-mode');
-      ['lore','leden','ranking','berichten','soundboard','merch'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
+      ['lore','leden','ranking','berichten','soundboard','merch','widr'].forEach(function(p) { document.body.classList.remove('perm-' + p); });
       document.getElementById('adminBadge').classList.remove('active');
       try { renderPresetButtons(); } catch(e) {}
       try { renderMembers(); } catch(e) {}
@@ -9539,6 +9608,8 @@
       });
 
       loadUsersList();
+      try { loadPendingUsers(); } catch(e) {}
+      try { loadPageAccessConfig(); } catch(e) {}
       updateNameLockBtn();
 
       document.getElementById('adminModal').classList.add('active');
@@ -9546,7 +9617,7 @@
 
     function renderRoleManager(currentRoles) {
       var list = document.getElementById('roleList');
-      var subRoles = ['lore','leden','ranking','berichten','soundboard','merch'];
+      var subRoles = ['widr','lore','leden','ranking','berichten','soundboard','merch'];
       list.innerHTML = subRoles.map(function(role) {
         var info = adminRoles[role];
         var hasPass = currentRoles[role] ? true : false;
@@ -9594,6 +9665,7 @@
 
     var allRoleOptions = [
       { id: 'master', label: '👑 Master', color: '#F5C518', desc: 'Volledige toegang' },
+      { id: 'widr', label: '🎖️ WidR Member', color: '#16C79A', desc: 'Groepslid toegang' },
       { id: 'lore', label: '📜 Lore', color: '#845EC2', desc: 'Verhalen & memes' },
       { id: 'leden', label: '👥 Leden', color: '#16C79A', desc: 'Leden beheren' },
       { id: 'ranking', label: '🏆 Ranking', color: '#E94560', desc: 'Categorieën & stemmen' },
@@ -9756,6 +9828,174 @@
           '</div>';
         });
       }).catch(function() {});
+    }
+
+    // ===== PENDING USERS (APPROVAL) =====
+    function loadPendingUsers() {
+      var list = document.getElementById('pendingUsersList');
+      if (!list) return;
+      db.collection('users').where('approvalRequested', '==', true).get().then(function(snapshot) {
+        var pending = [];
+        snapshot.forEach(function(doc) {
+          var u = doc.data();
+          if (!u.approved && !u.banned) pending.push({ id: doc.id, data: u });
+        });
+        if (pending.length === 0) {
+          list.innerHTML = '<div style="font-size:0.8rem;color:rgba(26,26,46,0.3);padding:8px;">Geen gebruikers wachten op goedkeuring 🎉</div>';
+          return;
+        }
+        list.innerHTML = pending.map(function(item) {
+          var u = item.data;
+          var time = u.approvalRequestedAt ? new Date(u.approvalRequestedAt.seconds * 1000).toLocaleString('nl-NL') : 'onbekend';
+          return '<div style="padding:12px 14px;background:rgba(255,154,60,0.08);border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,154,60,0.2);">' +
+            '<div style="font-weight:700;font-size:0.85rem;">' + (u.name || 'Onbekend') + '</div>' +
+            '<div style="font-size:0.7rem;color:rgba(26,26,46,0.45);">' + (u.email || '') + ' · ' + time + '</div>' +
+            '<div style="display:flex;gap:6px;margin-top:8px;">' +
+              '<button onclick="approveUser(\'' + item.id + '\')" style="padding:5px 14px;background:var(--mint);color:white;border:none;border-radius:6px;font-weight:700;font-size:0.7rem;cursor:pointer;">✅ Goedkeuren</button>' +
+              '<button onclick="toggleBan(\'' + item.id + '\',true)" style="padding:5px 14px;background:var(--accent);color:white;border:none;border-radius:6px;font-weight:700;font-size:0.7rem;cursor:pointer;">🚫 Weigeren</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }).catch(function() { list.textContent = 'Kon lijst niet laden.'; });
+    }
+
+    function approveUser(uid) {
+      db.collection('users').doc(uid).update({ approved: true }).then(function() {
+        db.collection('users').doc(uid).get().then(function(doc) {
+          if (doc.exists) {
+            db.collection('messages').add({
+              to: uid, fromUid: 'system', fromName: '🤖 Systeem',
+              text: '🎉 Je bent goedgekeurd! Welkom bij Wat in de Ranking. Je kunt nu inloggen.',
+              read: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(function(){});
+          }
+        }).catch(function(){});
+        loadPendingUsers();
+        loadUsersList();
+      }).catch(function(err) { console.error(err); });
+    }
+
+    // ===== PAGE ACCESS CONFIG =====
+    var allPages = [
+      { id: 'home', label: '🏠 Home' },
+      { id: 'apps', label: '🔥 Rank It' },
+      { id: 'rankings', label: '📊 Rankings' },
+      { id: 'polls', label: '🗳️ Polls' },
+      { id: 'reviews', label: '📝 Reviews' },
+      { id: 'bets', label: '🎰 Bets' },
+      { id: 'members', label: '👥 Leden' },
+      { id: 'lore', label: '📜 Lore' },
+      { id: 'soundboard', label: '🔊 Soundboard' },
+      { id: 'stickers', label: '🎨 Stickers' },
+      { id: 'leaderboard', label: '🏅 Leaderboard' },
+      { id: 'stats', label: '📊 Chat Stats' },
+      { id: 'inbox', label: '📨 Inbox' },
+      { id: 'merch', label: '🛍️ Merch' },
+      { id: 'about', label: '📖 Over Ons' },
+      { id: 'contact', label: '✉️ Contact' }
+    ];
+
+    var pageAccessConfig = {};
+
+    function loadPageAccessConfig() {
+      var el = document.getElementById('pageAccessList');
+      if (!el) return;
+      db.collection('config').doc('pageAccess').get().then(function(doc) {
+        pageAccessConfig = (doc.exists && doc.data()) || {};
+        renderPageAccessList();
+      }).catch(function() { renderPageAccessList(); });
+    }
+
+    function renderPageAccessList() {
+      var el = document.getElementById('pageAccessList');
+      if (!el) return;
+      el.innerHTML = allPages.map(function(page) {
+        var current = pageAccessConfig[page.id] || 'all';
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;">' +
+          '<div style="font-weight:700;font-size:0.82rem;">' + page.label + '</div>' +
+          '<select onchange="savePageAccess(\'' + page.id + '\',this.value)" style="padding:5px 10px;border:2px solid rgba(26,26,46,0.08);border-radius:8px;font-size:0.75rem;font-family:inherit;background:white;cursor:pointer;">' +
+            '<option value="all"' + (current === 'all' ? ' selected' : '') + '>🌍 Iedereen</option>' +
+            '<option value="verified"' + (current === 'verified' ? ' selected' : '') + '>✅ Geverifieerd</option>' +
+            '<option value="widr"' + (current === 'widr' ? ' selected' : '') + '>🎖️ WidR Members</option>' +
+            '<option value="master"' + (current === 'master' ? ' selected' : '') + '>👑 Alleen Master</option>' +
+          '</select>' +
+        '</div>';
+      }).join('');
+    }
+
+    function savePageAccess(pageId, level) {
+      pageAccessConfig[pageId] = level;
+      db.collection('config').doc('pageAccess').set(pageAccessConfig, { merge: true }).catch(function(err) { console.error(err); });
+    }
+
+    function checkPageAccess(pageId, callback) {
+      if (!pageAccessConfig || Object.keys(pageAccessConfig).length === 0) {
+        db.collection('config').doc('pageAccess').get().then(function(doc) {
+          pageAccessConfig = (doc.exists && doc.data()) || {};
+          callback(isPageAllowed(pageId));
+        }).catch(function() { callback(true); });
+      } else {
+        callback(isPageAllowed(pageId));
+      }
+    }
+
+    function isPageAllowed(pageId) {
+      var required = pageAccessConfig[pageId] || 'all';
+      if (required === 'all') return true;
+      if (!currentUser && !isGuest) return false;
+      if (currentUser && currentUser.email === 'joshibrahim903@gmail.com') return true;
+      if (userRoles && userRoles.indexOf('master') !== -1) return true;
+      if (required === 'verified') return isVerified;
+      if (required === 'widr') return (userRoles && userRoles.indexOf('widr') !== -1) || isVerified;
+      if (required === 'master') return (userRoles && userRoles.indexOf('master') !== -1);
+      return true;
+    }
+
+    // ===== USERS POPUP =====
+    function openUsersPopup() {
+      var existing = document.getElementById('usersPopupOverlay');
+      if (existing) { existing.remove(); return; }
+
+      var overlay = document.createElement('div');
+      overlay.id = 'usersPopupOverlay';
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10002;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s ease;';
+
+      overlay.innerHTML = '<div style="background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:500px;width:92%;max-height:80vh;overflow-y:auto;position:relative;">' +
+        '<button onclick="document.getElementById(\'usersPopupOverlay\').remove()" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:6px;background:rgba(26,26,46,0.06);border:none;cursor:pointer;font-size:0.9rem;color:rgba(26,26,46,0.4);">✕</button>' +
+        '<div style="font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;margin-bottom:4px;">Users 👤</div>' +
+        '<div id="usersPopupOnline" style="font-size:0.7rem;color:var(--mint);font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;"></div>' +
+        '<div id="usersPopupList" style="font-size:0.85rem;color:rgba(26,26,46,0.4);">Laden...</div>' +
+      '</div>';
+
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+
+      // Load users
+      db.collection('users').orderBy('lastLogin', 'desc').get().then(function(snapshot) {
+        var onlineCount = 0;
+        var html = '';
+        snapshot.forEach(function(doc) {
+          var u = doc.data();
+          var isOnline = u.lastSeen && (Date.now() - u.lastSeen < 120000);
+          if (isOnline) onlineCount++;
+          var roles = u.roles || [];
+          var roleBadges = roles.map(function(r) {
+            var opt = allRoleOptions.find(function(o) { return o.id === r; });
+            return opt ? '<span style="display:inline-block;padding:1px 7px;border-radius:100px;font-size:0.55rem;font-weight:700;background:' + opt.color + ';color:white;margin-right:3px;">' + opt.label + '</span>' : '';
+          }).join('');
+          html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;margin-bottom:6px;background:rgba(26,26,46,0.03);">' +
+            '<div style="font-size:1.5rem;">' + (isOnline ? '🟢' : '⚫') + '</div>' +
+            '<div style="flex:1;">' +
+              '<div style="font-weight:700;font-size:0.9rem;">' + (u.name || 'Onbekend') + (u.verified ? ' ✅' : '') + '</div>' +
+              (roleBadges ? '<div style="margin-top:3px;">' + roleBadges + '</div>' : '') +
+            '</div>' +
+          '</div>';
+        });
+        document.getElementById('usersPopupOnline').textContent = onlineCount + ' online nu';
+        document.getElementById('usersPopupList').innerHTML = html || '<div style="text-align:center;padding:20px;color:rgba(26,26,46,0.3);">Geen gebruikers gevonden</div>';
+      }).catch(function() {
+        document.getElementById('usersPopupList').textContent = 'Kon gebruikers niet laden.';
+      });
     }
   </script>
 
@@ -10180,7 +10420,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -10202,7 +10442,7 @@
     <footer>
       <div class="footer-logo">Wat in de <span>Ranking</span></div>
       <p><span onclick="openAdminLogin()" style="cursor:pointer">&copy;</span> 2026 Wat in de Ranking. Alle rechten voorbehouden.</p>
-      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.2 · auto-wk-bets</p>
+      <p style="font-size:0.65rem;color:rgba(26,26,46,0.25);margin-top:8px;">v3.5.3 · remove-docenten-ranking</p>
     </footer>
   </div>
 
@@ -10509,9 +10749,10 @@
     });
 
     // 6. RANDOM META AI (1% kans bij navigatie)
-    var _origNavigate = window.navigate;
+    var _origDoNavigate = window._doNavigate;
+    var _origNavigateEgg = window.navigate;
     window.navigate = function(page) {
-      _origNavigate(page);
+      if (typeof _origNavigateEgg === 'function') _origNavigateEgg(page);
       if (Math.random() < 0.01) {
         var msgs = [
           'Wist je dat ik ooit een fanfictie heb geschreven over Lors? Hij was niet blij.',
