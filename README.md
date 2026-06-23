@@ -5,7 +5,7 @@
 ### De Ultieme Ranking App voor de Ultieme Vriendengroep
 
 [![Live Site](https://img.shields.io/badge/🌐_Live-watinderanking.nl-F5C518?style=for-the-badge&labelColor=1A1A2E)](https://watinderanking.nl)
-[![Version](https://img.shields.io/badge/Version-3.5.1-E94560?style=for-the-badge&labelColor=1A1A2E)](https://watinderanking.nl)
+[![Version](https://img.shields.io/badge/Version-3.4.7-E94560?style=for-the-badge&labelColor=1A1A2E)](https://watinderanking.nl)
 [![Status](https://img.shields.io/badge/Status-Online-16C79A?style=for-the-badge&labelColor=1A1A2E)](https://watinderanking.nl)
 
 ---
